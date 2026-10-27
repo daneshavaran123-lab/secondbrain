@@ -107,16 +107,36 @@ async function foreignKeys() {
   return rows;
 }
 
-export async function columnsOf(table) {
+async function loadColumns(table) {
   const cached = columnCache.get(table);
-  if (cached && Date.now() - cached.at < CACHE_MS) return cached.cols;
+  if (cached && Date.now() - cached.at < CACHE_MS) return cached;
   const { rows } = await query(
-    `SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1`,
+    `SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1`,
     [table]
   );
-  const cols = new Set(rows.map((r) => r.column_name));
-  columnCache.set(table, { at: Date.now(), cols });
-  return cols;
+  const entry = { at: Date.now(), cols: new Set(rows.map((r) => r.column_name)), types: new Map(rows.map((r) => [r.column_name, r.data_type])) };
+  columnCache.set(table, entry);
+  return entry;
+}
+
+export async function columnsOf(table) {
+  return (await loadColumns(table)).cols;
+}
+
+/**
+ * Values ready for node-postgres: it sends JS arrays as Postgres arrays, which a json/jsonb
+ * column rejects ("invalid input syntax for type json"), so those are sent as JSON text.
+ */
+export async function prepareRow(table, row) {
+  const { types } = await loadColumns(table);
+  const out = {};
+  for (const [key, value] of Object.entries(row)) {
+    const type = types.get(key);
+    out[key] = (type === 'json' || type === 'jsonb') && value !== null && typeof value === 'object'
+      ? JSON.stringify(value)
+      : value;
+  }
+  return out;
 }
 
 const singular = (table) => table.replace(/ies$/, 'y').replace(/s$/, '');

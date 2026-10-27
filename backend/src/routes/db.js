@@ -10,7 +10,7 @@ import { requireAuth } from '../middleware/auth.js';
 import {
   BadRequest, Forbidden, ident, filterConditions, parseSelect, routeFilters,
   innerJoinConditions, joinColumns, columnSql, attachEmbeds, trimRow,
-  isScoped, ownerCondition, columnsOf,
+  isScoped, ownerCondition, columnsOf, prepareRow,
 } from './dbEmbed.js';
 
 const router = Router();
@@ -270,7 +270,7 @@ router.post('/:table', async (req, res) => {
         await assertParentsOwned(client, table, rows, userId);
         const out = [];
         for (const row of rows) {
-          const r = await withOwner(table, row, userId);
+          const r = await prepareRow(table, await withOwner(table, row, userId));
           const keys = Object.keys(r).filter(k => r[k] !== undefined);
           const cols = keys.map(ident).join(', ');
           const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
@@ -297,6 +297,7 @@ router.post('/:table', async (req, res) => {
 
       const keys = Object.keys(updateData).filter(k => updateData[k] !== undefined);
       if (!keys.length) return res.json({ data: [], error: null });
+      Object.assign(updateData, await prepareRow(table, updateData));
 
       let idx = values.length + 1;
       const sets = keys.map(k => { const s = `${ident(k)} = $${idx}`; idx++; return s; }).join(', ');
@@ -329,7 +330,7 @@ router.post('/:table', async (req, res) => {
         await assertParentsOwned(client, table, rows, userId);
         const out = [];
         for (const row of rows) {
-          const r = await withOwner(table, row, userId);
+          const r = await prepareRow(table, await withOwner(table, row, userId));
           const keys = Object.keys(r).filter(k => r[k] !== undefined);
           const cols = keys.map(ident).join(', ');
           const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
