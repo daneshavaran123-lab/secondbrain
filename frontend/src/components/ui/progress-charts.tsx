@@ -72,8 +72,6 @@ export function ProgressCharts() {
     return null;
   };
 
-  const isJSDOM = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '');
-
   return (
     <Card className="glass-card border-0 hover-glow transition-elegant">
       <CardContent className="p-4 lg:p-6 xl:p-8">
@@ -85,11 +83,7 @@ export function ProgressCharts() {
         <div className="h-48 lg:h-56 xl:h-64 mb-4 lg:mb-6 xl:mb-8">
           {isLoading ? (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs lg:text-sm">
-              در حال بارگذاری...
-            </div>
-          ) : isJSDOM ? (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs lg:text-sm">
-              نمودار در محیط تست غیرفعال است
+              در حال بارگذاری…
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">

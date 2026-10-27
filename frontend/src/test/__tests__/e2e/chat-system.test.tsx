@@ -1,274 +1,177 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChatPanel } from '@/components/chat/ChatPanel';
 import { MessageInput } from '@/components/chat/MessageInput';
 import { MessageList } from '@/components/chat/MessageList';
 
-// Mock Supabase
-const mockSupabase = {
-  auth: {
-    getUser: vi.fn(() => Promise.resolve({ 
-      data: { user: { id: 'test-user', email: 'test@example.com' } } 
-    })),
-  },
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        order: vi.fn(() => Promise.resolve({ 
-          data: [], 
-          error: null 
-        }))
-      }))
-    })),
-    insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
-    update: vi.fn(() => ({
-      eq: vi.fn(() => Promise.resolve({ data: null, error: null }))
-    })),
-  })),
+// A chainable query builder like the backend shim's: every filter returns the
+// builder, and awaiting it resolves to { data, error }.
+function query(result: { data: unknown; error: unknown } = { data: [], error: null }) {
+  const builder: any = {};
+  for (const method of ['select', 'eq', 'is', 'order', 'update', 'maybeSingle']) {
+    builder[method] = vi.fn(() => builder);
+  }
+  builder.insert = vi.fn(() => Promise.resolve({ data: null, error: null }));
+  builder.then = (resolve: (v: unknown) => unknown, reject: (e: unknown) => unknown) =>
+    Promise.resolve(result).then(resolve, reject);
+  return builder;
+}
+
+function realtimeChannel() {
+  const channel: any = {
+    on: vi.fn(() => channel),
+    subscribe: vi.fn((cb?: (status: string) => void) => {
+      cb?.('SUBSCRIBED');
+      return channel;
+    }),
+    track: vi.fn(() => Promise.resolve()),
+    presenceState: vi.fn(() => ({})),
+  };
+  return channel;
+}
+
+const mockSupabase = vi.hoisted(() => ({
+  auth: { getUser: vi.fn() },
+  from: vi.fn(),
+  channel: vi.fn(),
+  removeChannel: vi.fn(() => Promise.resolve()),
   storage: {
     from: vi.fn(() => ({
       upload: vi.fn(() => Promise.resolve({ error: null })),
-      createSignedUrl: vi.fn(() => Promise.resolve({ 
-        data: { signedUrl: 'test-url' } 
-      }))
-    }))
-  },
-  channel: vi.fn(() => ({
-    on: vi.fn(() => ({
-      subscribe: vi.fn(() => Promise.resolve())
+      createSignedUrl: vi.fn(() => Promise.resolve({ data: { signedUrl: 'blob:test' }, error: null })),
     })),
-    track: vi.fn(() => Promise.resolve()),
-    untrack: vi.fn(() => Promise.resolve()),
-    unsubscribe: vi.fn(() => Promise.resolve())
-  }))
-};
-
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: mockSupabase
+  },
 }));
 
-describe('Chat System E2E Tests', () => {
+vi.mock('@/integrations/supabase/client', () => ({ supabase: mockSupabase }));
+
+const PLACEHOLDER = /پیام خود را بنویسید/;
+
+describe('Chat', () => {
   const user = userEvent.setup();
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: 'u1', email: 'sara@example.com' } } });
+    mockSupabase.from.mockImplementation(() => query());
+    mockSupabase.channel.mockImplementation(() => realtimeChannel());
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  describe('MessageInput Component', () => {
-    it('should render message input with send button', () => {
-      render(
-        <MessageInput 
-          channelId="test-channel" 
-          onSent={vi.fn()} 
-        />
-      );
-
-      expect(screen.getByPlaceholderText('پیام خود را بنویسید...')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /ارسال/i })).toBeInTheDocument();
+  describe('MessageInput', () => {
+    it('renders the message box and the send button', () => {
+      render(<MessageInput channelId="c1" />);
+      expect(screen.getByPlaceholderText(PLACEHOLDER)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'ارسال' })).toBeInTheDocument();
     });
 
-    it('should handle message typing and sending', async () => {
+    it('inserts the message into the channel and clears the box', async () => {
+      const messages = query();
+      mockSupabase.from.mockImplementation((table: string) => (table === 'messages' ? messages : query()));
       const onSent = vi.fn();
-      render(
-        <MessageInput 
-          channelId="test-channel" 
-          onSent={onSent} 
-        />
+      render(<MessageInput channelId="c1" onSent={onSent} />);
+
+      await user.type(screen.getByPlaceholderText(PLACEHOLDER), 'جلسه ساعت ۱۰ است');
+      await user.click(screen.getByRole('button', { name: 'ارسال' }));
+
+      await waitFor(() => expect(onSent).toHaveBeenCalled());
+      expect(messages.insert).toHaveBeenCalledWith(
+        expect.objectContaining({ channel_id: 'c1', sender_id: 'u1', body: 'جلسه ساعت ۱۰ است' })
       );
-
-      const messageInput = screen.getByPlaceholderText('پیام خود را بنویسید...');
-      const sendButton = screen.getByRole('button', { name: /ارسال/i });
-
-      await user.type(messageInput, 'Hello, this is a test message');
-      await user.click(sendButton);
-
-      await waitFor(() => {
-        expect(mockSupabase.from).toHaveBeenCalledWith('messages');
-        expect(onSent).toHaveBeenCalled();
-      });
+      expect(screen.getByPlaceholderText(PLACEHOLDER)).toHaveValue('');
     });
 
-    it('should handle file attachments', async () => {
-      render(
-        <MessageInput 
-          channelId="test-channel" 
-          onSent={vi.fn()} 
-        />
-      );
-
-      const fileInput = screen.getByDisplayValue('') as HTMLInputElement;
-      const testFile = new File(['test content'], 'test.txt', { type: 'text/plain' });
-
-      await user.upload(fileInput, testFile);
-
-      expect(fileInput.files).toHaveLength(1);
-      expect(fileInput.files?.[0]).toBe(testFile);
-    });
-
-    it('should prevent sending empty messages', async () => {
+    it('does not send an empty message', async () => {
       const onSent = vi.fn();
-      render(
-        <MessageInput 
-          channelId="test-channel" 
-          onSent={onSent} 
-        />
-      );
-
-      const sendButton = screen.getByRole('button', { name: /ارسال/i });
-      await user.click(sendButton);
-
+      render(<MessageInput channelId="c1" onSent={onSent} />);
+      await user.click(screen.getByRole('button', { name: 'ارسال' }));
       expect(mockSupabase.from).not.toHaveBeenCalled();
       expect(onSent).not.toHaveBeenCalled();
     });
-  });
 
-  describe('MessageList Component', () => {
-    it('should render message list', () => {
-      render(<MessageList channelId="test-channel" />);
-      
-      // Should render without crashing
-      expect(screen.getByTestId).toBeDefined();
+    it('accepts file attachments', async () => {
+      render(<MessageInput channelId="c1" />);
+      const fileInput = screen.getByLabelText('پیوست فایل') as HTMLInputElement;
+      const file = new File(['متن'], 'brief.txt', { type: 'text/plain' });
+      await user.upload(fileInput, file);
+      expect(fileInput.files?.[0]).toBe(file);
     });
 
-    it('should handle real-time message updates', async () => {
-      const channelMock = {
-        on: vi.fn(() => ({ subscribe: vi.fn() })),
-        track: vi.fn(() => Promise.resolve()),
-        untrack: vi.fn(() => Promise.resolve()),
-        subscribe: vi.fn(),
-        unsubscribe: vi.fn()
-      };
+    it('recovers when the session cannot be read', async () => {
+      mockSupabase.auth.getUser.mockRejectedValueOnce(new Error('auth failed'));
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      render(<MessageInput channelId="c1" />);
 
-      mockSupabase.channel.mockReturnValue(channelMock);
+      await user.type(screen.getByPlaceholderText(PLACEHOLDER), 'سلام');
+      await user.click(screen.getByRole('button', { name: 'ارسال' }));
 
-      render(<MessageList channelId="test-channel" />);
-
-      // Verify channel subscription was set up
-      expect(mockSupabase.channel).toHaveBeenCalledWith('messages');
-    });
-  });
-
-  describe('ChatPanel Integration', () => {
-    it('should render complete chat interface', () => {
-      render(
-        <ChatPanel
-          open={true}
-          onOpenChange={vi.fn()}
-          channelId="test-channel"
-          taskTitle="Test Task"
-        />
-      );
-
-      expect(screen.getByText('Test Task')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('پیام خود را بنویسید...')).toBeInTheDocument();
-    });
-
-    it('should handle typing indicators', async () => {
-      const mockChannel = {
-        track: vi.fn(() => Promise.resolve()),
-        untrack: vi.fn(() => Promise.resolve()),
-        on: vi.fn(() => ({ subscribe: vi.fn() })),
-        subscribe: vi.fn(),
-        unsubscribe: vi.fn()
-      };
-
-      mockSupabase.channel.mockReturnValue(mockChannel);
-
-      render(
-        <ChatPanel
-          open={true}
-          onOpenChange={vi.fn()}
-          channelId="test-channel"
-          taskTitle="Test Task"
-        />
-      );
-
-      const messageInput = screen.getByPlaceholderText('پیام خود را بنویسید...');
-      await user.type(messageInput, 'Typing...');
-
-      await waitFor(() => {
-        expect(mockChannel.track).toHaveBeenCalledWith({
-          typing: true,
-          user_id: 'test-user'
-        });
-      });
-    });
-
-    it('should handle panel open/close state', async () => {
-      const onOpenChange = vi.fn();
-      
-      render(
-        <ChatPanel
-          open={false}
-          onOpenChange={onOpenChange}
-          channelId="test-channel"
-          taskTitle="Test Task"
-        />
-      );
-
-      // Panel should be closed initially
-      expect(screen.queryByText('Test Task')).not.toBeInTheDocument();
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should handle authentication errors gracefully', async () => {
-      mockSupabase.auth.getUser.mockRejectedValueOnce(new Error('Auth failed'));
-
-      render(
-        <MessageInput 
-          channelId="test-channel" 
-          onSent={vi.fn()} 
-        />
-      );
-
-      const messageInput = screen.getByPlaceholderText('پیام خود را بنویسید...');
-      const sendButton = screen.getByRole('button', { name: /ارسال/i });
-
-      await user.type(messageInput, 'Test message');
-      await user.click(sendButton);
-
-      // Should not crash and should handle error gracefully
       expect(mockSupabase.from).not.toHaveBeenCalled();
+      // The button is usable again for a retry
+      await waitFor(() => expect(screen.getByRole('button', { name: 'ارسال' })).toBeEnabled());
     });
 
-    it('should handle network errors during message sending', async () => {
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            order: vi.fn(() => Promise.resolve({ data: [], error: null }))
-          }))
-        })),
-        insert: vi.fn(() => Promise.resolve({ 
-          error: { message: 'Network error' } 
-        })),
-        update: vi.fn(() => ({
-          eq: vi.fn(() => Promise.resolve({ data: null, error: null }))
-        })),
-      });
-
+    it('keeps the text when the server rejects the message', async () => {
+      const messages = query();
+      messages.insert.mockResolvedValueOnce({ data: null, error: { message: 'Network error' } });
+      mockSupabase.from.mockImplementation((table: string) => (table === 'messages' ? messages : query()));
       const onSent = vi.fn();
-      render(
-        <MessageInput 
-          channelId="test-channel" 
-          onSent={onSent} 
-        />
+      render(<MessageInput channelId="c1" onSent={onSent} />);
+
+      await user.type(screen.getByPlaceholderText(PLACEHOLDER), 'سلام');
+      await user.click(screen.getByRole('button', { name: 'ارسال' }));
+
+      await waitFor(() => expect(messages.insert).toHaveBeenCalled());
+      expect(onSent).not.toHaveBeenCalled();
+      expect(screen.getByPlaceholderText(PLACEHOLDER)).toHaveValue('سلام');
+    });
+  });
+
+  describe('MessageList', () => {
+    it('shows the channel history', async () => {
+      mockSupabase.from.mockImplementation(() =>
+        query({
+          data: [{ id: 'm1', channel_id: 'c1', sender_id: 'u2', body: 'گزارش آماده شد', rich: {}, attachments: [], created_at: '2026-10-27T08:00:00Z' }],
+          error: null,
+        })
       );
+      render(<MessageList channelId="c1" />);
+      expect(await screen.findByText('گزارش آماده شد')).toBeInTheDocument();
+    });
 
-      const messageInput = screen.getByPlaceholderText('پیام خود را بنویسید...');
-      const sendButton = screen.getByRole('button', { name: /ارسال/i });
+    it('subscribes to live messages and unsubscribes on unmount', () => {
+      const { unmount } = render(<MessageList channelId="c1" />);
+      expect(mockSupabase.channel).toHaveBeenCalledWith('realtime:messages');
+      const channel = mockSupabase.channel.mock.results[0].value;
+      expect(channel.on).toHaveBeenCalledWith(
+        'postgres_changes',
+        expect.objectContaining({ table: 'messages', filter: 'channel_id=eq.c1' }),
+        expect.any(Function)
+      );
+      unmount();
+      expect(mockSupabase.removeChannel).toHaveBeenCalledWith(channel);
+    });
+  });
 
-      await user.type(messageInput, 'Test message');
-      await user.click(sendButton);
+  describe('ChatPanel', () => {
+    it('renders the task conversation', () => {
+      render(<ChatPanel open onOpenChange={vi.fn()} channelId="c1" taskTitle="تهیه گزارش" />);
+      expect(screen.getByText('گفتگو - تهیه گزارش')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(PLACEHOLDER)).toBeInTheDocument();
+    });
 
-      await waitFor(() => {
-        expect(onSent).not.toHaveBeenCalled();
-      });
+    it('announces typing through presence', async () => {
+      render(<ChatPanel open onOpenChange={vi.fn()} channelId="c1" taskTitle="تهیه گزارش" />);
+      await waitFor(() => expect(mockSupabase.channel).toHaveBeenCalledWith('room:chat:c1', expect.anything()));
+      const roomCall = mockSupabase.channel.mock.calls.findIndex(([name]) => name === 'room:chat:c1');
+      const room = mockSupabase.channel.mock.results[roomCall].value;
+
+      await user.type(screen.getByPlaceholderText(PLACEHOLDER), 'د');
+      await waitFor(() => expect(room.track).toHaveBeenCalledWith({ typing: true }));
+    });
+
+    it('renders nothing while closed', () => {
+      render(<ChatPanel open={false} onOpenChange={vi.fn()} channelId="c1" taskTitle="تهیه گزارش" />);
+      expect(screen.queryByText('گفتگو - تهیه گزارش')).not.toBeInTheDocument();
     });
   });
 });

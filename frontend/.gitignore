@@ -37,3 +37,7 @@ STORAGE_POLICIES_SETUP.md
 *.backup
 *.bak
 *.tmp
+
+# Test output
+test-results/
+coverage/

@@ -4,25 +4,26 @@ import { ProgressRing } from '@/components/ui/progress-ring'
 
 describe('ProgressRing Component', () => {
   describe('تست جعبه‌سیاه (Black-box Testing)', () => {
+    // The label uses Persian digits, like every number in the app
     it('should render with default props', () => {
       const { getByText } = render(<ProgressRing progress={50} />)
-      expect(getByText('50%')).toBeInTheDocument()
+      expect(getByText('۵۰%')).toBeInTheDocument()
     })
 
     it('should handle progress boundaries correctly', () => {
       const { rerender, getByText } = render(<ProgressRing progress={0} />)
-      expect(getByText('0%')).toBeInTheDocument()
+      expect(getByText('۰%')).toBeInTheDocument()
 
       rerender(<ProgressRing progress={100} />)
-      expect(getByText('100%')).toBeInTheDocument()
+      expect(getByText('۱۰۰%')).toBeInTheDocument()
 
       rerender(<ProgressRing progress={150} />)
-      expect(getByText('150%')).toBeInTheDocument()
+      expect(getByText('۱۵۰%')).toBeInTheDocument()
     })
 
     it('should hide text when showText is false', () => {
       const { queryByText } = render(<ProgressRing progress={75} showText={false} />)
-      expect(queryByText('75%')).not.toBeInTheDocument()
+      expect(queryByText('۷۵%')).not.toBeInTheDocument()
     })
 
     it('should apply custom className', () => {

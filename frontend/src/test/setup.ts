@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import 'fake-indexeddb/auto'
 import { vi } from 'vitest'
 
 // Mock IntersectionObserver
@@ -30,16 +31,12 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(), 
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
-}
-Object.defineProperty(global, 'localStorage', { value: localStorageMock })
+// jsdom provides a working localStorage; start every test file from an empty one
+localStorage.clear()
 
 // Mock scrollTo
 global.scrollTo = vi.fn()
+
+// jsdom does not implement element scrolling
+Element.prototype.scrollIntoView = vi.fn()
+Element.prototype.scrollTo = vi.fn() as unknown as Element['scrollTo']
