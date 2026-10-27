@@ -52,7 +52,7 @@ export default function AuthPage() {
   });
 
   useEffect(() => {
-    document.title = "ورود به سیستم - Mora";
+    document.title = "ورود - مغز دوم من";
     
     // اگر کاربر قبلاً احراز هویت شده، هدایت به صفحه اصلی
     if (isAuthenticated) {
@@ -168,7 +168,7 @@ export default function AuthPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent">
-              مورا
+              مغز دوم من
             </h1>
             <p className="text-sm text-muted-foreground mt-1">دستیار هوشمند فارسی‌زبان شما</p>
           </div>

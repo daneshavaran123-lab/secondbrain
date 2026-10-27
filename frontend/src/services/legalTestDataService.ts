@@ -28,14 +28,14 @@ export class LegalTestDataService {
           userId: 'default'
         },
         {
-          title: 'پرونده مالکیت فکری برند مورا',
+          title: 'پرونده مالکیت فکری برند مغز دوم من',
           type: 'civil',
           status: 'active',
           lawyer: 'مریم رضایی',
           opponent: 'شرکت رقیب تجاری',
           court: 'دادگاه حقوقی تهران',
           nextHearing: '2024-11-25',
-          description: 'نقض حقوق مالکیت فکری و استفاده غیرمجاز از برند مورا',
+          description: 'نقض حقوق مالکیت فکری و استفاده غیرمجاز از برند مغز دوم من',
           totalCost: 15000000,
           priority: 'high',
           userId: 'default'

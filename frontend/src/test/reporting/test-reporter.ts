@@ -232,7 +232,7 @@ export class CustomTestReporter implements Reporter {
   private createJSONReport() {
     return {
       timestamp: new Date().toISOString(),
-      system: 'Mora PKM System',
+      system: 'My Second Brain',
       metrics: this.metrics,
       summary: {
         totalTests: this.metrics.totalTests,

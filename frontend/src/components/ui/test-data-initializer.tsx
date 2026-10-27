@@ -79,7 +79,7 @@ export function TestDataInitializer() {
           مدیریت داده‌های تستی
         </CardTitle>
         <CardDescription>
-          ایجاد داده‌های تستی واقعی برای تمام ماژول‌های سیستم Mora
+          ایجاد داده‌های تستی واقعی برای تمام ماژول‌های «مغز دوم من»
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

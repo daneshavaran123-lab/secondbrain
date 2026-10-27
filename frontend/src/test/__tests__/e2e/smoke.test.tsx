@@ -12,7 +12,7 @@ describe('Smoke Tests - تست دود', () => {
 
     it('should display main application title', () => {
       const { getByText } = render(<Dashboard />)
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
     })
 
     it('should render key dashboard sections', () => {
@@ -49,7 +49,7 @@ describe('Smoke Tests - تست دود', () => {
       const { getByText } = render(<Dashboard />)
 
       // Persian text should be present and readable
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
       expect(getByText(/هوشمند/)).toBeInTheDocument()
     })
   })
@@ -68,7 +68,7 @@ describe('Smoke Tests - تست دود', () => {
       }).not.toThrow()
 
       const { getByText } = render(<Dashboard />)
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
     })
   })
 })

@@ -12,7 +12,7 @@ const PROMPTS = [
   { label: 'یه ایده دارم…', prefill: 'یه ایده دارم: ', send: false },
 ];
 
-/** Home-screen entry point: type anything and Mora takes it from there. */
+/** Home-screen entry point: type anything and the assistant takes it from there. */
 export function AskMoraCard({ className }: { className?: string }) {
   const [text, setText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,8 +34,8 @@ export function AskMoraCard({ className }: { className?: string }) {
           ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="از مورا بپرس یا چیزی ثبت کن…"
-          aria-label="پیام به مورا"
+          placeholder="از مغز دومت بپرس یا چیزی ثبت کن…"
+          aria-label="پیام به دستیار"
           className="h-10 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted-foreground focus-visible:outline-none"
         />
         <Button type="submit" size="icon" className="h-10 w-10 min-h-0 shrink-0 rounded-lg sm:h-9 sm:w-9" disabled={!text.trim()} aria-label="ارسال">

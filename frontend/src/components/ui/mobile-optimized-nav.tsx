@@ -54,7 +54,7 @@ export function MobileOptimizedNav({ className }: MobileOptimizedNavProps) {
               if ('vibrate' in navigator) navigator.vibrate(20);
               askAssistant();
             }}
-            aria-label="گفتگو با مورا"
+            aria-label="گفتگو با دستیار"
             className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background shadow-lg shadow-foreground/15 transition-transform active:scale-95"
           >
             <MoraRobotIcon size="sm" animate={false} />

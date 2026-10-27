@@ -27,7 +27,7 @@ describe('Dashboard Integration Tests', () => {
       const { getByText, getByTestId } = render(<Dashboard />)
 
       // Main dashboard should load
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
 
       // Statistics should be displayed
       expect(getByText('فعالیت‌های امروز')).toBeInTheDocument()
@@ -45,7 +45,7 @@ describe('Dashboard Integration Tests', () => {
       const { getByText } = render(<Dashboard />)
 
       // Should render in mobile layout
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
 
       // Test desktop view
       Object.defineProperty(window, 'innerWidth', {
@@ -53,7 +53,7 @@ describe('Dashboard Integration Tests', () => {
       })
 
       // Layout should adapt
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
     })
   })
 
@@ -64,7 +64,7 @@ describe('Dashboard Integration Tests', () => {
       const { getByText } = render(<Dashboard />)
 
       // Wait for main content to render
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
 
       const endTime = performance.now()
       const loadTime = endTime - startTime

@@ -1,5 +1,5 @@
 /**
- * System prompt for «مورا». Rebuilt on every request with a fresh snapshot of the
+ * System prompt for the assistant of «مغز دوم من». Rebuilt on every request with a fresh snapshot of the
  * user's day and long-term memories, so the model starts grounded instead of guessing.
  */
 
@@ -7,7 +7,7 @@ import { query } from '../db/index.js';
 import { bucketTasks, loadMemories } from './tools.js';
 import { addDays, buildDateTable, isoDateOf, persianDateLabel, persianTime, timeOf, zonedToUtc } from './time.js';
 
-const BASE_PROMPT = `تو «مورا» هستی؛ دستیار اجرایی و مغز دوم کاربر. همیشه و فقط به فارسی روان و طبیعی جواب بده، حتی اگر کاربر انگلیسی نوشت. نام ابزارها و شناسه‌ها را هرگز به کاربر نشان نده.
+const BASE_PROMPT = `تو دستیار هوشمند اپلیکیشن «مغز دوم من» هستی؛ دستیار اجرایی و حافظه دوم کاربر. اگر نامت را پرسیدند، بگو «دستیار مغز دوم من». همیشه و فقط به فارسی روان و طبیعی جواب بده، حتی اگر کاربر انگلیسی نوشت. نام ابزارها و شناسه‌ها را هرگز به کاربر نشان نده.
 
 ## روش کار
 ۱. هدف کاربر را بفهم و همه کارهای لازم را انجام بده؛ یک پیام می‌تواند چند کار داشته باشد.

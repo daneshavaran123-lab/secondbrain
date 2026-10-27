@@ -65,7 +65,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
               <OfflineChip />
             </div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 animate-fade-in bg-gradient-to-br from-primary via-accent to-primary bg-clip-text text-transparent">
-              Mora
+              مغز دوم من
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground font-medium">مرکز کنترل هوشمند</p>
             <div className="mt-6 flex justify-center gap-2" aria-hidden>

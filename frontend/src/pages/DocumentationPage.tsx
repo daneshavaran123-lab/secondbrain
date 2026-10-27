@@ -55,7 +55,7 @@ const DocumentationPage = () => {
               <Book className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">مستندات نرم‌افزار مورا</h1>
+              <h1 className="text-3xl font-bold text-foreground">مستندات «مغز دوم من»</h1>
               <p className="text-lg text-muted-foreground">سیستم مدیریت دانش شخصی و سازمانی</p>
             </div>
           </div>
@@ -68,7 +68,7 @@ const DocumentationPage = () => {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <Badge variant="outline">نسخه 2.1.0</Badge>
           <span>آخرین بروزرسانی: ۱۳ آبان ۱۴۰۳</span>
-          <span>توسعه‌دهنده: تیم مورا</span>
+          <span>توسعه‌دهنده: تیم مغز دوم من</span>
         </div>
       </div>
 
@@ -107,12 +107,12 @@ const DocumentationPage = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3">
                       <Book className="w-5 h-5" />
-                      معرفی کلی نرم‌افزار مورا
+                      معرفی کلی «مغز دوم من»
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-lg leading-relaxed">
-                      مورا یک سیستم جامع مدیریت دانش شخصی و سازمانی است که برای مدیران، پزشکان و متخصصان طراحی شده است. 
+                      «مغز دوم من» یک سیستم جامع مدیریت دانش شخصی و سازمانی است که برای مدیران، پزشکان و متخصصان طراحی شده است. 
                       این نرم‌افزار به عنوان "مغز دوم دیجیتال" عمل می‌کند و کمک می‌کند تا اطلاعات، دانش و فعالیت‌های روزانه 
                       به صورت هوشمند مدیریت شوند.
                     </p>

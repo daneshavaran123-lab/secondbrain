@@ -42,7 +42,7 @@ export async function chatCompletion({ messages, tools, toolChoice = 'auto', pre
           Authorization: `Bearer ${getApiKey()}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://aimora.app',
-          'X-Title': 'Aimora Assistant',
+          'X-Title': 'My Second Brain Assistant',
         },
         body: JSON.stringify({
           model, messages, temperature, max_tokens: maxTokens,

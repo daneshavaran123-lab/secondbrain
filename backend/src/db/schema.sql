@@ -1991,7 +1991,7 @@ CREATE TABLE IF NOT EXISTS succession_positions (
 
 
 -- ─── Smart assistant ──────────────────────────────────────────────────────────
--- حافظه بلندمدت دستیار مورا (ترجیحات، افراد مهم، اهداف کاربر)
+-- حافظه بلندمدت دستیار «مغز دوم من» (ترجیحات، افراد مهم، اهداف کاربر)
 CREATE TABLE IF NOT EXISTS assistant_memories (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID NOT NULL,

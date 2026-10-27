@@ -84,7 +84,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
   const handleNotificationChange = () => {
     setUnreadNotifications(notificationService.getUnreadCount());
   };
-  // Search runs through Mora, which looks across notes, meetings, ideas and tasks.
+  // Search runs through the assistant, which looks across notes, meetings, ideas, letters and tasks.
   const submitSearch = () => {
     const query = searchValue.trim();
     if (!query) return;
@@ -108,7 +108,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
             <Menu className="h-5 w-5" />
           </Button>
         </PlatformAware>
-        <span className="text-base font-semibold tracking-tight">مورا</span>
+        <span className="text-base font-semibold tracking-tight">مغز دوم من</span>
         <PlatformAware hideOn={['mobile', 'tablet']}>
           <span className="ms-2 text-xs text-muted-foreground">{getCurrentPersianDate()}</span>
         </PlatformAware>
@@ -136,7 +136,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
           />
           {searchValue && !isMobile && (
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">
-              Enter برای جستجو با مورا
+              Enter برای جستجو با دستیار
             </span>
           )}
         </div>

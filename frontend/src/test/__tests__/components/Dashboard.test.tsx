@@ -25,7 +25,7 @@ describe('Dashboard Component', () => {
       const { getByText } = render(<Dashboard />)
 
       // Check hero section
-      expect(getByText('Mora')).toBeInTheDocument()
+      expect(getByText('مغز دوم من')).toBeInTheDocument()
       expect(getByText(/مرکز کنترل هوشمند/)).toBeInTheDocument()
 
       // Check statistics cards

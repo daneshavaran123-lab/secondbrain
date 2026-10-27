@@ -95,7 +95,7 @@ export default function AssistantReportsPage() {
       <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-8 space-y-6" dir="rtl">
         <MinimalSectionHeader
           title="گزارش‌های دستیار هوشمند"
-          subtitle="مرور مکالمات، اقدامات و آمار استفاده از دستیار مورا"
+          subtitle="مرور مکالمات، اقدامات و آمار استفاده از دستیار"
         />
 
         {/* بازه + خروجی */}

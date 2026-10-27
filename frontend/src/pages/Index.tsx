@@ -49,7 +49,7 @@ const Index = () => {
   // Register service worker for offline support
   useServiceWorker();
   
-  // Wake word detection to open assistant with "هی مورا"
+  // Wake word detection to open the assistant with «هی دستیار»
   useWakeWord({
     autoStart: true,
     fallbackEnabled: true,
@@ -117,7 +117,7 @@ const Index = () => {
           <Brain className="h-6 w-6" />
         </div>
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-foreground">مورا</p>
+          <p className="text-sm font-medium text-foreground">مغز دوم من</p>
           <p className="text-xs text-muted-foreground">در حال بارگذاری...</p>
         </div>
         <div className="loading-dots">

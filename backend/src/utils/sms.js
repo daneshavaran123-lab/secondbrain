@@ -89,5 +89,5 @@ export async function sendOtp(phone, code) {
   }
 
   // Fallback: plain text OTP
-  return sendSms(phone, `کد تأیید شما: ${code}\nاین کد ۵ دقیقه معتبر است.\nMora System`);
+  return sendSms(phone, `کد تأیید شما: ${code}\nاین کد ۵ دقیقه معتبر است.\nمغز دوم من`);
 }

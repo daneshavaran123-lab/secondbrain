@@ -71,11 +71,13 @@ function useFallbackWakeWord(
         
         // Check for wake word variations
         const wakeWords = [
+          'هی دستیار',
+          'سلام دستیار',
+          'hey assistant',
+          // Earlier name of the app, still recognised for people used to it
           'هی مورا',
-          'hey mora',
-          'hi mora',
           'سلام مورا',
-          'مورا'
+          'hey mora'
         ];
         
         if (wakeWords.some(w => transcript.includes(w.toLowerCase()))) {
@@ -245,7 +247,7 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
       console.log('[WakeWord] Porcupine initialized with "hey mora" keyword');
       toast({
         title: 'دستیار صوتی فعال شد',
-        description: 'بگویید «هی مورا» برای فعال‌سازی',
+        description: 'بگویید «Hey Mora» برای فعال‌سازی',
       });
 
     } catch (err) {
@@ -274,7 +276,7 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
         fallback.start();
         toast({
           title: 'حالت جایگزین',
-          description: 'بگویید «مورا» یا «سلام مورا» برای فعال‌سازی',
+          description: 'بگویید «هی دستیار» یا «سلام دستیار» برای فعال‌سازی',
         });
       } else {
         setStatus('error');

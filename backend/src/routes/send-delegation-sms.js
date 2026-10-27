@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
     description ? `توضیحات: ${description.substring(0, 100)}${description.length > 100 ? '...' : ''}` : '',
     `مهلت: ${dueDateText}`,
     `کد: ${taskId}`,
-    'Mora System',
+    'مغز دوم من',
   ].filter(Boolean).join('\n');
 
   try {

@@ -57,7 +57,7 @@ export default function SignupPage() {
   });
 
   useEffect(() => {
-    document.title = "ثبت‌نام در سیستم - BrainForge";
+    document.title = "ثبت‌نام - مغز دوم من";
     
     // اگر کاربر قبلاً احراز هویت شده، هدایت به صفحه اصلی
     if (isAuthenticated) {

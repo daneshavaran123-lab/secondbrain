@@ -300,7 +300,7 @@ class TestDataService {
     const projects: Project[] = [
       {
         id: 'proj-1',
-        name: 'توسعه سیستم Mora',
+        name: 'توسعه سیستم «مغز دوم من»',
         description: 'ایجاد سیستم جامع مدیریت دانش شخصی با قابلیت‌های هوش مصنوعی',
         goal: 'ارائه ابزاری کامل برای مدیریت دانش، وظایف، و بهره‌وری شخصی',
         status: 'active',

@@ -45,7 +45,7 @@ interface MoraVoiceAssistantProps {
 
 export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantProps) {
   const [state, setState] = useState<AssistantState>('waiting');
-  const [statusText, setStatusText] = useState('در انتظار «هی مورا»...');
+  const [statusText, setStatusText] = useState('در انتظار «هی دستیار»...');
   const [commandHistory, setCommandHistory] = useState<CommandHistory[]>([]);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -84,14 +84,14 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
       setErrorMessage(error);
       setTimeout(() => {
         setState('waiting');
-        setStatusText('در انتظار «هی مورا»...');
+        setStatusText('در انتظار «هی دستیار»...');
         setErrorMessage(null);
       }, 3000);
     },
     onEnd: () => {
       if (state === 'listening' && !currentTranscript) {
         setState('waiting');
-        setStatusText('در انتظار «هی مورا»...');
+        setStatusText('در انتظار «هی دستیار»...');
       }
     }
   });
@@ -123,7 +123,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
           })
         });
         const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || 'ارتباط با مورا برقرار نشد');
+        if (!res.ok) throw new Error(data.error || 'ارتباط با دستیار برقرار نشد');
         response = data.message || 'متوجه نشدم. لطفاً دوباره بگویید.';
 
         // Carry out what the agent decided; anything sensitive waits for the chat panel.
@@ -157,7 +157,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
 
       // Return to waiting state
       setState('waiting');
-      setStatusText('در انتظار «هی مورا»...');
+      setStatusText('در انتظار «هی دستیار»...');
 
     } catch (error) {
       console.error('[MoraVoice] Process error:', error);
@@ -166,7 +166,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
       
       setTimeout(() => {
         setState('waiting');
-        setStatusText('در انتظار «هی مورا»...');
+        setStatusText('در انتظار «هی دستیار»...');
         setErrorMessage(null);
       }, 3000);
     }
@@ -244,7 +244,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
     if (wakeWord.status === 'loading') {
       setStatusText('در حال راه‌اندازی...');
     } else if (wakeWord.status === 'fallback') {
-      setStatusText('بگویید «مورا» یا «سلام مورا»...');
+      setStatusText('بگویید «هی دستیار» یا «سلام دستیار»...');
     } else if (wakeWord.status === 'error') {
       setStatusText('خطا در سیستم صوتی');
     }
@@ -296,7 +296,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
           animate={{ opacity: 1, y: 0 }}
           className="text-5xl font-bold text-primary mb-8"
         >
-          مورا
+          مغز دوم من
         </motion.h1>
 
         {/* Microphone Visualization */}

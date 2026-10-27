@@ -108,7 +108,7 @@ async function callAI(apiKey, messages, maxTokens = 3000) {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://aimora.app',
-          'X-Title': 'Mora Meeting Prep',
+          'X-Title': 'My Second Brain Meeting Prep',
         },
         body: JSON.stringify({ model, messages, temperature: 0.3, max_tokens: maxTokens }),
         signal: controller.signal,

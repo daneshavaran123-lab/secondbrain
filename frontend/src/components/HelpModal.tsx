@@ -673,7 +673,7 @@ const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Book className="h-4 w-4" />
-                    درباره Mora
+                    درباره «مغز دوم من»
                   </CardTitle>
                   <CardDescription>
                     اطلاعات سیستم و تیم توسعه
@@ -684,7 +684,7 @@ const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                     <div className="w-20 h-20 professional-gradient rounded-xl flex items-center justify-center mx-auto mb-4">
                       <span className="text-white font-bold text-2xl">BF</span>
                     </div>
-                    <h3 className="text-xl font-bold">Mora</h3>
+                    <h3 className="text-xl font-bold">مغز دوم من</h3>
                     <p className="text-muted-foreground">نسخه ۱.۰.۰</p>
                   </div>
 
@@ -692,7 +692,7 @@ const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                     <div>
                       <h4 className="font-semibold mb-2">درباره سیستم</h4>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Mora یک سیستم مدیریت دانش پیشرفته است که برای مدیریت اطلاعات، جلسات، وظایف و ارتباطات حرفه‌ای طراحی شده است. این سیستم با استفاده از تکنولوژی‌های هوش مصنوعی و یادگیری ماشین، تجربه کاربری هوشمند و شخصی‌سازی شده ارائه می‌دهد.
+                        «مغز دوم من» یک سیستم مدیریت دانش پیشرفته است که برای مدیریت اطلاعات، جلسات، وظایف و ارتباطات حرفه‌ای طراحی شده است. این سیستم با استفاده از تکنولوژی‌های هوش مصنوعی و یادگیری ماشین، تجربه کاربری هوشمند و شخصی‌سازی شده ارائه می‌دهد.
                       </p>
                     </div>
 

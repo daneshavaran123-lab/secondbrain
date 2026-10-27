@@ -187,7 +187,7 @@ self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received');
   
   const data = event.data?.json() || {};
-  const title = data.title || 'مورا - دستیار هوشمند';
+  const title = data.title || 'مغز دوم من';
   const options = {
     body: data.body || 'شما یک اعلان جدید دارید',
     icon: '/android-chrome-192x192.png',

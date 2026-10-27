@@ -486,7 +486,7 @@ class ActionExecutorService {
           const r = await fetch(`${backendUrl}/send-delegation-sms`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...(authHeader ? { Authorization: authHeader } : {}) },
-            body: JSON.stringify({ phone: recipient, title: 'اطلاع‌رسانی از مورا', description: message }),
+            body: JSON.stringify({ phone: recipient, title: 'اطلاع‌رسانی از مغز دوم من', description: message }),
           });
           if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || `خطا ${r.status}`); }
           break;
@@ -495,7 +495,7 @@ class ActionExecutorService {
           const r = await fetch(`${backendUrl}/generate-business-email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...(authHeader ? { Authorization: authHeader } : {}) },
-            body: JSON.stringify({ to: recipient, subject: 'اطلاع‌رسانی از مورا', body: message }),
+            body: JSON.stringify({ to: recipient, subject: 'اطلاع‌رسانی از مغز دوم من', body: message }),
           });
           if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || `خطا ${r.status}`); }
           break;
@@ -504,7 +504,7 @@ class ActionExecutorService {
           const r = await fetch(`${backendUrl}/telegram-bridge`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...(authHeader ? { Authorization: authHeader } : {}) },
-            body: JSON.stringify({ type: 'send_message', chat_id: recipient, text: `🔔 اطلاع‌رسانی\n\n${message}\n\n📱 دستیار هوشمند مورا` }),
+            body: JSON.stringify({ type: 'send_message', chat_id: recipient, text: `🔔 اطلاع‌رسانی\n\n${message}\n\n📱 دستیار «مغز دوم من»` }),
           });
           if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || `خطا ${r.status}`); }
           break;

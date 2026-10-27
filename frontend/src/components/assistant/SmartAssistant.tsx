@@ -1,5 +1,5 @@
 /**
- * Mora assistant panel.
+ * Assistant panel of «مغز دوم من».
  * Sends the conversation to the backend agent, runs the actions it returns
  * (automatically, or after the user confirms) and shows what happened.
  */
@@ -415,7 +415,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
     if (!isOnline) {
       setMessages((prev) => [...prev, userMessage, {
         id: replyId, role: 'assistant', timestamp: new Date(), isError: true,
-        content: 'برای گفتگو با مورا به اینترنت نیاز است. پیامتان را بعد از اتصال دوباره بفرستید.',
+        content: 'برای گفتگو با دستیار به اینترنت نیاز است. پیامتان را بعد از اتصال دوباره بفرستید.',
       }]);
       return;
     }
@@ -440,7 +440,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
       });
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) throw new Error('نشست شما منقضی شده؛ لطفاً دوباره وارد شوید.');
-      if (!res.ok) throw new Error(data.error || data.message || 'ارتباط با مورا برقرار نشد. دوباره امتحان کنید.');
+      if (!res.ok) throw new Error(data.error || data.message || 'ارتباط با دستیار برقرار نشد. دوباره امتحان کنید.');
 
       const actions: ActionView[] = (data.actions || []).map((a: AssistantAction & { id?: string }, i: number) => ({
         ...a,
@@ -549,7 +549,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
             exit={{ scale: 0.8, opacity: 0 }}
             whileTap={{ scale: 0.94 }}
             onClick={() => setIsOpen(true)}
-            aria-label="گفتگو با مورا"
+            aria-label="گفتگو با دستیار"
             className={cn(
               'fixed bottom-6 left-6 z-50 hidden md:flex',
               'h-12 items-center gap-2 rounded-full ps-3 pe-4',
@@ -559,7 +559,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
             )}
           >
             <MoraRobotIcon size="sm" animate={false} />
-            <span className="text-sm font-medium">از مورا بپرس</span>
+            <span className="text-sm font-medium">از دستیار بپرس</span>
           </motion.button>
         )}
       </AnimatePresence>
@@ -567,7 +567,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
       <AnimatePresence>
         {isOpen && (
           <motion.aside
-            aria-label="دستیار مورا"
+            aria-label="دستیار مغز دوم من"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
@@ -589,7 +589,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                   <MoraRobotIcon size="sm" animate={false} />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm font-semibold leading-5">مورا</h2>
+                  <h2 className="text-sm font-semibold leading-5">دستیار مغز دوم</h2>
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <span className={cn('h-1.5 w-1.5 rounded-full', isOnline ? 'bg-success' : 'bg-muted-foreground')} />
                     {status}
@@ -731,7 +731,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={isListening ? 'در حال شنیدن…' : 'از مورا بپرس یا چیزی ثبت کن…'}
+                  placeholder={isListening ? 'در حال شنیدن…' : 'بپرس یا چیزی ثبت کن…'}
                   className="block max-h-40 w-full resize-none bg-transparent px-3.5 pt-3 text-[15px] leading-6 outline-none placeholder:text-muted-foreground/70 focus-visible:outline-none"
                 />
                 <div className="flex items-center gap-1 px-2 pb-2 pt-1">

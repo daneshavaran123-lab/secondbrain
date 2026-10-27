@@ -222,7 +222,7 @@ export async function exportActionsToPDF(actions: AssistantActionLog[], stats: U
 
   // عنوان (LTR fallback، چون بدون بارگذاری فونت فارسی PDF نمی‌تواند RTL کامل بدهد)
   doc.setFontSize(16);
-  doc.text("Mora Assistant Report", 40, 50);
+  doc.text("My Second Brain - Assistant Report", 40, 50);
   doc.setFontSize(10);
   doc.text(`Range: ${rangeLabel}`, 40, 70);
   doc.text(`Total actions: ${stats.totalActions}  |  Success: ${stats.successCount}  |  Failed: ${stats.failedCount}`, 40, 88);
