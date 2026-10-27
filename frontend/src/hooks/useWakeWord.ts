@@ -1,6 +1,13 @@
 /**
- * Wake Word Detection Hook using Picovoice Porcupine
- * Supports custom "hey mora" keyword with fallback to Web Speech
+ * Wake word detection.
+ *
+ * Porcupine (on-device) runs when an access key and a trained keyword file are configured:
+ *   VITE_PICOVOICE_ACCESS_KEY  access key from console.picovoice.ai
+ *   VITE_WAKE_WORD_MODEL       keyword file (.ppn, Web platform) under public/, e.g. /models/hey-second-brain.ppn
+ *   VITE_WAKE_WORD_PHRASE      the phrase as spoken, shown to the user, e.g. «Hey Second Brain»
+ *   VITE_PORCUPINE_PARAMS      Porcupine's language model, default /models/porcupine_params.pv
+ * Porcupine has no Persian model, so its phrase is English. Otherwise the Web Speech API listens
+ * for the Persian phrases «هی دستیار» / «سلام دستیار».
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -23,6 +30,9 @@ type WakeWordStatus =
 
 interface UseWakeWordOptions {
   accessKey?: string;
+  keywordPath?: string;
+  keywordPhrase?: string;
+  paramsPath?: string;
   onWakeWord?: () => void;
   onError?: (error: string) => void;
   autoStart?: boolean;
@@ -47,6 +57,10 @@ function useFallbackWakeWord(
   const recognitionRef = useRef<any>(null);
   const [isListening, setIsListening] = useState(false);
   const isListeningRef = useRef(isListening);
+  // The caller's callback changes every render; reading it from a ref keeps the
+  // recognizer alive instead of rebuilding it on each render.
+  const onDetectedRef = useRef(onDetected);
+  onDetectedRef.current = onDetected;
 
   useEffect(() => {
     isListeningRef.current = isListening;
@@ -81,7 +95,7 @@ function useFallbackWakeWord(
         ];
         
         if (wakeWords.some(w => transcript.includes(w.toLowerCase()))) {
-          onDetected();
+          onDetectedRef.current();
           break;
         }
       }
@@ -115,7 +129,7 @@ function useFallbackWakeWord(
         // Ignore
       }
     };
-  }, [enabled, onDetected]);
+  }, [enabled]);
 
   const start = useCallback(() => {
     if (recognitionRef.current) {
@@ -145,6 +159,9 @@ function useFallbackWakeWord(
 export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn {
   const {
     accessKey = import.meta.env.VITE_PICOVOICE_ACCESS_KEY,
+    keywordPath = import.meta.env.VITE_WAKE_WORD_MODEL,
+    keywordPhrase = import.meta.env.VITE_WAKE_WORD_PHRASE || 'Hey Second Brain',
+    paramsPath = import.meta.env.VITE_PORCUPINE_PARAMS || '/models/porcupine_params.pv',
     onWakeWord,
     onError,
     autoStart = false,
@@ -193,8 +210,8 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
   // Initialize Porcupine
   const initializePorcupine = useCallback(async () => {
     if (isInitializing.current) return;
-    if (!accessKey) {
-      console.warn('[WakeWord] No access key provided, using fallback');
+    if (!accessKey || !keywordPath) {
+      console.info('[WakeWord] Porcupine is not configured, listening with Web Speech');
       setUseFallback(true);
       setStatus('fallback');
       fallback.start();
@@ -222,18 +239,11 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
         setTimeout(() => setStatus('listening'), 1000);
       };
 
-      // Custom keyword model for "hey mora"
-      const keywordModel = {
-        publicPath: '/models/Hey-mora_en_wasm_v4_0_0.ppn',
-        label: 'hey mora'
-      };
-
-      // Create Porcupine instance with custom "hey mora" keyword
       const porcupine = await Porcupine.create(
         accessKey,
-        keywordModel,
+        { publicPath: keywordPath, label: keywordPhrase },
         detectionCallback,
-        { publicPath: '/porcupine_params.pv' }
+        { publicPath: paramsPath }
       );
 
       porcupineRef.current = porcupine;
@@ -244,10 +254,10 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
       setStatus('listening');
       retryCount.current = 0;
       
-      console.log('[WakeWord] Porcupine initialized with "hey mora" keyword');
+      console.log(`[WakeWord] Porcupine listening for "${keywordPhrase}"`);
       toast({
         title: 'دستیار صوتی فعال شد',
-        description: 'بگویید «Hey Mora» برای فعال‌سازی',
+        description: `برای صدا زدن دستیار بگویید «${keywordPhrase}»`,
       });
 
     } catch (err) {
@@ -275,8 +285,8 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
         setStatus('fallback');
         fallback.start();
         toast({
-          title: 'حالت جایگزین',
-          description: 'بگویید «هی دستیار» یا «سلام دستیار» برای فعال‌سازی',
+          title: 'دستیار صوتی فعال شد',
+          description: 'برای صدا زدن دستیار بگویید «هی دستیار»',
         });
       } else {
         setStatus('error');
@@ -284,7 +294,7 @@ export function useWakeWord(options: UseWakeWordOptions = {}): UseWakeWordReturn
     } finally {
       isInitializing.current = false;
     }
-  }, [accessKey, cleanup, fallbackEnabled, onError, onWakeWord, fallback]);
+  }, [accessKey, keywordPath, keywordPhrase, paramsPath, cleanup, fallbackEnabled, onError, onWakeWord, fallback]);
 
   // Auto-start on mount if enabled
   useEffect(() => {

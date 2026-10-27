@@ -298,6 +298,26 @@ erDiagram
 
 > فایل‌های OCR به‌طور پیش‌فرض از jsDelivr دریافت می‌شوند. اگر در دسترس نبود، `worker.min.js` و `tesseract-core*.wasm*` (از `node_modules/tesseract.js` و `tesseract.js-core`) و `fas.traineddata.gz` و `eng.traineddata.gz` (از پکیج‌های `@tesseract.js-data/fas` و `eng`، پوشه `4.0.0_best_int`) را در یک مسیر عمومی مثل `public/ocr` بگذارید و `VITE_OCR_ASSETS_URL=/ocr` را تنظیم کنید.
 
+### ۶.۲ صدا زدن دستیار با صدا (wake word)
+
+به‌طور پیش‌فرض مرورگر (Web Speech API) به «هی دستیار» یا «سلام دستیار» گوش می‌دهد. این حالت فقط در مرورگرهای مبتنی بر Chromium کار می‌کند و برای تشخیص گفتار به سرویس گوگل وصل می‌شود.
+
+برای تشخیص روی خود دستگاه (بدون اینترنت و در همه مرورگرها) از Picovoice Porcupine استفاده می‌شود. Porcupine مدل فارسی ندارد، پس عبارت بیدارباش باید انگلیسی باشد:
+
+1. در [console.picovoice.ai](https://console.picovoice.ai/) وارد شوید و AccessKey را بردارید.
+2. در بخش Porcupine یک عبارت بسازید (پیشنهاد: `Hey Second Brain`)، زبان English و پلتفرم **Web (WASM)**، و فایل `.ppn` را دانلود کنید.
+3. فایل را در `frontend/public/models/` بگذارید. فایل مدل زبان انگلیسی Porcupine (`porcupine_params.pv`) را هم از [`lib/common`](https://github.com/Picovoice/porcupine/tree/master/lib/common) همان نسخه‌ای که با `.ppn` می‌خواند در همین پوشه بگذارید.
+4. متغیرها را تنظیم و فرانت‌اند را دوباره بسازید:
+
+| متغیر | مقدار نمونه |
+|---|---|
+| `VITE_PICOVOICE_ACCESS_KEY` | AccessKey حساب Picovoice |
+| `VITE_WAKE_WORD_MODEL` | `/models/hey-second-brain.ppn` |
+| `VITE_WAKE_WORD_PHRASE` | `Hey Second Brain` (همانی که به کاربر نشان داده می‌شود) |
+| `VITE_PORCUPINE_PARAMS` | اختیاری؛ پیش‌فرض `/models/porcupine_params.pv` |
+
+تا وقتی هر دو متغیر اول تنظیم نشده‌اند، همان حالت مرورگر فعال است. مدل قدیمی `Hey-mora_en_wasm_v4_0_0.ppn` هنوز در `public/models` هست و تا ساخت مدل جدید می‌توان با `VITE_WAKE_WORD_MODEL=/models/Hey-mora_en_wasm_v4_0_0.ppn` و `VITE_WAKE_WORD_PHRASE="Hey Mora"` از آن استفاده کرد.
+
 **گزارش‌گیری** در `/assistant-reports`: فیلتر روزانه/هفتگی/ماهانه/بازه دلخواه، نمودار Recharts، خروجی PDF و Excel.
 
 ---
