@@ -118,6 +118,13 @@ CREATE TABLE IF NOT EXISTS ideas (
   updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_ideas_user_id ON ideas(user_id);
+-- Columns the idea form and the assistant write (added after the first release)
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS domain VARCHAR(50) DEFAULT 'personal';
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS feasibility_score INTEGER;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS impact_score INTEGER;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS potential_impact TEXT;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS organization_id UUID;
 
 CREATE TABLE IF NOT EXISTS idea_analysis_queue (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -654,6 +661,21 @@ END $$;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'resume_section_type') THEN
     CREATE TYPE resume_section_type AS ENUM ('work','education','skills','certificates','awards','publications','affiliations','interests','media');
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'proficiency_level') THEN
+    CREATE TYPE proficiency_level AS ENUM ('beginner','intermediate','advanced','expert');
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'media_content_type') THEN
+    CREATE TYPE media_content_type AS ENUM ('text','video','podcast');
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'analysis_status') THEN
+    CREATE TYPE analysis_status AS ENUM ('pending','processing','completed','failed');
   END IF;
 END $$;
 
@@ -1280,6 +1302,15 @@ CREATE TABLE IF NOT EXISTS resume_exports (
   last_downloaded_at TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS sales_funnel_stages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  stage_name TEXT NOT NULL,
+  stage_order INTEGER NOT NULL,
+  conversion_rate NUMERIC DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS sales_leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
@@ -1316,14 +1347,6 @@ CREATE TABLE IF NOT EXISTS sales_icp_profiles (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS sales_funnel_stages (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  stage_name TEXT NOT NULL,
-  stage_order INTEGER NOT NULL,
-  conversion_rate NUMERIC DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
 
 CREATE TABLE IF NOT EXISTS user_organizations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1335,6 +1358,16 @@ CREATE TABLE IF NOT EXISTS user_organizations (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   UNIQUE(user_id, organization_id)
+);
+
+CREATE TABLE IF NOT EXISTS system_permissions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  permission_key text NOT NULL UNIQUE, -- کلید منحصر به فرد مجوز
+  permission_name text NOT NULL,        -- نام نمایشی مجوز
+  description text,                     -- توضیحات مجوز
+  category text NOT NULL,               -- دسته‌بندی مجوز
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS user_permissions (
@@ -1364,15 +1397,6 @@ CREATE TABLE IF NOT EXISTS user_audit_log (
   created_at timestamp with time zone DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS system_permissions (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  permission_key text NOT NULL UNIQUE, -- کلید منحصر به فرد مجوز
-  permission_name text NOT NULL,        -- نام نمایشی مجوز
-  description text,                     -- توضیحات مجوز
-  category text NOT NULL,               -- دسته‌بندی مجوز
-  is_active boolean DEFAULT true,
-  created_at timestamp with time zone DEFAULT now()
-);
 
 CREATE TABLE IF NOT EXISTS idea_business_model_canvas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1567,8 +1591,8 @@ CREATE TABLE IF NOT EXISTS knowledge_items (
     organization_id UUID REFERENCES organizations(id),
     title TEXT NOT NULL,
     content TEXT,
-    type knowledge_type NOT NULL,
-    category knowledge_category NOT NULL,
+    type TEXT NOT NULL,
+    category TEXT NOT NULL,
     url TEXT,
     file_path TEXT,
     metadata JSONB DEFAULT '{}',
@@ -1766,6 +1790,18 @@ CREATE TABLE IF NOT EXISTS company_calls (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+create table if not exists channels (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid references organizations(id) on delete cascade,
+  name text not null,
+  type text not null default 'topic',
+  visibility text not null default 'private', -- private|public|direct
+  created_by uuid not null,
+  domain text not null default 'personal',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists messages (
   id uuid primary key default gen_random_uuid(),
   channel_id uuid not null references channels(id) on delete cascade,
@@ -1820,7 +1856,7 @@ create table if not exists poll_votes (
 
 CREATE TABLE IF NOT EXISTS plaud_connections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users NOT NULL,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   
   -- OAuth Tokens
   access_token TEXT NOT NULL,
@@ -1853,7 +1889,7 @@ CREATE TABLE IF NOT EXISTS plaud_connections (
 
 CREATE TABLE IF NOT EXISTS plaud_recordings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users NOT NULL,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   connection_id UUID REFERENCES plaud_connections(id) ON DELETE CASCADE,
   
   -- Recording Info
@@ -1900,7 +1936,7 @@ CREATE TABLE IF NOT EXISTS plaud_recordings (
 
 CREATE TABLE IF NOT EXISTS hi_dock_connections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users NOT NULL,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   
   -- Device Info
   device_serial TEXT NOT NULL UNIQUE,

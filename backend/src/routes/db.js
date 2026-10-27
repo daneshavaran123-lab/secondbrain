@@ -7,10 +7,18 @@
 import { Router } from 'express';
 import { query, getClient } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
+import {
+  BadRequest, Forbidden, ident, filterConditions, parseSelect, routeFilters,
+  innerJoinConditions, joinColumns, columnSql, attachEmbeds, trimRow,
+  isScoped, ownerCondition, columnsOf,
+} from './dbEmbed.js';
 
 const router = Router();
 
-// Tables available in backend DB and their user-scoping column
+// Tables available in backend DB and how a row belongs to a user:
+//   { userCol }  the row has its own owner column
+//   { via }      the row belongs to a parent row the user owns (idea_risks → ideas)
+//   userCol null tables cannot be reached through this proxy
 const BACKEND_TABLES = {
   ideas:                  { userCol: 'user_id' },
   calendar_events:        { userCol: 'user_id' },
@@ -53,28 +61,28 @@ const BACKEND_TABLES = {
   organization_invitations:    { userCol: null },
   organization_departments:    { userCol: null },
   organization_employees:      { userCol: null },
-  organization_missions:       { userCol: null },
-  organization_policies:       { userCol: null },
-  organization_finance:        { userCol: null },
-  organization_hr:             { userCol: null },
-  organization_operations:     { userCol: null },
-  organization_strategies:     { userCol: null },
-  organization_okr_key_results:{ userCol: null },
-  organization_roadmap_milestones: { userCol: null },
+  organization_missions:       { userCol: 'user_id' },
+  organization_policies:       { userCol: 'created_by' },
+  organization_finance:        { userCol: 'user_id' },
+  organization_hr:             { userCol: 'user_id' },
+  organization_operations:     { userCol: 'user_id' },
+  organization_strategies:     { userCol: 'user_id' },
+  organization_okr_key_results:{ via: { col: 'strategy_id', parent: 'organization_strategies' } },
+  organization_roadmap_milestones: { via: { col: 'strategy_id', parent: 'organization_strategies' } },
   organization_notifications:  { userCol: 'user_id' },
-  organization_chart_nodes:    { userCol: null },
-  organization_checklist_items:{ userCol: null },
-  organization_decision_options:{ userCol: null },
-  organization_sop_steps:      { userCol: null },
-  organization_succession_plans:{ userCol: null },
-  organization_succession_successors:{ userCol: null },
+  organization_chart_nodes:    { via: { col: 'hr_id', parent: 'organization_hr' } },
+  organization_checklist_items:{ via: { col: 'operations_id', parent: 'organization_operations' } },
+  organization_decision_options:{ via: { col: 'strategy_id', parent: 'organization_strategies' } },
+  organization_sop_steps:      { via: { col: 'operations_id', parent: 'organization_operations' } },
+  organization_succession_plans:{ via: { col: 'hr_id', parent: 'organization_hr' } },
+  organization_succession_successors:{ via: { col: 'succession_plan_id', parent: 'organization_succession_plans' } },
   organization_performance_evaluations:{ userCol: null },
   organizational_claims:       { userCol: 'user_id' },
   organizational_policy_attachments:{ userCol: null },
   // Planning & Projects
   personal_planning:           { userCol: 'user_id' },
   projects:                    { userCol: 'user_id' },
-  project_tasks:               { userCol: 'user_id' },
+  project_tasks:               { via: { col: 'project_id', parent: 'projects' } },
   profiles:                    { userCol: 'user_id' },
   // Resume
   resume_personal_info:        { userCol: 'user_id' },
@@ -88,7 +96,7 @@ const BACKEND_TABLES = {
   resume_interests:            { userCol: 'user_id' },
   resume_media_interviews:     { userCol: 'user_id' },
   resume_templates:            { userCol: 'user_id' },
-  resume_template_customizations:{ userCol: 'user_id' },
+  resume_template_customizations:{ via: { col: 'template_id', parent: 'resume_templates' } },
   resume_exports:              { userCol: 'user_id' },
   // Sales & Marketing
   sales_leads:                 { userCol: 'user_id' },
@@ -96,35 +104,35 @@ const BACKEND_TABLES = {
   sales_funnel_stages:         { userCol: 'user_id' },
   marketing_campaigns:         { userCol: 'user_id' },
   // Ideas sub-tables
-  idea_business_model_canvas:  { userCol: 'user_id' },
-  idea_swot_analysis:          { userCol: 'user_id' },
-  idea_strategy:               { userCol: 'user_id' },
-  idea_financial_analysis:     { userCol: 'user_id' },
-  idea_milestones:             { userCol: 'user_id' },
-  idea_risks:                  { userCol: 'user_id' },
-  idea_inspirations:           { userCol: 'user_id' },
-  idea_revenue_opportunities:  { userCol: 'user_id' },
-  idea_suggested_actions:      { userCol: 'user_id' },
+  idea_business_model_canvas:  { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_swot_analysis:          { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_strategy:               { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_financial_analysis:     { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_milestones:             { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_risks:                  { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_inspirations:           { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_revenue_opportunities:  { via: { col: 'idea_id', parent: 'ideas' } },
+  idea_suggested_actions:      { via: { col: 'idea_id', parent: 'ideas' } },
   idea_analysis_queue:         { userCol: 'user_id' },
   // Knowledge
   knowledge_folders:           { userCol: 'user_id' },
   knowledge_items:             { userCol: 'user_id' },
   // CSR sub-tables
-  csr_project_milestones:      { userCol: null },
-  csr_project_documents:       { userCol: null },
-  csr_project_team:            { userCol: null },
-  csr_impact_assessments:      { userCol: null },
+  csr_project_milestones:      { via: { col: 'project_id', parent: 'csr_projects' } },
+  csr_project_documents:       { via: { col: 'project_id', parent: 'csr_projects' } },
+  csr_project_team:            { via: { col: 'project_id', parent: 'csr_projects' } },
+  csr_impact_assessments:      { via: { col: 'project_id', parent: 'csr_projects' } },
   // Company sub-tables
-  company_contacts:            { userCol: 'user_id' },
-  company_notes:               { userCol: 'user_id' },
-  company_profiles:            { userCol: 'user_id' },
-  company_tasks:               { userCol: 'user_id' },
+  company_contacts:            { via: { col: 'company_id', parent: 'business_companies' } },
+  company_notes:               { via: { col: 'company_id', parent: 'business_companies' } },
+  company_profiles:            { via: { col: 'company_id', parent: 'business_companies' } },
+  company_tasks:               { via: { col: 'company_id', parent: 'business_companies' } },
   company_calls:               { userCol: 'user_id' },
   // Messaging
   messages:                    { userCol: 'sender_id' },
   channel_members:             { userCol: 'user_id' },
-  polls:                       { userCol: 'user_id' },
-  poll_options:                { userCol: null },
+  polls:                       { userCol: 'created_by' },
+  poll_options:                { via: { col: 'poll_id', parent: 'polls' } },
   poll_votes:                  { userCol: 'user_id' },
   // Devices
   plaud_connections:           { userCol: 'user_id' },
@@ -144,48 +152,13 @@ const BACKEND_TABLES = {
   avatars:                     { userCol: 'user_id' },
 };
 
-// جداولی که ستون updated_at ندارند
-const TABLES_WITHOUT_UPDATED_AT = new Set([
-  'social_media_posts',
-  'gratitude_entries',
-  'ai_chat_messages',
-  'habit_completions',
-  'networking_interactions',
-  'networking_events',
-  'delegation_subtasks',
-  'delegation_notifications',
-  'delegation_attachments',
-  'delegation_task_events',
-]);
-
-const OP_MAP = { eq: '=', neq: '!=', gt: '>', gte: '>=', lt: '<', lte: '<=' };
+// Whether a table keeps updated_at is read from the schema (several child tables don't)
+const hasUpdatedAt = async (table) => (await columnsOf(table)).has('updated_at');
 
 // Column and key names reach SQL as quoted identifiers, so only plain identifiers
 // are accepted (a `"` would otherwise break out of the quotes and bypass the
-// per-user scope). Values always go through bind parameters.
-// Supabase-style embedded relations (`organizations (name)`) are not supported and
-// are rejected like any other non-identifier.
-const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
-
-class BadRequest extends Error {}
-class Forbidden extends Error {}
-
-function ident(name) {
-  if (typeof name !== 'string' || !IDENTIFIER.test(name)) {
-    throw new BadRequest(`Invalid column name: ${String(name).slice(0, 64)}`);
-  }
-  return `"${name}"`;
-}
-
-function selectList(select) {
-  if (select === undefined || select === null || select === '*') return '*';
-  if (typeof select !== 'string') throw new BadRequest('Invalid select');
-  const cols = select.split(',')
-    .map((c) => c.trim())
-    .filter(Boolean)
-    .map((c) => (c === '*' ? '*' : ident(c)));
-  return cols.length ? cols.join(', ') : '*';
-}
+// per-user scope). Values always go through bind parameters. Embedded relations
+// (`*, idea_risks(id)`) are resolved in dbEmbed.js under the same per-user rules.
 
 function rowCount(value) {
   const n = Number.parseInt(value, 10);
@@ -208,40 +181,32 @@ async function inTransaction(fn) {
   }
 }
 
-function buildWhere(filters, userId, userCol) {
+function buildWhere(filters, userId, table) {
   if (!Array.isArray(filters)) throw new BadRequest('filters must be an array');
-  const conditions = [`${ident(userCol)} = $1`];
-  const values = [userId];
-  let idx = 2;
+  const { conditions, values, nextIdx } = filterConditions(filters, 2, BACKEND_TABLES[table].userCol);
+  const owner = ownerCondition(BACKEND_TABLES, table, null, '$1');
+  return { where: [owner, ...conditions].join(' AND '), values: [userId, ...values], nextIdx };
+}
 
-  for (const f of filters) {
-    if (!f || typeof f !== 'object') continue;
-    const col = f.col || f.column;
-    const op  = f.op || 'eq';
-    const val = f.val !== undefined ? f.val : f.value;
-    if (!col) continue;
-    // user-scope column already handled above — skip to avoid duplicate condition
-    if (col === userCol || col === 'user_id' || col === 'author_id') continue;
-    const column = ident(col);
+/** Rows owned through a parent may only point at parents the user owns. */
+async function assertParentsOwned(client, table, rows, userId) {
+  const { via } = BACKEND_TABLES[table];
+  if (!via) return;
+  const ids = [...new Set(rows.map((r) => r[via.col]))];
+  if (ids.some((id) => id === undefined || id === null)) throw new BadRequest(`${via.col} is required`);
+  const { rows: [{ count }] } = await client.query(
+    `SELECT COUNT(*)::int AS count FROM ${ident(via.parent)} p WHERE p.${ident(via.parentCol || 'id')} = ANY($2) AND ${ownerCondition(BACKEND_TABLES, via.parent, 'p', '$1')}`,
+    [userId, ids]
+  );
+  if (count !== ids.length) throw new Forbidden(`${via.parent} row not found`);
+}
 
-    if (OP_MAP[op]) {
-      conditions.push(`${column} ${OP_MAP[op]} $${idx}`);
-      values.push(val); idx++;
-    } else if (op === 'like') {
-      conditions.push(`${column} LIKE $${idx}`);
-      values.push(val); idx++;
-    } else if (op === 'ilike') {
-      conditions.push(`${column} ILIKE $${idx}`);
-      values.push(val); idx++;
-    } else if (op === 'in') {
-      conditions.push(`${column} = ANY($${idx})`);
-      values.push(val); idx++;
-    } else if (op === 'is') {
-      conditions.push(val === null ? `${column} IS NULL` : `${column} IS NOT NULL`);
-    }
-  }
-
-  return { where: conditions.join(' AND '), values, nextIdx: idx };
+/** The values a new row gets from its owner: the owner column, or user_id when a child table keeps one. */
+async function withOwner(table, row, userId) {
+  const conf = BACKEND_TABLES[table];
+  if (conf.userCol) return { ...row, [conf.userCol]: userId };
+  if (row.user_id === undefined && (await columnsOf(table)).has('user_id')) return { ...row, user_id: userId };
+  return { ...row };
 }
 
 router.use(requireAuth);
@@ -253,7 +218,7 @@ router.post('/:table', async (req, res) => {
   if (!conf) {
     return res.status(404).json({ data: null, error: { message: `Table '${table}' not in backend` } });
   }
-  if (!conf.userCol) {
+  if (!isScoped(conf)) {
     return res.status(403).json({ data: null, error: { message: `Table '${table}' has no per-user scope and cannot be accessed directly` } });
   }
 
@@ -273,9 +238,13 @@ router.post('/:table', async (req, res) => {
   try {
     // ── SELECT ────────────────────────────────────────────────────────────────
     if (operation === 'select') {
-      const { where, values } = buildWhere(filters, userId, userCol);
+      const parsed = parseSelect(selectCols);
+      const { own, byAlias } = routeFilters(filters);
+      const { where, values, nextIdx } = buildWhere(own, userId, table);
+      const inner = await innerJoinConditions({ table, parsed, byAlias, userId, startIdx: nextIdx, tables: BACKEND_TABLES });
+      const extra = await joinColumns(table, parsed, BACKEND_TABLES);
 
-      let sql = `SELECT ${selectList(selectCols)} FROM ${table} WHERE ${where}`;
+      let sql = `SELECT ${columnSql(parsed, extra)} FROM ${table} WHERE ${[where, ...inner.conditions].join(' AND ')}`;
 
       if (order) {
         const col = order.col || order.column;
@@ -285,18 +254,23 @@ router.post('/:table', async (req, res) => {
       if (limit)  sql += ` LIMIT ${rowCount(limit)}`;
       if (offset) sql += ` OFFSET ${rowCount(offset)}`;
 
-      const result = await query(sql, values);
-      if (single) return res.json({ data: result.rows[0] || null, error: null });
-      return res.json({ data: result.rows, error: null });
+      let rows = (await query(sql, [...values, ...inner.values])).rows;
+      if (parsed.embeds.length) {
+        rows = (await attachEmbeds({ table, rows, parsed, byAlias, userId, tables: BACKEND_TABLES }))
+          .map((row) => trimRow(row, parsed));
+      }
+      if (single) return res.json({ data: rows[0] || null, error: null });
+      return res.json({ data: rows, error: null });
 
     // ── INSERT ────────────────────────────────────────────────────────────────
     } else if (operation === 'insert') {
       const rows = Array.isArray(rowData) ? rowData : [rowData];
 
       const inserted = await inTransaction(async (client) => {
+        await assertParentsOwned(client, table, rows, userId);
         const out = [];
         for (const row of rows) {
-          const r = { ...row, [userCol]: userId };
+          const r = await withOwner(table, row, userId);
           const keys = Object.keys(r).filter(k => r[k] !== undefined);
           const cols = keys.map(ident).join(', ');
           const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
@@ -312,11 +286,14 @@ router.post('/:table', async (req, res) => {
 
     // ── UPDATE ────────────────────────────────────────────────────────────────
     } else if (operation === 'update') {
-      const { where, values } = buildWhere(filters, userId, userCol);
+      const { where, values } = buildWhere(filters, userId, table);
       const updateData = { ...rowData };
-      delete updateData[userCol];
+      if (userCol) delete updateData[userCol];
       delete updateData.id;
       delete updateData.created_at;
+      if (conf.via && updateData[conf.via.col] !== undefined) {
+        await assertParentsOwned({ query }, table, [updateData], userId);
+      }
 
       const keys = Object.keys(updateData).filter(k => updateData[k] !== undefined);
       if (!keys.length) return res.json({ data: [], error: null });
@@ -325,14 +302,14 @@ router.post('/:table', async (req, res) => {
       const sets = keys.map(k => { const s = `${ident(k)} = $${idx}`; idx++; return s; }).join(', ');
       const updateVals = [...values, ...keys.map(k => updateData[k])];
 
-      const hasUpdatedAt = !TABLES_WITHOUT_UPDATED_AT.has(table);
-      const sql = `UPDATE ${table} SET ${sets}${hasUpdatedAt ? ', updated_at = NOW()' : ''} WHERE ${where} RETURNING *`;
+      const touch = (await hasUpdatedAt(table)) && !keys.includes('updated_at');
+      const sql = `UPDATE ${table} SET ${sets}${touch ? ', updated_at = NOW()' : ''} WHERE ${where} RETURNING *`;
       const result = await query(sql, updateVals);
       return res.json({ data: result.rows, error: null });
 
     // ── DELETE ────────────────────────────────────────────────────────────────
     } else if (operation === 'delete') {
-      const { where, values } = buildWhere(filters, userId, userCol);
+      const { where, values } = buildWhere(filters, userId, table);
       const sql = `DELETE FROM ${table} WHERE ${where} RETURNING id`;
       const result = await query(sql, values);
       return res.json({ data: result.rows, error: null });
@@ -342,13 +319,17 @@ router.post('/:table', async (req, res) => {
       const rows = Array.isArray(rowData) ? rowData : [rowData];
       // برخی جداول بر اساس ستونی غیر از id تضاد دارند (مثلاً habit_settings بر user_id)
       const conflictCol = ident(conf.conflictCol || 'id');
-      const owner = ident(userCol);
-      const hasUpdatedAtUpsert = !TABLES_WITHOUT_UPDATED_AT.has(table);
+      const hasUpdatedAtUpsert = await hasUpdatedAt(table);
+      // A conflicting row is only updated when it already belongs to the user
+      const ownsExisting = userCol
+        ? `${table}.${ident(userCol)} = EXCLUDED.${ident(userCol)}`
+        : ownerCondition(BACKEND_TABLES, table, table, '$OWNER');
 
       const upserted = await inTransaction(async (client) => {
+        await assertParentsOwned(client, table, rows, userId);
         const out = [];
         for (const row of rows) {
-          const r = { ...row, [userCol]: userId };
+          const r = await withOwner(table, row, userId);
           const keys = Object.keys(r).filter(k => r[k] !== undefined);
           const cols = keys.map(ident).join(', ');
           const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
@@ -357,13 +338,14 @@ router.post('/:table', async (req, res) => {
             .filter(k => ident(k) !== conflictCol && k !== userCol && k !== 'created_at')
             .map(k => `${ident(k)} = EXCLUDED.${ident(k)}`).join(', ');
 
-          const updatedAtClause = (hasUpdatedAtUpsert && updates) ? ', updated_at = NOW()' : '';
+          const updatedAtClause = (hasUpdatedAtUpsert && updates && !keys.includes('updated_at')) ? ', updated_at = NOW()' : '';
           // The WHERE keeps a conflicting row that belongs to another user untouched.
+          const ownerParam = `$${vals.length + 1}`;
           const sql = `INSERT INTO ${table} (${cols}) VALUES (${placeholders})
             ON CONFLICT (${conflictCol}) DO UPDATE SET ${updates || `${conflictCol} = EXCLUDED.${conflictCol}`}${updatedAtClause}
-            WHERE ${table}.${owner} = EXCLUDED.${owner}
+            WHERE ${ownsExisting.replaceAll('$OWNER', ownerParam)}
             RETURNING *`;
-          const result = await client.query(sql, vals);
+          const result = await client.query(sql, userCol ? vals : [...vals, userId]);
           if (!result.rows.length) throw new Forbidden('Row belongs to another user');
           out.push(result.rows[0]);
         }
@@ -374,9 +356,12 @@ router.post('/:table', async (req, res) => {
 
     // ── COUNT ─────────────────────────────────────────────────────────────────
     } else if (operation === 'count') {
-      const { where, values } = buildWhere(filters, userId, userCol);
-      const sql = `SELECT COUNT(*) FROM ${table} WHERE ${where}`;
-      const result = await query(sql, values);
+      const parsed = parseSelect(selectCols);
+      const { own, byAlias } = routeFilters(filters);
+      const { where, values, nextIdx } = buildWhere(own, userId, table);
+      const inner = await innerJoinConditions({ table, parsed, byAlias, userId, startIdx: nextIdx, tables: BACKEND_TABLES });
+      const sql = `SELECT COUNT(*) FROM ${table} WHERE ${[where, ...inner.conditions].join(' AND ')}`;
+      const result = await query(sql, [...values, ...inner.values]);
       return res.json({ count: parseInt(result.rows[0].count), data: null, error: null });
 
     } else {
