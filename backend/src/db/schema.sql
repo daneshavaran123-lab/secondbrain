@@ -2007,3 +2007,36 @@ ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS venue_address TEX
 ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS domain VARCHAR(50);
 ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS color VARCHAR(20);
 ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS reminders JSONB;
+
+-- نامه‌ها و بخشنامه‌های سازمانی (متن OCR، تحلیل هوش مصنوعی، پیش‌نویس جوابیه)
+CREATE TABLE IF NOT EXISTS organizational_letters (
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id           UUID NOT NULL,
+  kind              VARCHAR(20) NOT NULL DEFAULT 'letter',
+  direction         VARCHAR(20) NOT NULL DEFAULT 'incoming',
+  organization_name TEXT,
+  subject           TEXT,
+  sender            TEXT,
+  recipient         TEXT,
+  letter_number     TEXT,
+  letter_date       TEXT,
+  deadline          DATE,
+  urgency           VARCHAR(20) DEFAULT 'normal',
+  classification    TEXT,
+  summary           TEXT,
+  key_points        JSONB DEFAULT '[]',
+  action_items      JSONB DEFAULT '[]',
+  needs_reply       BOOLEAN,
+  ocr_text          TEXT,
+  clean_text        TEXT,
+  ocr_confidence    NUMERIC(5,2),
+  reply_draft       TEXT,
+  status            VARCHAR(20) NOT NULL DEFAULT 'new',
+  file_name         TEXT,
+  file_type         TEXT,
+  file_data         BYTEA,
+  analyzed_at       TIMESTAMPTZ,
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
+  updated_at        TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_org_letters_user ON organizational_letters(user_id, created_at DESC);

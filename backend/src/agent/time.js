@@ -142,7 +142,7 @@ export function jalaliToGregorian(jy, jm, jd) {
 
 // ─── Normalisers for tool arguments ──────────────────────────────────────────
 const RELATIVE_DAYS = [
-  [/پس[‌\s-]?فردا/, 2],
+  [/پس[\u200c\s-]?فردا/, 2],
   [/فردا/, 1],
   [/دیروز/, -1],
   [/امروز|امشب/, 0],

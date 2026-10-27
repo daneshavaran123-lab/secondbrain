@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Heart, BookOpen, Calendar, Settings, Users, Building2, Briefcase, TrendingUp, Brain, UserCheck, Scale, Zap, Globe, User, Phone, MessageSquare, FileText, Target, BarChart3, Activity, Home, ChevronRight, ChevronLeft, Lightbulb, UserPlus, ClipboardList, Bot, Shield, Leaf, GraduationCap, CheckSquare } from "lucide-react";
+import { Heart, BookOpen, Calendar, Settings, Users, Building2, Briefcase, TrendingUp, Brain, UserCheck, Scale, Zap, Globe, User, Phone, MessageSquare, FileText, Target, BarChart3, Activity, Home, ChevronRight, ChevronLeft, Lightbulb, UserPlus, ClipboardList, Bot, Shield, Leaf, GraduationCap, CheckSquare, Mail } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -319,6 +319,15 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
         label: 'واگذاری وظایف',
         icon: UserPlus,
         path: '/delegation?domain=organizational'
+      }]
+    }, {
+      id: 'organizational-correspondence',
+      title: 'مکاتبات',
+      items: [{
+        id: 'organizational-letters',
+        label: 'نامه‌ها و بخشنامه‌ها',
+        icon: Mail,
+        path: '/organizational-letters'
       }]
     }, {
       id: 'organizational-organizations',

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Search, Settings, Menu, ChevronDown, HelpCircle, Plus, Calendar as CalendarIcon, BookOpen, FileText, User, LogOut, Shield } from "lucide-react";
+import { Bell, Search, Settings, Menu, ChevronDown, HelpCircle, Plus, Calendar as CalendarIcon, BookOpen, FileText, User, LogOut, Shield, Mail } from "lucide-react";
 import SettingsModal from "./SettingsModal";
 import HelpModal from "./HelpModal";
 import { Button } from "@/components/ui/button";
@@ -161,6 +161,10 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
               <DropdownMenuItem className="cursor-pointer gap-2" onClick={() => navigate('/personal-journal')}>
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
                 یادداشت جدید
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer gap-2" onClick={() => navigate('/organizational-letters?upload=1')}>
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                بارگذاری نامه
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer gap-2" onClick={() => navigate('/documentation')}>
                 <FileText className="h-4 w-4 text-muted-foreground" />

@@ -1217,7 +1217,7 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
     if (iso) {
       result.setFullYear(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
       if (!time && iso[4]) time = iso[4];
-    } else if (/پس[‌\s]?فردا/.test(date)) {
+    } else if (/پس[\u200c\s]?فردا/.test(date)) {
       result.setDate(result.getDate() + 2);
     } else if (date.includes('فردا')) {
       result.setDate(result.getDate() + 1);

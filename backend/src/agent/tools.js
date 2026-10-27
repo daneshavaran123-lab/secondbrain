@@ -38,9 +38,9 @@ const READ_TOOL_DEFS = [
     domain: { type: 'string', enum: ['all', 'personal', 'professional', 'organizational'] },
     days_ahead: { type: 'number', description: 'تا چند روز آینده (پیش‌فرض ۷)' },
   }),
-  fn('search_brain', 'جستجو در مغز دوم کاربر: یادداشت‌ها، دانش، دل‌نوشته‌ها، صورتجلسه‌ها، ایده‌ها، شکرگزاری‌ها، محتوای فرهنگی و پرونده‌های حقوقی. برای سوال‌هایی مثل «درباره X چی نوشته بودم؟» یا «ایده‌هام درباره Y».', {
+  fn('search_brain', 'جستجو در مغز دوم کاربر: یادداشت‌ها، دانش، دل‌نوشته‌ها، صورتجلسه‌ها، ایده‌ها، شکرگزاری‌ها، محتوای فرهنگی، پرونده‌های حقوقی و نامه‌ها و بخشنامه‌های سازمانی. برای سوال‌هایی مثل «درباره X چی نوشته بودم؟»، «ایده‌هام درباره Y» یا «بخشنامه مرخصی چی می‌گفت؟».', {
     query: { type: 'string', description: 'کلمات کلیدی' },
-    sources: { type: 'array', items: { type: 'string', enum: ['notes', 'ideas', 'meetings', 'gratitude', 'content', 'saved', 'legal'] }, description: 'محدود کردن منابع (اختیاری)' },
+    sources: { type: 'array', items: { type: 'string', enum: ['notes', 'ideas', 'meetings', 'gratitude', 'content', 'saved', 'legal', 'letters'] }, description: 'محدود کردن منابع (اختیاری)' },
     limit: { type: 'number' },
   }, ['query']),
   fn('search_contacts', 'جستجوی مخاطبین کاربر با نام، سازمان، ایمیل یا تلفن.', {
@@ -181,7 +181,7 @@ async function safeRows(sql, params) {
 }
 
 // Unify Arabic/Persian letter variants and drop ZWNJ so «می‌خواهم» matches «میخواهم».
-const normalizeFa = (s) => String(s ?? '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/‌/g, '');
+const normalizeFa = (s) => String(s ?? '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/\u200c/g, '');
 const SQL_NORMALIZE = (expr) => `translate(${expr}, 'يك' || chr(8204), 'یک')`;
 const escapeLike = (s) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 
@@ -286,6 +286,7 @@ const BRAIN_SOURCES = {
   content: { label: 'محتوای فرهنگی', table: 'cultural_content', owner: 'user_id', title: 'title', body: 'content', extra: 'content_type' },
   saved: { label: 'ذخیره‌شده', table: 'knowledge_items', owner: 'user_id', title: 'title', body: 'content', extra: null },
   legal: { label: 'پرونده حقوقی', table: 'legal_cases', owner: 'user_id', title: 'title', body: 'description', extra: 'status' },
+  letters: { label: 'نامه/بخشنامه', table: 'organizational_letters', owner: 'user_id', title: 'subject', body: 'clean_text', fallback: 'ocr_text', extra: 'sender' },
 };
 
 function snippetAround(body, words) {
@@ -307,7 +308,8 @@ async function searchBrain(args, ctx) {
 
   const perSource = await Promise.all(wanted.map(async (key) => {
     const s = BRAIN_SOURCES[key];
-    const haystack = SQL_NORMALIZE(`COALESCE(${s.title || "''"}, '') || ' ' || COALESCE(${s.body}, '')`);
+    const body = s.fallback ? `COALESCE(${s.body}, ${s.fallback})` : s.body;
+    const haystack = SQL_NORMALIZE(`COALESCE(${s.title || "''"}, '') || ' ' || COALESCE(${body}, '')`);
     const where = patterns.length ? ` AND ${haystack} ILIKE ANY($2)` : '';
     const params = patterns.length ? [ctx.userId, patterns] : [ctx.userId];
     const rows = await safeRows(
@@ -319,7 +321,7 @@ async function searchBrain(args, ctx) {
 
   const scored = perSource.flat().map(({ key, s, r }) => {
     const title = s.title ? r[s.title] : null;
-    const body = r[s.body];
+    const body = r[s.body] || (s.fallback ? r[s.fallback] : null);
     const t = normalizeFa(title).toLowerCase();
     const b = normalizeFa(body).toLowerCase();
     const score = words.reduce((acc, w) => acc + (t.includes(w) ? 3 : 0) + (b.includes(w) ? 1 : 0), 0);

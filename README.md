@@ -250,7 +250,7 @@ erDiagram
 `/calendar` · `/meetings` · `/meetings/preparation` · `/tasks` · `/projects` · `/knowledge` · `/ideas` · `/legal` · `/resume` · `/business-email` · `/delegation` · `/professional-planning` · `/documentation`
 
 ### سازمانی
-`/companies` · `/my-organizations` · `/organizations/new` · `/organizations/:id` (dashboard, settings, members) · `/organizational-planning` · `/social-responsibility` · `/csr-project/:id`
+`/companies` · `/my-organizations` · `/organizations/new` · `/organizations/:id` (dashboard, settings, members) · `/organizational-planning` · `/organizational-letters` · `/social-responsibility` · `/csr-project/:id`
 
 فضاهای سازمانی اختصاصی: `khadim-e-khalgh` · `varid` · `chamber` · `frangaran` — هرکدام با ماژول‌های سیاست/مأموریت، داشبورد، جانشین‌پروری، پیگیری مطالبات، صورت‌جلسه و ارزیابی ریسک.
 
@@ -286,6 +286,17 @@ erDiagram
 > **ترتیب انتشار:** اول فرانت‌اند و بعد بک‌اند را منتشر کنید. نسخه قدیمی فرانت‌اند تاریخ‌های `YYYY-MM-DD` را نمی‌فهمد و قرارها را در روز اشتباه ثبت می‌کند.
 
 > جدول `assistant_memories` و ستون‌های `venue_address`، `domain`، `color` و `reminders` در `calendar_events` هنگام اولین درخواست به دستیار ساخته می‌شوند (علاوه بر `schema.sql`).
+
+### ۶.۱ نامه‌ها و بخشنامه‌های سازمانی (`/organizational-letters`)
+
+- **بارگذاری:** عکس (از گالری یا دوربین گوشی) یا PDF نامه/بخشنامه.
+- **خواندن متن (OCR) در مرورگر:** PDF با لایه متنی سالم مستقیم خوانده می‌شود؛ PDF اسکن‌شده یا PDFهایی که متن فارسی‌شان به‌هم‌ریخته ذخیره شده، صفحه‌به‌صفحه با Tesseract (فارسی+انگلیسی) خوانده می‌شوند. کاربر پیش از ذخیره متن را بررسی و اصلاح می‌کند.
+- **تحلیل با هوش مصنوعی (بک‌اند):** موضوع، فرستنده، گیرنده، شماره، تاریخ، مهلت (تبدیل به تاریخ میلادی)، فوریت، خلاصه، نکات، اقدامات لازم و متن اصلاح‌شده؛ همزمان پیش‌نویس **جوابیه** رسمی (برای بخشنامه: اعلام وصول و گزارش اقدام).
+- **پیشنهاد جدید** با لحن‌های آماده (موافقت، رد مؤدبانه، درخواست مهلت، درخواست اطلاعات، اعلام وصول) و توضیح دلخواه؛ کپی و دانلود Word.
+- اقدامات لازم با یک کلیک به کارها اضافه می‌شوند؛ دستیار هم نامه‌ها را جستجو می‌کند و نامه‌های در انتظار پاسخ را می‌شناسد.
+- داده در جدول `organizational_letters` (با فایل اصلی، حداکثر ۷ مگابایت) و API در `backend/src/routes/org-letters.js`.
+
+> فایل‌های OCR به‌طور پیش‌فرض از jsDelivr دریافت می‌شوند. اگر در دسترس نبود، `worker.min.js` و `tesseract-core*.wasm*` (از `node_modules/tesseract.js` و `tesseract.js-core`) و `fas.traineddata.gz` و `eng.traineddata.gz` (از پکیج‌های `@tesseract.js-data/fas` و `eng`، پوشه `4.0.0_best_int`) را در یک مسیر عمومی مثل `public/ocr` بگذارید و `VITE_OCR_ASSETS_URL=/ocr` را تنظیم کنید.
 
 **گزارش‌گیری** در `/assistant-reports`: فیلتر روزانه/هفتگی/ماهانه/بازه دلخواه، نمودار Recharts، خروجی PDF و Excel.
 

@@ -32,6 +32,7 @@ const BASE_PROMPT = `تو «مورا» هستی؛ دستیار اجرایی و �
 - وزن، خواب، ورزش، آب، فشار → save_health_metrics · «امروز مدیتیشن کردم» → complete_habit
 - مخاطب و کارت ویزیت → create_contact · فایل اکسل مخاطبین → import_contacts_batch
 - مدرک، دوره، سابقه کاری → add_resume_item · پرونده حقوقی → create_legal_case · یادداشت حقوقی → save_lawyer_note
+- نامه و بخشنامه اداری را کاربر در صفحه «نامه‌ها و بخشنامه‌ها» بارگذاری می‌کند؛ برای پیدا کردنشان search_brain با منبع letters
 - پیامک → send_sms (همیشه با تأیید)
 
 ## سبک پاسخ
@@ -63,6 +64,12 @@ async function buildSnapshot(ctx) {
     rows(`SELECT habit_id FROM habit_completions WHERE user_id = $1 AND completion_date = $2`, [userId, today]),
     loadMemories(userId).catch(() => []),
   ]);
+  const letters = await rows(
+    `SELECT subject, deadline FROM organizational_letters
+     WHERE user_id = $1 AND status IN ('new', 'in_progress') AND COALESCE(needs_reply, true)
+     ORDER BY deadline ASC NULLS LAST, created_at DESC LIMIT 5`,
+    [userId],
+  );
 
   const lines = [];
   const p = profile[0];
@@ -94,6 +101,13 @@ async function buildSnapshot(ctx) {
     const done = new Set(doneHabits.map((h) => h.habit_id));
     const left = habits.filter((h) => !done.has(h.id)).map((h) => h.title);
     lines.push(`- عادت‌ها: ${fa(habits.length - left.length)} از ${fa(habits.length)} امروز انجام شده${left.length ? `؛ مانده: ${left.slice(0, 5).join('، ')}` : ''}.`);
+  }
+
+  if (letters.length) {
+    lines.push(`- نامه‌های در انتظار پاسخ (بخش نامه‌ها و بخشنامه‌ها):`);
+    for (const l of letters) {
+      lines.push(`  • ${l.subject || 'بدون موضوع'}${l.deadline ? ` (مهلت: ${persianDateLabel(new Date(l.deadline), tz)})` : ''}`);
+    }
   }
 
   const memoryLines = memories.map((m) => `- ${m.content} (memory_id: ${m.id})`);

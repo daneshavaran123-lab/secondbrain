@@ -35,6 +35,7 @@ import perplexityProxyRouter from './routes/perplexity-proxy.js';
 import subUsersRouter from './routes/sub-users.js';
 import dbRouter from './routes/db.js';
 import supabaseProxyRouter from './routes/supabase-proxy.js';
+import orgLettersRouter from './routes/org-letters.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -104,6 +105,7 @@ app.use('/perplexity-proxy',          perplexityProxyRouter);
 app.use('/sub-users',                 subUsersRouter);
 app.use('/db',                        dbRouter);
 app.use('/supabase-proxy',            supabaseProxyRouter);
+app.use('/org-letters',               orgLettersRouter);
 
 // Debug: test OpenRouter connectivity from backend server
 app.get('/debug-ai', async (req, res) => {

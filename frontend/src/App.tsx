@@ -29,6 +29,7 @@ const DelegationPage = lazy(() => import("./pages/DelegationPage"));
 const PersonalPlanningPage = lazy(() => import("./pages/PersonalPlanningPage"));
 const ProfessionalPlanningPage = lazy(() => import("./pages/ProfessionalPlanningPage"));
 const OrganizationalPlanningPage = lazy(() => import("./pages/OrganizationalPlanningPage"));
+const OrganizationalLettersPage = lazy(() => import("./pages/OrganizationalLettersPage"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 const KhadimEKhalghPage = lazy(() => import("./pages/organizational/KhadimEKhalghPage"));
 const Dashboard = lazy(() => import("./pages/organizational/khadim-e-khalgh/Dashboard"));
@@ -154,6 +155,7 @@ const App = () => {
                   <Route path="personal-planning" element={<PersonalPlanningPage />} />
                   <Route path="professional-planning" element={<ProfessionalPlanningPage />} />
                   <Route path="organizational-planning" element={<OrganizationalPlanningPage />} />
+                  <Route path="organizational-letters" element={<OrganizationalLettersPage />} />
                   <Route path="ai-chat" element={<AIChatPage />} />
                   <Route path="ai-chat/analytics" element={<AIChatAnalytics />} />
                   <Route path="secretary-portal" element={<SecretaryPortalPage />} />
