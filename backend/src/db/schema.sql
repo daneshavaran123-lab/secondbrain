@@ -1989,3 +1989,21 @@ CREATE TABLE IF NOT EXISTS succession_positions (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
+
+-- ─── Smart assistant ──────────────────────────────────────────────────────────
+-- حافظه بلندمدت دستیار مورا (ترجیحات، افراد مهم، اهداف کاربر)
+CREATE TABLE IF NOT EXISTS assistant_memories (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL,
+  content    TEXT NOT NULL,
+  category   VARCHAR(50) DEFAULT 'other',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_assistant_memories_user ON assistant_memories(user_id, created_at DESC);
+
+-- ستون‌هایی که دستیار هنگام ساخت قرار و یادآوری می‌نویسد
+ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS venue_address TEXT;
+ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS domain VARCHAR(50);
+ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS color VARCHAR(20);
+ALTER TABLE IF EXISTS calendar_events ADD COLUMN IF NOT EXISTS reminders JSONB;
