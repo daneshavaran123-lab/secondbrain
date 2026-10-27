@@ -160,22 +160,11 @@ export default function AuthPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-background">
-      {/* Aurora background — futuristic radial mesh */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,hsl(var(--primary)/0.18),transparent_55%),radial-gradient(ellipse_at_bottom_right,hsl(var(--accent)/0.22),transparent_55%),radial-gradient(ellipse_at_center,hsl(265_80%_60%/0.10),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent,hsl(var(--background))_85%)]" />
-        <div className="absolute -top-32 -right-32 w-[480px] h-[480px] rounded-full bg-primary/15 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute -bottom-40 -left-32 w-[520px] h-[520px] rounded-full bg-accent/15 blur-[140px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '1.5s' }} />
-      </div>
-
       <div className="w-full max-w-md space-y-6 animate-fade-in">
         {/* لوگو و عنوان */}
         <div className="text-center space-y-3">
-          <div className="inline-flex relative">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary to-accent blur-xl opacity-60" />
-            <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-2xl">
-              <Brain className="h-9 w-9" />
-            </div>
+          <div className="inline-flex rounded-2xl bg-foreground p-3.5 text-background">
+            <Brain className="h-8 w-8" />
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent">
@@ -278,7 +267,7 @@ export default function AuthPage() {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 hover:scale-[1.01]" 
+                    className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors" 
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
@@ -332,7 +321,7 @@ export default function AuthPage() {
 
                       <Button
                         type="button"
-                        className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 hover:scale-[1.01]"
+                        className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors"
                         onClick={handleSendOtp}
                         disabled={isLoading}
                       >
@@ -374,7 +363,7 @@ export default function AuthPage() {
 
                       <Button
                         type="button"
-                        className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground shadow-lg shadow-primary/25 transition-all"
+                        className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors"
                         onClick={handleVerifyOtp}
                         disabled={isLoading || otpCode.length < 4}
                       >
@@ -459,7 +448,7 @@ export default function AuthPage() {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-11 rounded-xl bg-gradient-to-br from-accent to-primary hover:opacity-90 text-primary-foreground shadow-lg shadow-accent/25 transition-all hover:shadow-accent/40 hover:scale-[1.01]" 
+                    className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors" 
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}

@@ -22,18 +22,13 @@ export function SectionHeader({
     <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4 page-enter", className)}>
       <div className="flex items-center gap-3 md:gap-4">
         {icon && (
-          <div className="relative flex-shrink-0">
-            <div className="p-2.5 md:p-3 rounded-xl text-white shadow-md flex-shrink-0 relative z-10"
-              style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))' }}>
-              {icon}
-            </div>
-            <div className="absolute inset-0 rounded-xl blur-md opacity-30 z-0"
-              style={{ background: 'hsl(var(--primary))' }} />
+          <div className="flex-shrink-0 rounded-xl border border-border bg-card p-2.5 text-foreground [&_svg]:h-5 [&_svg]:w-5">
+            {icon}
           </div>
         )}
         <div className="min-w-0">
           <h1 className={cn(
-            "text-lg md:text-2xl font-bold mb-0.5 truncate",
+            "text-lg md:text-2xl font-semibold tracking-tight mb-0.5 truncate",
             gradient && "heading-primary"
           )}>
             {title}

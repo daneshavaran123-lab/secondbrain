@@ -597,20 +597,20 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                 </div>
               </div>
               <div className="flex items-center gap-0.5">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground" onClick={startNewChat} title="گفتگوی جدید" aria-label="گفتگوی جدید" disabled={isLoading}>
+                <Button variant="ghost" size="icon" className="h-10 w-10 min-h-0 rounded-lg text-muted-foreground sm:h-9 sm:w-9" onClick={startNewChat} title="گفتگوی جدید" aria-label="گفتگوی جدید" disabled={isLoading}>
                   <SquarePen className="h-[18px] w-[18px]" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground" onClick={() => setIsVoiceMode(true)} title="حالت صوتی" aria-label="حالت صوتی">
+                <Button variant="ghost" size="icon" className="h-10 w-10 min-h-0 rounded-lg text-muted-foreground sm:h-9 sm:w-9" onClick={() => setIsVoiceMode(true)} title="حالت صوتی" aria-label="حالت صوتی">
                   <AudioLines className="h-[18px] w-[18px]" />
                 </Button>
                 <Button
-                  variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground"
+                  variant="ghost" size="icon" className="h-10 w-10 min-h-0 rounded-lg text-muted-foreground sm:h-9 sm:w-9"
                   onClick={() => { setIsOpen(false); navigate('/assistant-reports'); }}
                   title="گزارش‌های دستیار" aria-label="گزارش‌های دستیار"
                 >
                   <BarChart3 className="h-[18px] w-[18px]" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground" onClick={() => setIsOpen(false)} title="بستن" aria-label="بستن">
+                <Button variant="ghost" size="icon" className="h-10 w-10 min-h-0 rounded-lg text-muted-foreground sm:h-9 sm:w-9" onClick={() => setIsOpen(false)} title="بستن" aria-label="بستن">
                   <X className="h-[18px] w-[18px]" />
                 </Button>
               </div>
@@ -692,7 +692,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                                   key={option}
                                   onClick={() => sendMessage(option)}
                                   disabled={isLoading}
-                                  className="rounded-full border border-border px-3 py-1.5 text-xs transition-colors hover:bg-muted disabled:opacity-50"
+                                  className="min-h-[34px] rounded-full border border-border px-3 py-1.5 text-xs transition-colors hover:bg-muted disabled:opacity-50 sm:min-h-0"
                                 >
                                   {option}
                                 </button>
@@ -715,7 +715,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                     <div className="flex items-center gap-2 rounded-lg bg-muted px-2.5 py-1.5 text-xs">
                       <FileIcon type={attachedFile.type} className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                       <span className="min-w-0 flex-1 truncate">{attachedFile.fileName}</span>
-                      <button onClick={clearAttachment} className="text-muted-foreground hover:text-foreground" aria-label="حذف فایل">
+                      <button onClick={clearAttachment} className="min-h-0 text-muted-foreground hover:text-foreground" aria-label="حذف فایل">
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -737,7 +737,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                 <div className="flex items-center gap-1 px-2 pb-2 pt-1">
                   <Button
                     variant="ghost" size="icon"
-                    className="h-8 w-8 rounded-lg text-muted-foreground"
+                    className="h-9 w-9 min-h-0 rounded-lg text-muted-foreground sm:h-8 sm:w-8"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isProcessingFile}
                     title="پیوست فایل" aria-label="پیوست فایل"
@@ -754,7 +754,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                   {voiceSupported && (
                     <Button
                       variant="ghost" size="icon"
-                      className={cn('h-8 w-8 rounded-lg text-muted-foreground', isListening && 'bg-destructive/10 text-destructive')}
+                      className={cn('h-9 w-9 min-h-0 rounded-lg text-muted-foreground sm:h-8 sm:w-8', isListening && 'bg-destructive/10 text-destructive')}
                       onClick={() => (isListening ? stopListening() : startListening())}
                       title={isListening ? 'توقف' : 'گفتن به‌جای نوشتن'} aria-label="ورودی صوتی"
                     >
@@ -764,7 +764,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                   {tts.isSupported && (
                     <Button
                       variant="ghost" size="icon"
-                      className={cn('h-8 w-8 rounded-lg text-muted-foreground', tts.isEnabled && 'text-foreground')}
+                      className={cn('h-9 w-9 min-h-0 rounded-lg text-muted-foreground sm:h-8 sm:w-8', tts.isEnabled && 'text-foreground')}
                       onClick={() => { if (tts.isEnabled) tts.stop(); tts.toggleEnabled(); }}
                       title={tts.isEnabled ? 'پاسخ صوتی روشن است' : 'پاسخ صوتی خاموش است'}
                       aria-label="پاسخ صوتی" aria-pressed={tts.isEnabled}
@@ -776,7 +776,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                     size="icon"
                     onClick={() => sendMessage(input)}
                     disabled={(!input.trim() && !attachedFile) || isLoading}
-                    className="ms-auto h-8 w-8 rounded-lg"
+                    className="ms-auto h-9 w-9 min-h-0 rounded-lg sm:h-8 sm:w-8"
                     aria-label="ارسال"
                   >
                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}

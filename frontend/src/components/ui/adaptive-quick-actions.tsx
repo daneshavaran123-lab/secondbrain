@@ -10,15 +10,12 @@ import {
   UserCheck, 
   Scale, 
   BookOpen,
-  Plus,
-  MessageCircle
+  MessageCircle,
+  FolderKanban
 } from 'lucide-react';
 
 export function AdaptiveQuickActions() {
-  const { 
-    isXs, isSm, isMd, isLg, isXl, is2Xl,
-    isMobile, isTablet, isDesktop 
-  } = useResponsiveBreakpoints();
+  const { isMobile } = useResponsiveBreakpoints();
   const navigate = useNavigate();
   const [todaysFocus, setTodaysFocus] = useState<TodaysFocusItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,172 +40,98 @@ export function AdaptiveQuickActions() {
       title: 'برنامه‌ریزی شخصی',
       icon: CheckSquare,
       route: '/personal-planning',
-      hue: '217',
     },
     {
       title: 'برنامه‌ریزی سازمانی',
       icon: UserCheck,
       route: '/organizational-planning',
-      hue: '152',
     },
     {
       title: 'مدیریت پروژه‌ها',
-      icon: CheckSquare,
-      route: '/project-management',
-      hue: '189',
+      icon: FolderKanban,
+      route: '/projects',
     },
     {
       title: 'ایده‌ها',
       icon: Lightbulb,
       route: '/ideas',
-      hue: '48',
     },
     {
       title: 'مسائل حقوقی',
       icon: Scale,
       route: '/legal',
-      hue: '270',
     },
     {
       title: 'دانش‌بنیان',
       icon: BookOpen,
       route: '/knowledge',
-      hue: '238',
     },
     {
       title: 'گفتگوی هوشمند',
       icon: MessageCircle,
       route: '/ai-chat',
-      hue: '142',
     },
     {
       title: 'تقویم',
       icon: Calendar,
       route: '/calendar',
-      hue: '0',
     }
   ];
 
-  const getVisibleActions = () => {
-    if (isMobile) return quickActions.slice(0, 4);
-    if (isTablet) return quickActions.slice(0, 6);
-    return quickActions;
-  };
-
-  const visibleActions = getVisibleActions();
+  const [showAll, setShowAll] = useState(false);
+  const visibleActions = isMobile && !showAll ? quickActions.slice(0, 4) : quickActions;
 
   return (
-    <div className="space-y-5">
-      {/* Quick Actions */}
-      <div className="card-premium bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl overflow-hidden">
-        <div className={cn(isMobile ? "p-4 pb-3" : "p-5 pb-3")}>
-          <div className={cn(
-            "flex items-center gap-2 font-semibold",
-            isMobile ? "text-base" : "text-lg"
-          )}>
-            <div className="p-1.5 rounded-lg bg-primary/10">
-              <Plus className="w-4 h-4 text-primary" />
-            </div>
-            دسترسی سریع
-          </div>
-        </div>
-
-        <div className={cn(isMobile ? "p-4 pt-0" : "p-5 pt-0")}>
-          <div className={cn(
-            "grid w-full gap-2.5 stagger-children",
-            isMobile ? "grid-cols-2" :
-            isTablet ? "grid-cols-1" :
-            "grid-cols-1 xl:grid-cols-2"
-          )}>
-            {visibleActions.map((action, index) => {
-              const IconComponent = action.icon;
-              return (
-                <button
-                  key={index}
-                  onClick={() => navigate(action.route)}
-                  className={cn(
-                    "flex items-center gap-3 w-full text-right rounded-xl transition-all duration-200",
-                    "hover:shadow-sm hover:-translate-y-0.5 active:scale-95",
-                    "border border-transparent hover:border-border/50",
-                    isMobile ? "p-2.5 min-h-[52px]" : "p-3 min-h-[52px]"
-                  )}
-                  style={{
-                    background: `hsl(${action.hue} 70% 50% / 0.07)`,
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = `hsl(${action.hue} 70% 50% / 0.12)`)}
-                  onMouseLeave={e => (e.currentTarget.style.background = `hsl(${action.hue} 70% 50% / 0.07)`)}
-                >
-                  <div
-                    className={cn(
-                      "flex items-center justify-center rounded-lg flex-shrink-0",
-                      isMobile ? "w-8 h-8" : "w-9 h-9"
-                    )}
-                    style={{ background: `hsl(${action.hue} 70% 50% / 0.15)` }}
-                  >
-                    <IconComponent
-                      className={isMobile ? "w-4 h-4" : "w-4 h-4"}
-                      style={{ color: `hsl(${action.hue} 65% 45%)` }}
-                    />
-                  </div>
-
-                  <span className={cn(
-                    "font-medium truncate",
-                    isMobile ? "text-xs leading-tight" : "text-sm"
-                  )}>
-                    {action.title}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {isMobile && quickActions.length > 4 && (
-            <button className="w-full mt-3 text-sm text-muted-foreground hover:text-foreground transition-colors py-2 rounded-lg hover:bg-muted/30">
-              نمایش بیشتر
+    <div className="space-y-6">
+      <section className="rounded-2xl border border-border bg-card p-4 shadow-card md:p-5">
+        <h2 className="mb-3 text-sm font-semibold">دسترسی سریع</h2>
+        <div className="grid grid-cols-2 gap-2">
+          {visibleActions.map((action) => (
+            <button
+              key={action.route}
+              onClick={() => navigate(action.route)}
+              className="flex min-h-[44px] items-center gap-2.5 rounded-xl border border-border px-3 py-2.5 text-right transition-colors hover:bg-muted/60 active:scale-[0.98]"
+            >
+              <action.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="min-w-0 text-[13px] font-medium leading-5">{action.title}</span>
             </button>
-          )}
+          ))}
         </div>
-      </div>
+        {isMobile && quickActions.length > 4 && (
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="mt-2 w-full rounded-lg py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+          >
+            {showAll ? 'کمتر' : 'نمایش همه'}
+          </button>
+        )}
+      </section>
 
-      {/* Today's Focus - Only on tablet and desktop */}
       {!isMobile && (
-        <div className="card-premium bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl overflow-hidden">
-          <div className={cn(isTablet ? "p-4 pb-2" : "p-5 pb-3")}>
-            <div className="flex items-center gap-2 font-semibold text-base">
-              <div className="p-1.5 rounded-lg bg-primary/10">
-                <UserCheck className="w-4 h-4 text-primary" />
-              </div>
-              تمرکز امروز
-            </div>
-          </div>
-
-          <div className={cn(isTablet ? "p-4 pt-0" : "p-5 pt-0")}>
-            <div className="space-y-1">
-              {todaysFocus.length > 0 ? todaysFocus.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted/40 transition-colors">
-                  <div className={cn(
-                    "w-2 h-2 rounded-full flex-shrink-0",
-                    item.status === 'completed' ? 'bg-emerald-500' :
-                    item.status === 'in_progress' ? 'bg-amber-500' : 'bg-primary'
+        <section className="rounded-2xl border border-border bg-card p-4 shadow-card md:p-5">
+          <h2 className="mb-3 text-sm font-semibold">تمرکز امروز</h2>
+          {todaysFocus.length > 0 ? (
+            <ul className="space-y-1">
+              {todaysFocus.map((item) => (
+                <li key={item.id} className="flex items-start gap-3 rounded-lg px-2 py-2">
+                  <span className={cn(
+                    'mt-2 h-1.5 w-1.5 shrink-0 rounded-full',
+                    item.status === 'completed' ? 'bg-success' : item.status === 'in_progress' ? 'bg-warning' : 'bg-muted-foreground/50'
                   )} />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium">{item.title}</span>
-                    {item.description && (
-                      <p className="text-xs text-muted-foreground truncate">{item.description}</p>
-                    )}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm leading-6">{item.title}</p>
+                    {item.description && <p className="truncate text-xs text-muted-foreground">{item.description}</p>}
                   </div>
-                  {item.time && (
-                    <span className="text-xs text-muted-foreground flex-shrink-0">{item.time}</span>
-                  )}
-                </div>
-              )) : (
-                <div className="text-center py-6 text-muted-foreground">
-                  <p className="text-sm">هیچ وظیفه‌ای برای امروز تعریف نشده</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+                  {item.time && <span className="shrink-0 text-xs text-muted-foreground">{item.time}</span>}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              {isLoading ? 'در حال بارگذاری…' : 'برای امروز کاری ثبت نشده'}
+            </p>
+          )}
+        </section>
       )}
     </div>
   );

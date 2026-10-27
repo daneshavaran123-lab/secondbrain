@@ -406,35 +406,35 @@ body * {
 
 @layer base {
   :root {
-    /* Modern Futuristic Color Palette */
-    --background: 0 0% 99%;
-    --foreground: 225 25% 8%;
+    /* Minimal palette: neutral zinc surfaces, one calm indigo accent */
+    --background: 240 5% 98.5%;
+    --foreground: 240 10% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 225 25% 12%;
+    --card-foreground: 240 10% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 225 25% 10%;
+    --popover-foreground: 240 10% 9%;
 
-    /* Primary - Modern Vibrant Blue-Purple */
-    --primary: 250 80% 58%;
+    --primary: 243 62% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 250 80% 52%;
-    --primary-glow: 260 90% 70%;
+    --primary-hover: 243 62% 50%;
+    --primary-glow: 243 62% 66%;
 
-    /* Secondary - Soft Elegant Gray */
-    --secondary: 220 20% 94%;
-    --secondary-foreground: 220 20% 22%;
+    --secondary: 240 5% 95%;
+    --secondary-foreground: 240 6% 20%;
 
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 15% 50%;
+    --muted: 240 5% 95%;
+    --muted-foreground: 240 4% 44%;
 
-    /* Accent - Vibrant Coral-Pink */
-    --accent: 340 80% 65%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent is the neutral hover surface used by menus, selects and ghost buttons */
+    --accent: 240 5% 94%;
+    --accent-foreground: 240 10% 9%;
 
-    --destructive: 0 65% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 36 92% 46%;
 
     /* Futuristic Theme Colors - Enhanced */
     --medical-blue: 200 95% 52%;
@@ -445,7 +445,7 @@ body * {
     --innovation-violet: 265 85% 62%;
     
     /* Progress Chart Colors */
-    --success: 148 65% 45%;
+    --success: 152 58% 38%;
     --meeting: 280 65% 45%;
     --innovation: 260 85% 55%;
     
@@ -464,13 +464,13 @@ body * {
     --mood-calm: 260 45% 65%;
     --mood-excited: 25 85% 65%;
 
-    --border: 215 15% 88%;
-    --input: 215 15% 92%;
-    --ring: 210 85% 25%;
+    --border: 240 6% 90%;
+    --input: 240 6% 88%;
+    --ring: 243 62% 56%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 100%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
 
@@ -489,23 +489,24 @@ body * {
 
   /* Futuristic Gradients */
   :root {
-    --gradient-primary: linear-gradient(135deg, hsl(250 80% 58%) 0%, hsl(280 75% 65%) 50%, hsl(190 85% 55%) 100%);
-    --gradient-medical: linear-gradient(135deg, hsl(200 95% 52%) 0%, hsl(155 75% 50%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 99%) 0%, hsl(220 20% 97%) 100%);
-    --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(245, 247, 250, 0.9) 100%);
-    --gradient-glass: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(240, 245, 255, 0.5) 100%);
-    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(250 80% 58% / 0.12), transparent 70%);
-    --gradient-professional: linear-gradient(135deg, hsl(200 95% 52%) 0%, hsl(265 85% 62%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(250 80% 58%) 0%, hsl(190 90% 55%) 50%, hsl(340 80% 65%) 100%);
-    --gradient-futuristic: linear-gradient(135deg, hsl(250 80% 58% / 0.04) 0%, hsl(340 80% 65% / 0.03) 50%, hsl(0 0% 99%) 100%);
-    
-    /* Professional Shadows - Enhanced */
-    --shadow-elegant: 0 8px 32px -8px hsl(250 80% 58% / 0.25);
-    --shadow-medical: 0 12px 40px -10px hsl(200 95% 52% / 0.28);
-    --shadow-card: 0 4px 16px -4px hsl(220 20% 22% / 0.1);
-    --shadow-glass: 0 8px 32px 0 rgba(255, 255, 255, 0.1), 0 2px 8px 0 rgba(0, 0, 0, 0.04);
-    --shadow-glow: 0 0 48px hsl(260 90% 70% / 0.35);
-    --shadow-floating: 0 16px 56px -16px hsl(250 80% 58% / 0.3);
+    /* Gradients resolve to flat fills so every bg-gradient-* utility stays calm */
+    --gradient-primary: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-medical: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-subtle: linear-gradient(hsl(var(--background)), hsl(var(--background)));
+    --gradient-card: linear-gradient(hsl(var(--card)), hsl(var(--card)));
+    --gradient-glass: linear-gradient(hsl(var(--card)), hsl(var(--card)));
+    --gradient-glow: none;
+    --gradient-professional: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-hero: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-futuristic: linear-gradient(hsl(var(--background)), hsl(var(--background)));
+
+    /* Soft neutral elevation */
+    --shadow-elegant: 0 1px 2px hsl(240 10% 10% / 0.04), 0 4px 12px -4px hsl(240 10% 10% / 0.08);
+    --shadow-medical: var(--shadow-elegant);
+    --shadow-card: 0 1px 2px hsl(240 10% 10% / 0.04);
+    --shadow-glass: var(--shadow-card);
+    --shadow-glow: none;
+    --shadow-floating: 0 12px 32px -12px hsl(240 10% 10% / 0.18);
     
     /* Smooth Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -526,17 +527,16 @@ body * {
     --lux-velvet: 280 50% 32%;
     
     /* Luxury Gradients - Enhanced */
-    --gradient-lux: linear-gradient(135deg, hsl(30 20% 96%) 0%, hsl(200 50% 90%) 50%, hsl(220 25% 92%) 100%);
-    --gradient-luxury-gold: linear-gradient(135deg, hsl(45 100% 68%) 0%, hsl(35 95% 62%) 100%);
-    --gradient-luxury-rose: linear-gradient(135deg, hsl(340 85% 72%) 0%, hsl(320 70% 68%) 100%);
-    --gradient-luxury-platinum: linear-gradient(135deg, hsl(220 25% 92%) 0%, hsl(210 30% 88%) 100%);
-    --gradient-luxury-ember: linear-gradient(135deg, hsl(20 95% 65%) 0%, hsl(25 90% 62%) 100%);
-    
-    /* Luxury Shadows - Enhanced */
-    --shadow-luxury: 0 12px 48px -12px hsl(240 30% 12% / 0.15);
-    --shadow-luxury-glow: 0 0 56px hsl(45 100% 68% / 0.4);
-    --shadow-luxury-soft: 0 6px 32px -6px hsl(240 30% 12% / 0.1);
-    --shadow-luxury-deep: 0 20px 80px -20px hsl(240 30% 12% / 0.25);
+    --gradient-lux: linear-gradient(hsl(var(--muted)), hsl(var(--muted)));
+    --gradient-luxury-gold: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-luxury-rose: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-luxury-platinum: linear-gradient(hsl(var(--muted)), hsl(var(--muted)));
+    --gradient-luxury-ember: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+
+    --shadow-luxury: var(--shadow-elegant);
+    --shadow-luxury-glow: none;
+    --shadow-luxury-soft: var(--shadow-card);
+    --shadow-luxury-deep: var(--shadow-floating);
   }
 
   /* Iranian Kanban Theme Colors */
@@ -562,30 +562,37 @@ body * {
   }
 
   .dark {
-    --background: 222 47% 7%;
-    --foreground: 210 15% 95%;
+    --background: 240 6% 7%;
+    --foreground: 0 0% 95%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 15% 95%;
+    --card: 240 5% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 15% 95%;
+    --popover: 240 5% 11%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 217 92% 60%;
-    --primary-foreground: 222 47% 11%;
-    --primary-hover: 217 92% 55%;
+    --primary: 243 85% 72%;
+    --primary-foreground: 240 10% 8%;
+    --primary-hover: 243 85% 66%;
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 15% 95%;
+    --secondary: 240 4% 15%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 25% 75%;
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 63%;
 
-    --accent: 217 33% 23%;
-    --accent-foreground: 210 15% 95%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 95%;
 
-    --destructive: 0 63% 50%;
-    --destructive-foreground: 210 15% 95%;
+    --destructive: 0 72% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 50% 52%;
+    --warning: 38 92% 58%;
+
+    --shadow-elegant: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px -6px rgb(0 0 0 / 0.5);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-floating: 0 16px 40px -12px rgb(0 0 0 / 0.6);
 
     /* Enhanced theme colors for dark mode */
     --medical-blue: 200 90% 60%;
@@ -594,21 +601,20 @@ body * {
     --tech-cyan: 190 85% 60%;
     --innovation-violet: 265 80% 68%;
 
-    --border: 217 33% 23%;
-    --input: 217 33% 23%;
-    --ring: 217 92% 60%;
-    --sidebar-background: 222 47% 7%;
-    --sidebar-foreground: 210 15% 95%;
-    --sidebar-primary: 217 92% 60%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 15% 95%;
-    --sidebar-border: 217 33% 23%;
-    --sidebar-ring: 217 92% 60%;
+    --border: 240 4% 17%;
+    --input: 240 4% 20%;
+    --ring: 243 85% 72%;
+    --sidebar-background: 240 6% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 243 85% 72%;
+    --sidebar-primary-foreground: 240 10% 8%;
+    --sidebar-accent: 240 4% 15%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 4% 17%;
+    --sidebar-ring: 243 85% 72%;
 
-    /* Dark mode gradients */
-    --gradient-primary-dark: linear-gradient(135deg, hsl(217 92% 60%) 0%, hsl(280 75% 65%) 50%, hsl(190 85% 60%) 100%);
-    --gradient-medical-dark: linear-gradient(135deg, hsl(200 90% 60%) 0%, hsl(155 70% 55%) 100%);
+    --gradient-primary-dark: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    --gradient-medical-dark: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
   }
 }
 
@@ -626,7 +632,7 @@ body * {
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: var(--gradient-futuristic);
+    background: hsl(var(--background));
     min-height: 100vh;
     direction: rtl;
   }
@@ -2192,9 +2198,8 @@ body * {
 
 /* ── Focus ring improvement ──────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid hsl(var(--primary) / 0.6);
+  outline: 2px solid hsl(var(--ring) / 0.7);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* ── Notification Badge ──────────────────────────────────────── */
@@ -2589,5 +2594,267 @@ h4 {
   .content-area {
     margin-inline: auto;
     max-width: 1600px;
+  }
+}
+
+/* ============================================================
+   MORA MINIMAL
+   لایه نهایی طراحی: سطوح ساده، مرز نازک، سایه نرم، بدون درخشش.
+   کلاس‌های قدیمی glass/glow/premium را بازتعریف می‌کند تا کل
+   برنامه یک‌دست و آرام شود.
+   ============================================================ */
+
+.gradient-mesh,
+.dark .gradient-mesh,
+.bg-gradient-subtle {
+  background: hsl(var(--background));
+}
+
+.glass-card,
+.dark .glass-card,
+.card-premium,
+.dark .card-premium {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover,
+.dark .glass-card:hover,
+.card-premium:hover,
+.dark .card-premium:hover {
+  background: hsl(var(--card));
+  border-color: hsl(var(--foreground) / 0.14);
+  box-shadow: var(--shadow-elegant);
+  transform: none;
+}
+
+.glass-header,
+.dark .glass-header,
+.glass-nav {
+  background: hsl(var(--background) / 0.85);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border: 0;
+  border-bottom: 1px solid hsl(var(--border));
+  box-shadow: none;
+}
+
+.glass-sidebar,
+.sidebar-header-glass {
+  background: hsl(var(--card));
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.glass-button,
+.btn-glass,
+.quick-action {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.glass-button:hover,
+.btn-glass:hover,
+.quick-action:hover {
+  background: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  box-shadow: none;
+  transform: none;
+}
+
+.glass-input,
+.dark .glass-input,
+.input-glass,
+.dark .input-glass {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--input));
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.glass-input:focus,
+.dark .glass-input:focus,
+.input-glass:focus,
+.dark .input-glass:focus {
+  background: hsl(var(--background));
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
+}
+
+.btn-primary {
+  background: hsl(var(--primary));
+  box-shadow: none;
+}
+.btn-primary::after { display: none; }
+.btn-primary:hover {
+  background: hsl(var(--primary-hover));
+  box-shadow: none;
+  transform: none;
+  filter: none;
+}
+
+.auth-card {
+  background: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-elegant);
+}
+
+/* No glow, shimmer or floating motion */
+.glow-primary,
+.glow-accent,
+.glow-soft,
+.shadow-glow,
+.pulse-glow,
+.float,
+.text-glow {
+  box-shadow: none;
+  text-shadow: none;
+  animation: none;
+}
+
+.hover-glow:hover,
+.btn-magnetic:hover,
+.btn-magnetic:active,
+.interactive-card:hover,
+.hover-rotate:hover,
+.hover-tilt:hover {
+  box-shadow: var(--shadow-elegant);
+  transform: none;
+  animation: none;
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-elegant);
+}
+
+.hover-scale:hover {
+  transform: none;
+}
+
+.shimmer::after,
+.gradient-border::before,
+.sidebar-shine::before,
+.header-gradient-border::after,
+.stat-card::before {
+  display: none;
+}
+
+.text-gradient,
+.text-gradient-primary,
+.text-gradient-warm,
+.text-luxury {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: hsl(var(--foreground));
+}
+
+.mora-gradient,
+.hero-gradient {
+  background: hsl(var(--primary)) !important;
+}
+
+/* Tailwind gradients render as a flat fill of their first colour stop.
+   Fades to transparent (image scrims, dividers) keep their gradient. */
+:is(.bg-gradient-to-t, .bg-gradient-to-tr, .bg-gradient-to-r, .bg-gradient-to-br,
+    .bg-gradient-to-b, .bg-gradient-to-bl, .bg-gradient-to-l, .bg-gradient-to-tl):not([class*="to-transparent"]):not([class*="from-transparent"]) {
+  background-image: linear-gradient(var(--tw-gradient-from), var(--tw-gradient-from));
+}
+
+/* Navigation */
+.nav-item:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+.nav-item.active,
+.nav-item[aria-current="page"],
+.dark .nav-item.active,
+.dark .nav-item[aria-current="page"] {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.domain-tab.active {
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  box-shadow: 0 1px 2px hsl(240 10% 10% / 0.08), 0 0 0 1px hsl(var(--border));
+}
+
+.category-header::before {
+  background: hsl(var(--border));
+}
+
+.indicator-dot {
+  background: hsl(var(--foreground));
+  box-shadow: none;
+}
+
+.badge-count {
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border-color: transparent;
+}
+
+.stat-card {
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+}
+
+.stat-card:hover {
+  background: hsl(var(--muted) / 0.5);
+  border-color: hsl(var(--border));
+}
+
+/* Loading */
+.loading-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: hsl(var(--foreground));
+  box-shadow: none;
+  animation: none;
+}
+
+.loading-logo svg {
+  color: hsl(var(--background));
+}
+
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  background: hsl(var(--muted-foreground) / 0.6);
+}
+
+/* Quieter scrollbars */
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.12);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

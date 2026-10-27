@@ -125,34 +125,34 @@ export const KnowledgeCapture: React.FC<KnowledgeCaptureProps> = ({ onKnowledgeA
   ] as const;
 
   return (
-    <Card className="p-10 border-4 border-primary/20 shadow-2xl rounded-3xl bg-gradient-to-br from-background to-muted/10">
-      <CardHeader className="pb-12">
-        <CardTitle className="text-4xl font-bold text-primary flex items-center gap-4 mb-8">
-          <Brain className="h-12 w-12" />
+    <Card className="rounded-2xl border border-border p-4 shadow-card md:p-6">
+      <CardHeader className="px-0 pb-6 pt-0">
+        <CardTitle className="mb-5 flex items-center gap-2 text-lg font-semibold">
+          <Brain className="h-5 w-5 text-muted-foreground" />
           ذخیره دانش جدید
         </CardTitle>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {captureTypes.map(({ id, label, icon: Icon }) => (
             <Button
               key={id}
               variant={captureType === id ? "default" : "outline"}
               size="lg"
               onClick={() => setCaptureType(id)}
-              className={`h-24 flex-col gap-4 text-xl font-bold border-3 rounded-2xl shadow-lg transition-all duration-300 ${
-                captureType === id 
-                  ? 'bg-primary text-primary-foreground border-primary shadow-2xl scale-105 transform' 
-                  : 'bg-background border-border hover:border-primary hover:shadow-xl hover:scale-102 transform'
+              className={`h-20 flex-col gap-2 rounded-xl border text-sm font-medium transition-colors ${
+                captureType === id
+                  ? 'border-foreground bg-foreground text-background hover:bg-foreground/90'
+                  : 'border-border bg-background hover:bg-muted'
               }`}
             >
-              <Icon className="h-10 w-10" />
+              <Icon className="h-5 w-5" />
               <span>{label}</span>
             </Button>
           ))}
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 pt-0">
+      <CardContent className="space-y-6 px-0 pb-0 pt-0">
         {/* Permission Guide */}
         {captureType === 'voice' && (
           <>

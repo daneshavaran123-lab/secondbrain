@@ -8,7 +8,7 @@ const quotes = [
   "أَلَيْسَ اللَّهُ بِكَافٍ عَبْدَهُ - آیا خدا بنده‌اش را کافی نیست؟"
 ];
 
-export function AnimatedSubtitle() {
+export function AnimatedSubtitle({ className = '' }: { className?: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -26,16 +26,10 @@ export function AnimatedSubtitle() {
   }, []);
 
   return (
-    <div className="h-6 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-b border-border/30 overflow-hidden">
-      <div 
-        className={`h-full flex items-center justify-center transition-all duration-500 transform ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-        }`}
-      >
-        <p className="text-xs text-muted-foreground/80 font-light px-4 text-center">
-          {quotes[currentIndex]}
-        </p>
-      </div>
-    </div>
+    <p
+      className={`text-xs leading-5 text-muted-foreground transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'} ${className}`}
+    >
+      {quotes[currentIndex]}
+    </p>
   );
 }

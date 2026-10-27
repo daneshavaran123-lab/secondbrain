@@ -56,7 +56,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
       recentMeetings.forEach(meeting => {
         activities.push({
           id: meeting.id,
-          title: `جلسه ${meeting.title}`,
+          title: meeting.title?.startsWith('جلسه') ? meeting.title : `جلسه ${meeting.title}`,
           time: getRelativeTime(meeting.updated_at),
           type: 'info'
         });
@@ -160,18 +160,15 @@ export async function getTodaysFocus(): Promise<TodaysFocusItem[]> {
 }
 
 // Helper function to get relative time
-function getRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-  
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} دقیقه پیش`;
-  } else if (diffInMinutes < 1440) {
-    const hours = Math.floor(diffInMinutes / 60);
-    return `${hours} ساعت پیش`;
-  } else {
-    const days = Math.floor(diffInMinutes / 1440);
-    return `${days} روز پیش`;
-  }
+function getRelativeTime(dateString?: string | null): string {
+  const date = dateString ? new Date(dateString) : null;
+  // Rows without a timestamp used to render «NaN روز پیش»
+  if (!date || Number.isNaN(date.getTime())) return '';
+  const diffInMinutes = Math.max(0, Math.floor((Date.now() - date.getTime()) / (1000 * 60)));
+  const fa = (n: number) => n.toLocaleString('fa-IR');
+
+  if (diffInMinutes < 1) return 'همین الان';
+  if (diffInMinutes < 60) return `${fa(diffInMinutes)} دقیقه پیش`;
+  if (diffInMinutes < 1440) return `${fa(Math.floor(diffInMinutes / 60))} ساعت پیش`;
+  return `${fa(Math.floor(diffInMinutes / 1440))} روز پیش`;
 }

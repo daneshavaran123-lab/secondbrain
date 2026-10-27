@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import DomainSidebar from "@/components/DomainSidebar";
 import { MinimalDashboard } from '@/components/ui/minimal-dashboard';
-import { AnimatedSubtitle } from "@/components/ui/animated-subtitle";
 import { FuturisticHero } from "@/components/ui/futuristic-hero";
 import { FuturisticSection } from "@/components/ui/futuristic-section";
 import { TestDataInitializer } from "@/components/ui/test-data-initializer";
@@ -14,7 +13,6 @@ import { OfflineBanner, OfflineIndicator } from "@/components/ui/offline-banner"
 import { SmartAssistant } from "@/components/assistant/SmartAssistant";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
-import { useAdaptiveLayout } from "@/hooks/useAdaptiveLayout";
 import { useResponsiveBreakpoints } from "@/hooks/useResponsiveBreakpoints";
 import { useServiceWorker } from "@/hooks/useOffline";
 import { useWakeWord } from "@/hooks/useWakeWord";
@@ -25,7 +23,6 @@ import { cn } from "@/lib/utils";
 const Index = () => {
   const isMobile = useIsMobile();
   const device = useDeviceDetection();
-  const layout = useAdaptiveLayout();
   const { isTablet, isDesktop } = useResponsiveBreakpoints();
   const navigate = useNavigate();
   // sidebar فقط روی desktop (≥1024px) به‌صورت پیش‌فرض باز است
@@ -117,7 +114,7 @@ const Index = () => {
     return (
       <div className="loading-screen gradient-mesh">
         <div className="loading-logo">
-          <Brain className="h-7 w-7 text-white" />
+          <Brain className="h-6 w-6" />
         </div>
         <div className="text-center space-y-2">
           <p className="text-sm font-medium text-foreground">مورا</p>
@@ -135,7 +132,7 @@ const Index = () => {
     return (
       <div className="loading-screen gradient-mesh">
         <div className="loading-logo">
-          <Brain className="h-7 w-7 text-white" />
+          <Brain className="h-6 w-6" />
         </div>
         <div className="loading-dots">
           <span /><span /><span />
@@ -146,7 +143,7 @@ const Index = () => {
 
   return (
     <CrossPlatformOptimized
-      className="h-screen overflow-hidden gradient-mesh flex flex-col animate-blur-in"
+      className="h-screen overflow-hidden bg-background flex flex-col"
       enableSafeArea={device.isNative}
       enableKeyboardHandling={device.type === 'mobile'}
       enableTouchOptimizations={device.touchCapable}
@@ -182,7 +179,6 @@ const Index = () => {
 
       <OfflineBanner />
       <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
-      <AnimatedSubtitle />
 
       <main className={cn(
         "flex-1 overflow-auto transition-all duration-300 ease-out",
@@ -198,7 +194,7 @@ const Index = () => {
           {isHomePage ? (
             <MinimalDashboard sidebarOpen={sidebarOpen} />
           ) : (
-            <PageWrapper sidebarOpen={sidebarOpen} className={layout.padding[device.type]}>
+            <PageWrapper sidebarOpen={sidebarOpen}>
               <Outlet context={{ sidebarOpen }} />
             </PageWrapper>
           )}

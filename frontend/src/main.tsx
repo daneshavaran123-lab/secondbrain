@@ -19,7 +19,7 @@ autoExecuteCompleteCleanup()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark" storageKey="brainforge-theme">
+      <ThemeProvider defaultTheme="system" storageKey="brainforge-theme">
         <App />
       </ThemeProvider>
     </ErrorBoundary>

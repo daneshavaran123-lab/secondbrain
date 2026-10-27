@@ -534,9 +534,8 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
   return (
     <div className={cn(
       "fixed top-0 right-0 h-full",
-      "bg-background/97 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/75",
-      "border-l border-border/40 shadow-[−4px_0_24px_rgba(0,0,0,0.06)]",
-      "transition-all duration-300 ease-in-out flex flex-col sidebar-shine",
+      "bg-card border-l border-border",
+      "transition-all duration-300 ease-in-out flex flex-col",
       "touch-manipulation overflow-hidden",
       !isDesktop
         ? cn(
