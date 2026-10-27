@@ -5,7 +5,7 @@
  */
 
 import { Router } from 'express';
-import { query } from '../db/index.js';
+import { query, getClient } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
@@ -160,33 +160,84 @@ const TABLES_WITHOUT_UPDATED_AT = new Set([
 
 const OP_MAP = { eq: '=', neq: '!=', gt: '>', gte: '>=', lt: '<', lte: '<=' };
 
+// Column and key names reach SQL as quoted identifiers, so only plain identifiers
+// are accepted (a `"` would otherwise break out of the quotes and bypass the
+// per-user scope). Values always go through bind parameters.
+// Supabase-style embedded relations (`organizations (name)`) are not supported and
+// are rejected like any other non-identifier.
+const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+class BadRequest extends Error {}
+class Forbidden extends Error {}
+
+function ident(name) {
+  if (typeof name !== 'string' || !IDENTIFIER.test(name)) {
+    throw new BadRequest(`Invalid column name: ${String(name).slice(0, 64)}`);
+  }
+  return `"${name}"`;
+}
+
+function selectList(select) {
+  if (select === undefined || select === null || select === '*') return '*';
+  if (typeof select !== 'string') throw new BadRequest('Invalid select');
+  const cols = select.split(',')
+    .map((c) => c.trim())
+    .filter(Boolean)
+    .map((c) => (c === '*' ? '*' : ident(c)));
+  return cols.length ? cols.join(', ') : '*';
+}
+
+function rowCount(value) {
+  const n = Number.parseInt(value, 10);
+  if (!Number.isFinite(n) || n < 0) throw new BadRequest('Invalid limit/offset');
+  return n;
+}
+
+async function inTransaction(fn) {
+  const client = await getClient();
+  try {
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 function buildWhere(filters, userId, userCol) {
-  const conditions = [`"${userCol}" = $1`];
+  if (!Array.isArray(filters)) throw new BadRequest('filters must be an array');
+  const conditions = [`${ident(userCol)} = $1`];
   const values = [userId];
   let idx = 2;
 
-  for (const f of (filters || [])) {
+  for (const f of filters) {
+    if (!f || typeof f !== 'object') continue;
     const col = f.col || f.column;
     const op  = f.op || 'eq';
     const val = f.val !== undefined ? f.val : f.value;
     if (!col) continue;
     // user-scope column already handled above — skip to avoid duplicate condition
     if (col === userCol || col === 'user_id' || col === 'author_id') continue;
+    const column = ident(col);
 
     if (OP_MAP[op]) {
-      conditions.push(`"${col}" ${OP_MAP[op]} $${idx}`);
+      conditions.push(`${column} ${OP_MAP[op]} $${idx}`);
       values.push(val); idx++;
     } else if (op === 'like') {
-      conditions.push(`"${col}" LIKE $${idx}`);
+      conditions.push(`${column} LIKE $${idx}`);
       values.push(val); idx++;
     } else if (op === 'ilike') {
-      conditions.push(`"${col}" ILIKE $${idx}`);
+      conditions.push(`${column} ILIKE $${idx}`);
       values.push(val); idx++;
     } else if (op === 'in') {
-      conditions.push(`"${col}" = ANY($${idx})`);
+      conditions.push(`${column} = ANY($${idx})`);
       values.push(val); idx++;
     } else if (op === 'is') {
-      conditions.push(val === null ? `"${col}" IS NULL` : `"${col}" IS NOT NULL`);
+      conditions.push(val === null ? `${column} IS NULL` : `${column} IS NOT NULL`);
     }
   }
 
@@ -197,9 +248,13 @@ router.use(requireAuth);
 
 router.post('/:table', async (req, res) => {
   const { table } = req.params;
-  const conf = BACKEND_TABLES[table];
+  // Own keys only: `constructor`, `__proto__` etc. must not resolve to a config.
+  const conf = Object.hasOwn(BACKEND_TABLES, table) ? BACKEND_TABLES[table] : null;
   if (!conf) {
     return res.status(404).json({ data: null, error: { message: `Table '${table}' not in backend` } });
+  }
+  if (!conf.userCol) {
+    return res.status(403).json({ data: null, error: { message: `Table '${table}' has no per-user scope and cannot be accessed directly` } });
   }
 
   const userId = req.user.id;
@@ -220,18 +275,15 @@ router.post('/:table', async (req, res) => {
     if (operation === 'select') {
       const { where, values } = buildWhere(filters, userId, userCol);
 
-      const cols = selectCols === '*' ? '*'
-        : selectCols.split(',').map(c => `"${c.trim()}"`).join(', ');
-
-      let sql = `SELECT ${cols} FROM ${table} WHERE ${where}`;
+      let sql = `SELECT ${selectList(selectCols)} FROM ${table} WHERE ${where}`;
 
       if (order) {
         const col = order.col || order.column;
         const asc = order.asc !== false && order.ascending !== false;
-        if (col) sql += ` ORDER BY "${col}" ${asc ? 'ASC' : 'DESC'}`;
+        if (col) sql += ` ORDER BY ${ident(col)} ${asc ? 'ASC' : 'DESC'}`;
       }
-      if (limit)  sql += ` LIMIT ${parseInt(limit)}`;
-      if (offset) sql += ` OFFSET ${parseInt(offset)}`;
+      if (limit)  sql += ` LIMIT ${rowCount(limit)}`;
+      if (offset) sql += ` OFFSET ${rowCount(offset)}`;
 
       const result = await query(sql, values);
       if (single) return res.json({ data: result.rows[0] || null, error: null });
@@ -240,18 +292,21 @@ router.post('/:table', async (req, res) => {
     // ── INSERT ────────────────────────────────────────────────────────────────
     } else if (operation === 'insert') {
       const rows = Array.isArray(rowData) ? rowData : [rowData];
-      const inserted = [];
 
-      for (const row of rows) {
-        const r = { ...row, [userCol]: userId };
-        const keys = Object.keys(r).filter(k => r[k] !== undefined);
-        const cols = keys.map(k => `"${k}"`).join(', ');
-        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-        const vals = keys.map(k => r[k]);
-        const sql = `INSERT INTO ${table} (${cols}) VALUES (${placeholders}) RETURNING *`;
-        const result = await query(sql, vals);
-        inserted.push(result.rows[0]);
-      }
+      const inserted = await inTransaction(async (client) => {
+        const out = [];
+        for (const row of rows) {
+          const r = { ...row, [userCol]: userId };
+          const keys = Object.keys(r).filter(k => r[k] !== undefined);
+          const cols = keys.map(ident).join(', ');
+          const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+          const vals = keys.map(k => r[k]);
+          const sql = `INSERT INTO ${table} (${cols}) VALUES (${placeholders}) RETURNING *`;
+          const result = await client.query(sql, vals);
+          out.push(result.rows[0]);
+        }
+        return out;
+      });
 
       return res.json({ data: inserted.length === 1 ? inserted[0] : inserted, error: null });
 
@@ -267,7 +322,7 @@ router.post('/:table', async (req, res) => {
       if (!keys.length) return res.json({ data: [], error: null });
 
       let idx = values.length + 1;
-      const sets = keys.map(k => { const s = `"${k}" = $${idx}`; idx++; return s; }).join(', ');
+      const sets = keys.map(k => { const s = `${ident(k)} = $${idx}`; idx++; return s; }).join(', ');
       const updateVals = [...values, ...keys.map(k => updateData[k])];
 
       const hasUpdatedAt = !TABLES_WITHOUT_UPDATED_AT.has(table);
@@ -285,28 +340,35 @@ router.post('/:table', async (req, res) => {
     // ── UPSERT ────────────────────────────────────────────────────────────────
     } else if (operation === 'upsert') {
       const rows = Array.isArray(rowData) ? rowData : [rowData];
-      const upserted = [];
       // برخی جداول بر اساس ستونی غیر از id تضاد دارند (مثلاً habit_settings بر user_id)
-      const conflictCol = conf.conflictCol || 'id';
+      const conflictCol = ident(conf.conflictCol || 'id');
+      const owner = ident(userCol);
       const hasUpdatedAtUpsert = !TABLES_WITHOUT_UPDATED_AT.has(table);
 
-      for (const row of rows) {
-        const r = { ...row, [userCol]: userId };
-        const keys = Object.keys(r).filter(k => r[k] !== undefined);
-        const cols = keys.map(k => `"${k}"`).join(', ');
-        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-        const vals = keys.map(k => r[k]);
-        const updates = keys
-          .filter(k => k !== conflictCol && k !== userCol && k !== 'created_at')
-          .map(k => `"${k}" = EXCLUDED."${k}"`).join(', ');
+      const upserted = await inTransaction(async (client) => {
+        const out = [];
+        for (const row of rows) {
+          const r = { ...row, [userCol]: userId };
+          const keys = Object.keys(r).filter(k => r[k] !== undefined);
+          const cols = keys.map(ident).join(', ');
+          const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+          const vals = keys.map(k => r[k]);
+          const updates = keys
+            .filter(k => ident(k) !== conflictCol && k !== userCol && k !== 'created_at')
+            .map(k => `${ident(k)} = EXCLUDED.${ident(k)}`).join(', ');
 
-        const updatedAtClause = (hasUpdatedAtUpsert && updates) ? ', updated_at = NOW()' : '';
-        const sql = `INSERT INTO ${table} (${cols}) VALUES (${placeholders})
-          ON CONFLICT (${conflictCol}) DO UPDATE SET ${updates || `"${conflictCol}" = EXCLUDED."${conflictCol}"`}${updatedAtClause}
-          RETURNING *`;
-        const result = await query(sql, vals);
-        upserted.push(result.rows[0]);
-      }
+          const updatedAtClause = (hasUpdatedAtUpsert && updates) ? ', updated_at = NOW()' : '';
+          // The WHERE keeps a conflicting row that belongs to another user untouched.
+          const sql = `INSERT INTO ${table} (${cols}) VALUES (${placeholders})
+            ON CONFLICT (${conflictCol}) DO UPDATE SET ${updates || `${conflictCol} = EXCLUDED.${conflictCol}`}${updatedAtClause}
+            WHERE ${table}.${owner} = EXCLUDED.${owner}
+            RETURNING *`;
+          const result = await client.query(sql, vals);
+          if (!result.rows.length) throw new Forbidden('Row belongs to another user');
+          out.push(result.rows[0]);
+        }
+        return out;
+      });
 
       return res.json({ data: upserted.length === 1 ? upserted[0] : upserted, error: null });
 
@@ -322,6 +384,8 @@ router.post('/:table', async (req, res) => {
     }
 
   } catch (err) {
+    if (err instanceof BadRequest) return res.status(400).json({ data: null, error: { message: err.message } });
+    if (err instanceof Forbidden) return res.status(403).json({ data: null, error: { message: err.message } });
     console.error(`[db/${table}] error:`, err.message);
     return res.status(500).json({ data: null, error: { message: err.message } });
   }
