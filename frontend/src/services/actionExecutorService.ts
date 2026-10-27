@@ -371,13 +371,40 @@ class ActionExecutorService {
       };
     }
 
+    // The assistant sends { title, date, time, location }; map them onto calendar_events columns.
+    const changes = (updates || {}) as { title?: string; date?: string; time?: string; location?: string };
+    const patch: Record<string, unknown> = {};
+    if (changes.title) patch.title = changes.title;
+    if (changes.location) patch.venue_address = changes.location;
+    if (changes.date || changes.time) {
+      const { data: current } = await supabase
+        .from('calendar_events')
+        .select('id, start_date, end_date')
+        .eq('id', targetMeetingId)
+        .single();
+      const oldStart = current?.start_date ? new Date(current.start_date) : new Date();
+      const duration = current?.end_date
+        ? new Date(current.end_date).getTime() - oldStart.getTime()
+        : 60 * 60 * 1000;
+      const start = this.parseDateTime(
+        changes.date || this.toLocalIsoDate(oldStart),
+        changes.time || `${oldStart.getHours()}:${String(oldStart.getMinutes()).padStart(2, '0')}`
+      );
+      patch.start_date = start.toISOString();
+      patch.end_date = new Date(start.getTime() + duration).toISOString();
+    }
+
+    if (Object.keys(patch).length === 0) {
+      return { success: false, message: 'تغییری برای اعمال مشخص نشده', error: 'MISSING_INFO' };
+    }
+
     const { error } = await supabase
       .from('calendar_events')
-      .update(updates as Record<string, unknown>)
+      .update(patch)
       .eq('id', targetMeetingId);
 
     if (error) {
-      await syncService.queueAction('update', 'calendar_event', targetMeetingId, updates as Record<string, unknown>);
+      await syncService.queueAction('update', 'calendar_event', targetMeetingId, patch);
       return {
         success: true,
         message: '✅ تغییرات در تقویم حرفه‌ای ذخیره شد (در انتظار همگام‌سازی)',
@@ -427,18 +454,15 @@ class ActionExecutorService {
     // Save to offline storage
     await offlineStorage.saveTask(taskData);
 
-    // Queue for sync
-    await syncService.queueAction('create', 'task', taskData.id, {
-      ...taskData,
-      user_id: user.id
-    });
-
-    const dueDateStr = parsedDueDate ? ` - موعد: ${this.formatPersianDateTime(parsedDueDate)}` : '';
+    const saved = await this.insertTrackedTask(taskData);
+    const dueDateStr = parsedDueDate ? ` - موعد: ${this.formatPersianDate(parsedDueDate)}` : '';
 
     return {
       success: true,
-      message: `✅ وظیفه "${title}" در لیست وظایف ${domainLabel} اضافه شد${dueDateStr}`,
-      location: `لیست وظایف ${domainLabel}`,
+      message: saved
+        ? `✅ وظیفه «${title}» به کارهای ${domainLabel} اضافه شد${dueDateStr}`
+        : `وظیفه «${title}» روی همین دستگاه ذخیره شد؛ بعد از اتصال دوباره امتحان کنید`,
+      location: 'پیگیری کارها',
       timestamp: new Date(),
       data: taskData
     };
@@ -1068,10 +1092,7 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
 
       try {
         await offlineStorage.saveTask(taskData);
-        await syncService.queueAction('create', 'task', taskData.id, {
-          ...taskData,
-          user_id: user.id
-        });
+        if (!(await this.insertTrackedTask(taskData))) throw new Error('not synced');
         successCount++;
       } catch (err) {
         failCount++;
@@ -1083,7 +1104,7 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
       success: true,
       message: `✅ ${successCount} وظیفه در لیست وظایف ${domainLabel} اضافه شد` + 
                (failCount > 0 ? ` (${failCount} خطا)` : ''),
-      location: `لیست وظایف ${domainLabel}`,
+      location: 'پیگیری کارها',
       timestamp: new Date(),
       data: { successCount, failCount }
     };
@@ -1178,43 +1199,46 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
   }
 
   /**
-   * Parse Persian date/time to JavaScript Date
+   * Parse a date/time to JavaScript Date.
+   * Accepts ISO dates from the assistant (YYYY-MM-DD, optionally with HH:MM),
+   * Persian relative words, and Persian/Arabic digits.
    */
   private parseDateTime(dateStr?: string, timeStr?: string): Date {
-    const now = new Date();
-    const result = new Date(now);
+    const toLatin = (v?: string) => (v || '')
+      .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
+      .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660));
+    const date = toLatin(dateStr).trim();
+    let time = toLatin(timeStr).trim();
+    const result = new Date();
 
-    if (!dateStr) return result;
+    if (!date && !time) return result;
 
-    const lowerDate = dateStr.toLowerCase();
-
-    // Handle relative dates
-    if (lowerDate.includes('امروز')) {
-      // Today - no change needed
-    } else if (lowerDate.includes('فردا')) {
-      result.setDate(result.getDate() + 1);
-    } else if (lowerDate.includes('پس‌فردا') || lowerDate.includes('پسفردا')) {
+    const iso = date.match(/(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s]+(\d{1,2}:\d{2}))?/);
+    if (iso) {
+      result.setFullYear(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+      if (!time && iso[4]) time = iso[4];
+    } else if (/پس[‌\s]?فردا/.test(date)) {
       result.setDate(result.getDate() + 2);
-    } else if (lowerDate.includes('هفته آینده') || lowerDate.includes('هفته بعد')) {
+    } else if (date.includes('فردا')) {
+      result.setDate(result.getDate() + 1);
+    } else if (date.includes('هفته آینده') || date.includes('هفته بعد')) {
       result.setDate(result.getDate() + 7);
-    } else if (lowerDate.includes('آخر هفته')) {
-      // Find next Thursday or Friday
-      const day = result.getDay();
-      const daysUntilThursday = (4 - day + 7) % 7 || 7;
+    } else if (date.includes('آخر هفته')) {
+      // Next Thursday
+      const daysUntilThursday = (4 - result.getDay() + 7) % 7 || 7;
       result.setDate(result.getDate() + daysUntilThursday);
     }
 
-    // Parse time if provided
-    if (timeStr) {
-      const timeMatch = timeStr.match(/(\d{1,2})[:\s]?(\d{2})?/);
+    if (time) {
+      const timeMatch = time.match(/(\d{1,2})(?:\s*:\s*(\d{2}))?/);
       if (timeMatch) {
         let hours = parseInt(timeMatch[1]);
         const minutes = parseInt(timeMatch[2] || '0');
 
         // Handle Persian AM/PM
-        if (timeStr.includes('بعدازظهر') || timeStr.includes('عصر') || timeStr.includes('شب')) {
+        if (/بعد\s*از\s*ظهر|بعدازظهر|عصر|شب/.test(time)) {
           if (hours < 12) hours += 12;
-        } else if (timeStr.includes('صبح') && hours === 12) {
+        } else if (time.includes('صبح') && hours === 12) {
           hours = 0;
         }
 
@@ -1223,6 +1247,32 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
     }
 
     return result;
+  }
+
+  private toLocalIsoDate(date: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+
+  private formatPersianDate(date: Date): string {
+    return new Intl.DateTimeFormat('fa-IR', { month: 'long', day: 'numeric', weekday: 'long' }).format(date);
+  }
+
+  /**
+   * Persist a task to delegation_tasks, the table the assistant reads and the
+   * Delegation page lists. Returns false when the backend is unreachable.
+   */
+  private async insertTrackedTask(task: { title: string; description?: string; dueDate?: string; priority: string; domain: string }): Promise<boolean> {
+    const { error } = await supabase.from('delegation_tasks').insert({
+      title: task.title,
+      description: task.description || null,
+      due_date: task.dueDate || null,
+      priority: task.priority,
+      status: 'pending',
+      domain: task.domain,
+    });
+    if (error) console.error('[ActionExecutor] Task save error:', error);
+    return !error;
   }
 
   /**

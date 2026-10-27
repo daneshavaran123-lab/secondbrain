@@ -20,7 +20,8 @@ import { VoiceToggle } from './VoiceToggle';
 import { useWakeWord } from '@/hooks/useWakeWord';
 import { useRealtimeSpeechRecognition } from '@/hooks/useRealtimeSpeechRecognition';
 import { usePersianTTS } from '@/hooks/usePersianTTS';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
+import { actionExecutor, AssistantAction } from '@/services/actionExecutorService';
 import { cn } from '@/lib/utils';
 
 interface CommandHistory {
@@ -113,16 +114,29 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
 
       if (!response) {
         // Call AI assistant for complex commands
-        const result = await supabase.functions.invoke('smart-assistant', {
-          body: {
+        const res = await apiFetch('/smart-assistant', {
+          method: 'POST',
+          body: JSON.stringify({
             message: command,
             conversationHistory: [],
             context: getCurrentContext()
-          }
+          })
         });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'ارتباط با مورا برقرار نشد');
+        response = data.message || 'متوجه نشدم. لطفاً دوباره بگویید.';
 
-        if (result.error) throw new Error(result.error.message);
-        response = result.data?.message || 'متوجه نشدم. لطفاً دوباره بگویید.';
+        // Carry out what the agent decided; anything sensitive waits for the chat panel.
+        const actions: AssistantAction[] = data.actions || [];
+        const failures: string[] = [];
+        for (const action of actions.filter((a) => a.status === 'pending')) {
+          const result = await actionExecutor.executeAction(action);
+          if (!result.success) failures.push(result.message);
+        }
+        if (failures.length) response += ` اما این مورد انجام نشد: ${failures.join('، ')}`;
+        if (actions.some((a) => a.status === 'needs_confirmation')) {
+          response += ' برای انجام بعضی کارها تأیید شما لازم است؛ لطفاً در پنجره گفتگو تأیید کنید.';
+        }
       }
 
       // Add to history
@@ -220,7 +234,8 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
       currentTime: new Intl.DateTimeFormat('fa-IR', {
         hour: '2-digit',
         minute: '2-digit'
-      }).format(now)
+      }).format(now),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     };
   };
 

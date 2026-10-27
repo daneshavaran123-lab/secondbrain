@@ -1,41 +1,43 @@
 /**
- * Smart Executive Assistant Component
- * Floating chat interface for natural language commands
- * Enhanced with voice input, file upload, TTS, and detailed feedback
+ * Mora assistant panel.
+ * Sends the conversation to the backend agent, runs the actions it returns
+ * (automatically, or after the user confirms) and shows what happened.
  */
 
-import { useState, useRef, useEffect, useCallback, ChangeEvent } from 'react';
-import { MoraRobotIcon } from './MoraRobotIcon';
+import { useState, useRef, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MessageCircle, 
-  X, 
-  Send, 
-  Mic, 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import {
+  X,
+  ArrowUp,
+  Mic,
   MicOff,
   Loader2,
-  CheckCircle,
+  Check,
   AlertCircle,
-  // Sparkles removed - replaced by MoraRobotIcon
-  Calendar,
-  ClipboardList,
-  Bell,
+  Clock,
   Paperclip,
   FileText,
   Image as ImageIcon,
   Table,
-  XCircle,
-  MapPin,
-  Volume2,
-  Maximize2,
-  BarChart3,
   Music,
-  Video
+  Video,
+  AudioLines,
+  BarChart3,
+  SquarePen,
+  Search,
+  CalendarDays,
+  ListTodo,
+  Lightbulb,
+  Ban,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
+import { ASSISTANT_ASK_EVENT, AssistantAskDetail } from '@/lib/assistant';
 import { actionExecutor, AssistantAction, ActionResult } from '@/services/actionExecutorService';
 import { offlineStorage } from '@/services/offlineStorageService';
 import { fileProcessor, ProcessedFile } from '@/services/fileProcessorService';
@@ -43,27 +45,30 @@ import { logAssistantAction } from '@/services/assistantLogService';
 import { useOffline } from '@/hooks/useOffline';
 import { useRealtimeSpeechRecognition } from '@/hooks/useRealtimeSpeechRecognition';
 import { usePersianTTS } from '@/hooks/usePersianTTS';
-import { VoiceToggle } from './VoiceToggle';
+import { useAuth } from '@/contexts/AuthContext';
 import { MoraVoiceAssistant } from './MoraVoiceAssistant';
+import { MoraRobotIcon } from './MoraRobotIcon';
 import { cn } from '@/lib/utils';
+
+type ActionState = 'running' | 'done' | 'failed' | 'awaiting' | 'dismissed';
+
+interface ActionView extends AssistantAction {
+  id: string;
+  state: ActionState;
+  resultMessage?: string;
+}
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
-  actions?: AssistantAction[];
-  questions?: Array<{
-    question: string;
-    options?: string[];
-    field?: string;
-  }>;
+  actions?: ActionView[];
+  steps?: Array<{ tool: string; label: string }>;
+  questions?: Array<{ question: string; options?: string[]; field?: string }>;
   isLoading?: boolean;
-  attachment?: {
-    fileName: string;
-    type: string;
-    preview?: string;
-  };
+  isError?: boolean;
+  attachment?: { fileName: string; type: string };
 }
 
 interface SmartAssistantProps {
@@ -72,835 +77,719 @@ interface SmartAssistantProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+const SESSION_ID = 'current';
+const HISTORY_FOR_AGENT = 16;
+
+const SUGGESTIONS = [
+  { icon: CalendarDays, text: 'برنامه امروزم چیه؟', send: true },
+  { icon: ListTodo, text: 'چه کارهایی عقب افتاده؟', send: true },
+  { icon: Lightbulb, text: 'یه ایده دارم: ', send: false },
+  { icon: Search, text: 'درباره ', hint: 'درباره … چی نوشته بودم؟', send: false },
+];
+
+const STATE_WORD: Record<ActionState, string> = {
+  running: 'در حال انجام',
+  done: 'انجام شد',
+  failed: 'ناموفق',
+  awaiting: 'منتظر تأیید',
+  dismissed: 'رد شد',
+};
+
+const toStoredStatus = (state: ActionState): AssistantAction['status'] =>
+  state === 'done' ? 'completed' : state === 'awaiting' ? 'needs_confirmation' : 'failed';
+
+const fromStoredStatus = (status: string, error?: string): ActionState =>
+  status === 'completed' ? 'done'
+    : status === 'needs_confirmation' ? 'awaiting'
+    : status === 'failed' && error !== 'dismissed' ? 'failed'
+    : 'dismissed';
+
+/** What the agent needs to know about earlier turns, including how actions ended. */
+function historyForAgent(messages: Message[]) {
+  return messages
+    .filter((m) => !m.isLoading && !m.isError && m.content)
+    .slice(-HISTORY_FOR_AGENT)
+    .map((m) => {
+      if (m.role !== 'assistant' || !m.actions?.length) return { role: m.role, content: m.content };
+      const outcome = m.actions
+        .map((a) => `${STATE_WORD[a.state]}: ${a.feedback?.details || a.function}${a.state === 'failed' && a.resultMessage ? ` (${a.resultMessage})` : ''}`)
+        .join('؛ ');
+      return { role: m.role, content: `${m.content}\n\n[نتیجه اقدامات: ${outcome}]` };
+    });
+}
+
+const plainText = (md: string) =>
+  md.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[*_`#>|]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+function getContext() {
+  const now = new Date();
+  return {
+    currentDate: new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(now),
+    currentTime: new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' }).format(now),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    page: typeof document !== 'undefined' ? document.title : undefined,
+  };
+}
+
+function FileIcon({ type, className }: { type: string; className?: string }) {
+  const Icon = type === 'image' ? ImageIcon
+    : type === 'pdf' ? FileText
+    : type === 'excel' || type === 'csv' ? Table
+    : type === 'audio' ? Music
+    : type === 'video' ? Video
+    : Paperclip;
+  return <Icon className={className} />;
+}
+
+function AssistantMarkdown({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        p: ({ children }) => <p className="my-1.5 first:mt-0 last:mb-0">{children}</p>,
+        ul: ({ children }) => <ul className="my-2 list-disc space-y-1 ps-5 marker:text-muted-foreground">{children}</ul>,
+        ol: ({ children }) => <ol className="my-2 list-decimal space-y-1 ps-5 marker:text-muted-foreground">{children}</ol>,
+        strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+        a: ({ children, href }) => (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">{children}</a>
+        ),
+        h1: ({ children }) => <h3 className="mb-1 mt-3 text-sm font-semibold">{children}</h3>,
+        h2: ({ children }) => <h3 className="mb-1 mt-3 text-sm font-semibold">{children}</h3>,
+        h3: ({ children }) => <h3 className="mb-1 mt-3 text-sm font-semibold">{children}</h3>,
+        code: ({ children }) => <code className="rounded bg-muted px-1 py-0.5 text-[0.85em]">{children}</code>,
+        blockquote: ({ children }) => <blockquote className="my-2 border-s-2 border-border ps-3 text-muted-foreground">{children}</blockquote>,
+        table: ({ children }) => (
+          <div className="my-2 overflow-x-auto rounded-lg border border-border">
+            <table className="w-full border-collapse text-xs">{children}</table>
+          </div>
+        ),
+        th: ({ children }) => <th className="border-b border-border bg-muted/50 px-2 py-1.5 text-start font-medium">{children}</th>,
+        td: ({ children }) => <td className="border-b border-border/60 px-2 py-1.5">{children}</td>,
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
+
+function ActionRow({
+  action,
+  disabled,
+  onConfirm,
+  onDismiss,
+}: {
+  action: ActionView;
+  disabled: boolean;
+  onConfirm: () => void;
+  onDismiss: () => void;
+}) {
+  const { state } = action;
+  const icon = {
+    running: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
+    done: <Check className="h-3.5 w-3.5" />,
+    failed: <AlertCircle className="h-3.5 w-3.5" />,
+    awaiting: <Clock className="h-3.5 w-3.5" />,
+    dismissed: <Ban className="h-3.5 w-3.5" />,
+  }[state];
+  const isRead = /^(get|search)_/.test(action.function);
+  const detail = (state === 'failed' || (state === 'done' && isRead)) && action.resultMessage
+    ? action.resultMessage
+    : action.feedback?.details;
+
+  return (
+    <div className={cn(
+      'rounded-xl border px-3 py-2.5 text-xs transition-colors',
+      state === 'awaiting' ? 'border-primary/30 bg-primary/[0.04]' : 'border-border bg-muted/40',
+      state === 'dismissed' && 'opacity-60'
+    )}>
+      <div className="flex items-start gap-2.5">
+        <span className={cn(
+          'mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full',
+          state === 'done' && 'bg-success/15 text-success',
+          state === 'failed' && 'bg-destructive/10 text-destructive',
+          state === 'awaiting' && 'bg-primary/10 text-primary',
+          (state === 'running' || state === 'dismissed') && 'bg-muted text-muted-foreground'
+        )}>
+          {icon}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-foreground">
+            {action.feedback?.location || 'اقدام'}
+            <span className="font-normal text-muted-foreground"> · {STATE_WORD[state]}</span>
+          </p>
+          {detail && <p className="mt-0.5 whitespace-pre-wrap break-words leading-5 text-muted-foreground">{detail}</p>}
+        </div>
+      </div>
+      {state === 'awaiting' && (
+        <div className="mt-2.5 flex justify-end gap-2">
+          <Button size="sm" variant="ghost" className="h-8 rounded-lg px-3 text-xs" onClick={onDismiss} disabled={disabled}>
+            نه، ممنون
+          </Button>
+          <Button size="sm" className="h-8 rounded-lg px-3 text-xs" onClick={onConfirm} disabled={disabled}>
+            تأیید و انجام
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ThinkingDots() {
+  return (
+    <div className="flex items-center gap-2 py-1 text-sm text-muted-foreground" role="status">
+      <span className="flex gap-1" aria-hidden>
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: `${i * 0.15}s` }} />
+        ))}
+      </span>
+      در حال فکر کردن…
+    </div>
+  );
+}
+
 export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange }: SmartAssistantProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  
-  // Use external control if provided, otherwise internal
   const isOpen = externalIsOpen ?? internalIsOpen;
-  const setIsOpen = (open: boolean) => {
-    if (onOpenChange) {
-      onOpenChange(open);
-    } else {
-      setInternalIsOpen(open);
-    }
-  };
-  
-  // State for preventing duplicate action execution
-  const [executingActions, setExecutingActions] = useState<Set<string>>(new Set());
+  const setIsOpen = useCallback((open: boolean) => {
+    if (onOpenChange) onOpenChange(open);
+    else setInternalIsOpen(open);
+  }, [onOpenChange]);
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isOnline } = useOffline();
+  const tts = usePersianTTS();
+
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [pendingActions, setPendingActions] = useState<AssistantAction[]>([]);
   const [attachedFile, setAttachedFile] = useState<ProcessedFile | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
-  
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { isOnline } = useOffline();
-  
-  // Persian TTS hook
-  const tts = usePersianTTS();
+  const [historyLoaded, setHistoryLoaded] = useState(false);
 
-  // Voice recognition hook
+  const messagesRef = useRef<Message[]>([]);
+  messagesRef.current = messages;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     isListening,
-    transcript,
     interimTranscript,
     isSupported: voiceSupported,
     startListening,
     stopListening,
-    resetTranscript
+    resetTranscript,
   } = useRealtimeSpeechRecognition({
     language: 'fa-IR',
     continuous: true,
     interimResults: true,
     onResult: (text, isFinal) => {
-      if (isFinal && text.trim()) {
-        setInput(prev => {
-          const newInput = prev ? `${prev} ${text}` : text;
-          return newInput;
-        });
-      }
-    }
+      if (isFinal && text.trim()) setInput((prev) => (prev ? `${prev} ${text}` : text));
+    },
   });
 
-  // Load conversation history on mount
+  // Restore the last conversation (stored newest-first).
   useEffect(() => {
-    const loadHistory = async () => {
-      const history = await offlineStorage.getRecentHistory(20);
-      if (history.length > 0) {
-        setMessages(history.map(h => ({
-          id: h.id,
-          role: h.role,
-          content: h.content,
-          timestamp: new Date(h.timestamp),
-          actions: h.actions?.map(a => ({
-            function: a.function || a.type || '',
+    offlineStorage.getRecentHistory(30).then((history) => {
+      setMessages(history.reverse().map((h) => ({
+        id: h.id,
+        role: h.role,
+        content: h.content,
+        timestamp: new Date(h.timestamp),
+        actions: h.actions?.map((a, i) => ({
+          id: `${h.id}-${i}`,
+          function: a.function || a.type || '',
+          params: a.params,
+          status: a.status,
+          feedback: (a.result as { feedback?: ActionView['feedback'] } | undefined)?.feedback,
+          resultMessage: a.error && a.error !== 'dismissed' ? a.error : undefined,
+          state: fromStoredStatus(a.status, a.error),
+        })),
+      })));
+    }).catch(() => {}).finally(() => setHistoryLoaded(true));
+  }, []);
+
+  // Persist the conversation (debounced) so it survives reloads.
+  useEffect(() => {
+    if (!historyLoaded) return;
+    const timer = setTimeout(() => {
+      for (const m of messages.slice(-30)) {
+        if (m.isLoading || m.isError) continue;
+        offlineStorage.saveMessage({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          timestamp: m.timestamp.toISOString(),
+          sessionId: SESSION_ID,
+          actions: m.actions?.map((a) => ({
+            function: a.function,
             params: a.params,
-            status: a.status as AssistantAction['status'],
-            result: a.result,
-            error: a.error
-          }))
-        })));
+            status: toStoredStatus(a.state),
+            result: { feedback: a.feedback },
+            error: a.state === 'dismissed' ? 'dismissed' : a.state === 'failed' ? a.resultMessage : undefined,
+          })),
+        }).catch(() => {});
       }
-    };
-    loadHistory();
-  }, []);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [messages, historyLoaded]);
 
-  // Auto-clear messages every 10 minutes for fresh UX
   useEffect(() => {
-    const interval = setInterval(async () => {
-      setMessages([]);
-      await offlineStorage.clearSessionHistory('current');
-      console.log('[SmartAssistant] Auto-cleared messages for fresh UX');
-    }, 10 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  // Focus input when opened
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 300);
-    }
-  }, [isOpen]);
-
-  // Get current date/time context
-  const getContext = useCallback(() => {
-    const now = new Date();
-    const persianFormatter = new Intl.DateTimeFormat('fa-IR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
-    });
-    const timeFormatter = new Intl.DateTimeFormat('fa-IR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-
-    return {
-      currentDate: persianFormatter.format(now),
-      currentTime: timeFormatter.format(now)
+    if (!isOpen) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 250);
+    const onKey = (e: globalThis.KeyboardEvent) => e.key === 'Escape' && setIsOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('keydown', onKey);
     };
+  }, [isOpen, setIsOpen]);
+
+  // Auto-grow the composer.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [input]);
+
+  const updateAction = useCallback((messageId: string, actionId: string, patch: Partial<ActionView>) => {
+    setMessages((prev) => prev.map((m) => m.id !== messageId ? m : {
+      ...m,
+      actions: m.actions?.map((a) => (a.id === actionId ? { ...a, ...patch } : a)),
+    }));
   }, []);
 
-  // Handle file upload
-  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsProcessingFile(true);
+  const runAction = useCallback(async (messageId: string, action: ActionView) => {
+    updateAction(messageId, action.id, { state: 'running' });
+    let result: ActionResult;
     try {
-      const processed = await fileProcessor.processFile(file);
-      setAttachedFile(processed);
+      result = await actionExecutor.executeAction(action);
     } catch (error) {
-      console.error('[SmartAssistant] File processing error:', error);
-      // Show error in chat
-      setMessages(prev => [...prev, {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: `❌ خطا در پردازش فایل: ${error instanceof Error ? error.message : 'خطای ناشناخته'}`,
-        timestamp: new Date()
-      }]);
-    } finally {
-      setIsProcessingFile(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      result = { success: false, message: error instanceof Error ? error.message : 'خطای ناشناخته' };
     }
-  };
 
-  // Remove attached file
-  const removeAttachment = () => {
-    if (attachedFile?.preview) {
-      URL.revokeObjectURL(attachedFile.preview);
-    }
-    setAttachedFile(null);
-  };
+    logAssistantAction({
+      action_type: action.function,
+      summary: result.message || `اجرای ${action.function}`,
+      domain: (action.params as { domain?: string })?.domain ?? null,
+      target_table: null,
+      target_id: null,
+      payload: { params: action.params, result: { success: result.success, location: result.location } },
+      status: result.success ? 'success' : 'failed',
+      error_message: result.success ? null : result.message,
+    });
 
-  // Send message to assistant
-  const sendMessage = async (text: string) => {
-    if ((!text.trim() && !attachedFile) || isLoading) return;
+    updateAction(messageId, action.id, { state: result.success ? 'done' : 'failed', resultMessage: result.message });
+  }, [updateAction]);
 
-    const messageText = text.trim() || (attachedFile ? `فایل ضمیمه: ${attachedFile.fileName}` : '');
+  const clearAttachment = useCallback(() => {
+    setAttachedFile((file) => {
+      if (file?.preview) URL.revokeObjectURL(file.preview);
+      return null;
+    });
+  }, []);
 
+  const sendMessage = useCallback(async (raw: string) => {
+    const text = raw.trim();
+    if ((!text && !attachedFile) || isLoading) return;
+
+    if (isListening) stopListening();
+    const content = text || `فایل ضمیمه: ${attachedFile?.fileName}`;
+    const history = historyForAgent(messagesRef.current);
     const userMessage: Message = {
       id: crypto.randomUUID(),
       role: 'user',
-      content: messageText,
+      content,
       timestamp: new Date(),
-      attachment: attachedFile ? {
-        fileName: attachedFile.fileName,
-        type: attachedFile.type,
-        preview: attachedFile.preview
-      } : undefined
+      attachment: attachedFile ? { fileName: attachedFile.fileName, type: attachedFile.type } : undefined,
     };
+    const replyId = crypto.randomUUID();
 
-    setMessages(prev => [...prev, userMessage]);
+    if (!isOnline) {
+      setMessages((prev) => [...prev, userMessage, {
+        id: replyId, role: 'assistant', timestamp: new Date(), isError: true,
+        content: 'برای گفتگو با مورا به اینترنت نیاز است. پیامتان را بعد از اتصال دوباره بفرستید.',
+      }]);
+      return;
+    }
+
+    const attachment = attachedFile ? {
+      fileName: attachedFile.fileName,
+      type: attachedFile.type,
+      content: attachedFile.text || JSON.stringify(attachedFile.data),
+      summary: attachedFile.summary,
+    } : null;
+
+    setMessages((prev) => [...prev, userMessage, { id: replyId, role: 'assistant', content: '', timestamp: new Date(), isLoading: true }]);
     setInput('');
-    setIsLoading(true);
     resetTranscript();
-
-    // Save to offline storage
-    await offlineStorage.saveMessage({
-      id: userMessage.id,
-      role: 'user',
-      content: userMessage.content,
-      timestamp: userMessage.timestamp.toISOString(),
-      sessionId: 'current'
-    });
-
-    // Add loading message
-    const loadingId = crypto.randomUUID();
-    setMessages(prev => [...prev, {
-      id: loadingId,
-      role: 'assistant',
-      content: '',
-      timestamp: new Date(),
-      isLoading: true
-    }]);
-
-    try {
-      // Build conversation history for context
-      const conversationHistory = messages.slice(-10).map(m => ({
-        role: m.role,
-        content: m.content
-      }));
-
-      // Prepare attachment data if present
-      const attachmentData = attachedFile ? {
-        fileName: attachedFile.fileName,
-        type: attachedFile.type,
-        content: attachedFile.text || JSON.stringify(attachedFile.data),
-        summary: attachedFile.summary
-      } : null;
-
-      const response = await supabase.functions.invoke('smart-assistant', {
-        body: {
-          message: messageText,
-          conversationHistory,
-          context: getContext(),
-          attachment: attachmentData
-        }
-      });
-
-      // Clear attached file after sending
-      removeAttachment();
-
-      if (response.error) {
-        throw new Error(response.error.message || 'خطا در ارتباط با دستیار');
-      }
-
-      const data = response.data;
-
-      // Remove loading message and add response
-      const responseMessage = data.message || 'چگونه می‌توانم کمکتان کنم؟';
-      
-      setMessages(prev => {
-        const filtered = prev.filter(m => m.id !== loadingId);
-        const assistantMessage: Message = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: responseMessage,
-          timestamp: new Date(),
-          actions: data.actions,
-          questions: data.questions
-        };
-
-        // Save to offline storage
-        offlineStorage.saveMessage({
-          id: assistantMessage.id,
-          role: 'assistant',
-          content: assistantMessage.content,
-          actions: assistantMessage.actions?.map(a => ({
-            type: a.function,
-            function: a.function,
-            params: a.params,
-            status: a.status
-          })),
-          timestamp: assistantMessage.timestamp.toISOString(),
-          sessionId: 'current'
-        });
-
-        return [...filtered, assistantMessage];
-      });
-
-      // Speak the response if TTS is enabled
-      if (tts.isEnabled && responseMessage) {
-        tts.speak(responseMessage);
-      }
-
-      // Auto-execute safe actions, store sensitive ones for confirmation
-      if (data.actions && data.actions.length > 0) {
-        const safeActions = [
-          'create_meeting', 'create_task', 'create_reminder',
-          'save_for_later', 'save_journal_entry', 'save_gratitude',
-          'create_contact', 'save_meeting_summary', 'save_meeting_recording',
-          'create_tasks_batch', 'import_contacts_batch',
-          // Domain-specific safe actions
-          'save_health_metrics',    // سلامت
-          'add_resume_item',        // رزومه
-          'create_csr_project',     // مسئولیت اجتماعی
-          'save_idea',              // ایده‌ها
-          'save_knowledge',         // مدیریت دانش
-          'complete_habit',         // عادت‌ها
-          'get_pending_tasks',      // وظایف معوق
-          // NEW: Legal & Organization
-          'create_legal_case',      // پرونده حقوقی
-          'save_lawyer_note',       // یادداشت حقوقی
-          'create_organization_mission' // ماموریت سازمانی
-        ];
-        
-        const sensitiveActions = ['cancel_meeting', 'update_meeting', 'delete_task', 'send_sms'];
-        
-        for (const action of data.actions) {
-          if (safeActions.includes(action.function)) {
-            // Auto-execute safe actions
-            const result = await actionExecutor.executeAction(action);
-
-            // ثبت لاگ گزارش‌گیری
-            logAssistantAction({
-              action_type: action.function,
-              summary: result.message || `اجرای ${action.function}`,
-              domain: (action.params as any)?.domain ?? null,
-              target_table: (result as any)?.targetTable ?? null,
-              target_id: (result as any)?.targetId ?? null,
-              payload: { params: action.params, result: { success: result.success, location: result.location } },
-              status: result.success ? 'success' : 'failed',
-              error_message: result.success ? null : result.message,
-            });
-
-            // Only add result message if different from AI response message
-            // to avoid duplicate messages
-            const resultMessage = result.location 
-              ? `${result.message}\n📍 ${result.location}`
-              : result.message;
-            
-            // Check if AI response already contains similar confirmation
-            const aiMessageHasConfirmation = data.message && (
-              data.message.includes('انجام شد') || 
-              data.message.includes('ذخیره شد') ||
-              data.message.includes('ایجاد شد') ||
-              data.message.includes('ثبت شد')
-            );
-            
-            // Only show separate result message if AI didn't already confirm
-            // or if there was an error
-            if (!result.success || !aiMessageHasConfirmation) {
-              setMessages(prev => [...prev, {
-                id: crypto.randomUUID(),
-                role: 'assistant',
-                content: result.success ? resultMessage : `❌ ${result.message}`,
-                timestamp: new Date()
-              }]);
-            }
-          } else if (sensitiveActions.includes(action.function)) {
-            // Store sensitive actions for confirmation
-            setPendingActions(prev => [...prev, action]);
-          }
-        }
-      }
-
-    } catch (error) {
-      console.error('[SmartAssistant] Error:', error);
-      setMessages(prev => {
-        const filtered = prev.filter(m => m.id !== loadingId);
-        return [...filtered, {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: error instanceof Error ? error.message : 'متأسفانه مشکلی پیش آمد. لطفاً دوباره تلاش کنید.',
-          timestamp: new Date()
-        }];
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Execute pending action
-  const executeAction = async (action: AssistantAction) => {
+    clearAttachment();
     setIsLoading(true);
+
     try {
-      const result = await actionExecutor.executeAction(action);
-
-      logAssistantAction({
-        action_type: action.function,
-        summary: result.message || `اجرای ${action.function}`,
-        domain: (action.params as any)?.domain ?? null,
-        target_table: (result as any)?.targetTable ?? null,
-        target_id: (result as any)?.targetId ?? null,
-        payload: { params: action.params, result: { success: result.success, location: result.location } },
-        status: result.success ? 'success' : 'failed',
-        error_message: result.success ? null : result.message,
+      const res = await apiFetch('/smart-assistant', {
+        method: 'POST',
+        body: JSON.stringify({ message: content, conversationHistory: history, context: getContext(), attachment }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) throw new Error('نشست شما منقضی شده؛ لطفاً دوباره وارد شوید.');
+      if (!res.ok) throw new Error(data.error || data.message || 'ارتباط با مورا برقرار نشد. دوباره امتحان کنید.');
 
-      // Add result message with location info
-      const resultMessage = result.location 
-        ? `${result.message}\n📍 ${result.location}`
-        : result.message;
-
-      setMessages(prev => [...prev, {
-        id: crypto.randomUUID(),
+      const actions: ActionView[] = (data.actions || []).map((a: AssistantAction & { id?: string }, i: number) => ({
+        ...a,
+        id: a.id || `${replyId}-${i}`,
+        state: a.status === 'needs_confirmation' ? 'awaiting' : 'running',
+      }));
+      const reply: Message = {
+        id: replyId,
         role: 'assistant',
-        content: result.success 
-          ? resultMessage
-          : `❌ ${result.message}`,
-        timestamp: new Date()
-      }]);
+        content: data.message || '',
+        timestamp: new Date(),
+        actions,
+        steps: data.steps,
+        questions: data.questions,
+      };
+      setMessages((prev) => prev.map((m) => (m.id === replyId ? reply : m)));
 
-      // Remove from pending
-      setPendingActions(prev => prev.filter(a => a !== action));
+      if (tts.isEnabled && reply.content) tts.speak(plainText(reply.content));
 
+      for (const action of actions) {
+        if (action.state === 'running') await runAction(replyId, action);
+      }
     } catch (error) {
-      setMessages(prev => [...prev, {
-        id: crypto.randomUUID(),
+      setMessages((prev) => prev.map((m) => m.id !== replyId ? m : {
+        id: replyId,
         role: 'assistant',
-        content: `❌ خطا در اجرای عملیات: ${error instanceof Error ? error.message : 'خطای ناشناخته'}`,
-        timestamp: new Date()
-      }]);
+        timestamp: new Date(),
+        isError: true,
+        content: error instanceof Error ? error.message : 'متأسفانه مشکلی پیش آمد. لطفاً دوباره تلاش کنید.',
+      }));
     } finally {
       setIsLoading(false);
     }
+  }, [attachedFile, isLoading, isListening, stopListening, isOnline, resetTranscript, clearAttachment, tts, runAction]);
+
+  // Let other parts of the app open the assistant or ask it something.
+  const sendRef = useRef(sendMessage);
+  sendRef.current = sendMessage;
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const { text = '', send = true } = (e as CustomEvent<AssistantAskDetail>).detail || {};
+      setIsOpen(true);
+      if (send && text.trim()) sendRef.current(text);
+      else if (text) setInput(text);
+    };
+    window.addEventListener(ASSISTANT_ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ASSISTANT_ASK_EVENT, onAsk);
+  }, [setIsOpen]);
+
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsProcessingFile(true);
+    try {
+      setAttachedFile(await fileProcessor.processFile(file));
+    } catch (error) {
+      setMessages((prev) => [...prev, {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        isError: true,
+        timestamp: new Date(),
+        content: `پردازش فایل ممکن نشد: ${error instanceof Error ? error.message : 'خطای ناشناخته'}`,
+      }]);
+    } finally {
+      setIsProcessingFile(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
-  // Handle quick action selection
-  const handleQuickOption = (option: string) => {
-    setInput(option);
-    sendMessage(option);
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      sendMessage(input);
+    }
   };
 
-  // Toggle voice input
-  const toggleVoice = () => {
-    if (isListening) {
-      stopListening();
+  const startNewChat = async () => {
+    tts.stop();
+    setMessages([]);
+    setInput('');
+    clearAttachment();
+    await offlineStorage.clearSessionHistory(SESSION_ID).catch(() => {});
+    inputRef.current?.focus();
+  };
+
+  const pickSuggestion = (s: (typeof SUGGESTIONS)[number]) => {
+    if (s.send) {
+      sendMessage(s.text);
     } else {
-      startListening();
+      setInput(s.text);
+      inputRef.current?.focus();
     }
   };
 
-  // Get file icon based on type
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case 'image': return <ImageIcon className="h-4 w-4" />;
-      case 'pdf': return <FileText className="h-4 w-4" />;
-      case 'excel':
-      case 'csv': return <Table className="h-4 w-4" />;
-      case 'audio': return <Music className="h-4 w-4" />;
-      case 'video': return <Video className="h-4 w-4" />;
-      default: return <Paperclip className="h-4 w-4" />;
-    }
-  };
-
-  // Quick suggestions
-  const suggestions = [
-    { icon: Calendar, text: 'قرارهای امروز', color: 'text-primary' },
-    { icon: ClipboardList, text: 'وظایف عقب‌افتاده', color: 'text-warning' },
-    { icon: Bell, text: 'یادآوری جدید', color: 'text-success' },
-  ];
+  const firstName = user?.first_name || user?.display_name?.split(' ')[0] || '';
+  const lastAssistantId = [...messages].reverse().find((m) => m.role === 'assistant')?.id;
+  const status = !isOnline ? 'آفلاین' : isLoading ? 'در حال فکر کردن…' : tts.isSpeaking ? 'در حال صحبت' : 'آماده';
 
   return (
     <>
-      {/* Floating Action Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
-            initial={{ scale: 0, opacity: 0 }}
+            initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            whileTap={{ scale: 0.94 }}
             onClick={() => setIsOpen(true)}
+            aria-label="گفتگو با مورا"
             className={cn(
-              'fixed bottom-24 left-6 z-50 md:bottom-8',
-              'w-14 h-14 rounded-full',
-              'glass-button shadow-lg',
-              'flex items-center justify-center',
-              'text-primary hover:glow-primary',
-              'transition-all duration-300',
+              'fixed bottom-6 left-6 z-50 hidden md:flex',
+              'h-12 items-center gap-2 rounded-full ps-3 pe-4',
+              'bg-foreground text-background shadow-lg shadow-foreground/10',
+              'transition-transform hover:-translate-y-0.5',
               className
             )}
           >
-            <MoraRobotIcon size="lg" />
+            <MoraRobotIcon size="sm" animate={false} />
+            <span className="text-sm font-medium">از مورا بپرس</span>
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* Assistant Panel */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+          <motion.aside
+            aria-label="دستیار مورا"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
             className={cn(
-              'fixed bottom-4 left-4 right-4 z-50',
-              'md:bottom-8 md:left-8 md:right-auto md:w-[440px]',
-              'max-h-[85vh] rounded-3xl overflow-hidden',
-              // Liquid Glass Styles
-              'bg-white/70 dark:bg-slate-900/70',
-              'backdrop-blur-2xl backdrop-saturate-150',
-              'border border-white/50 dark:border-white/10',
-              'shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)]',
-              'dark:shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)]',
-              'flex flex-col'
+              'fixed z-[60] flex flex-col overflow-hidden bg-background text-foreground',
+              'inset-0 sm:inset-auto sm:bottom-6 sm:left-6',
+              'sm:h-[min(720px,calc(100dvh-3rem))] sm:w-[420px]',
+              'sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl sm:shadow-foreground/10'
             )}
           >
-            {/* Header - Liquid Glass */}
-            <div className="flex items-center justify-between p-4 border-b border-white/30 dark:border-white/10 bg-white/30 dark:bg-slate-800/30">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <MoraRobotIcon size="sm" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">دستیار هوشمند مورا</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {isOnline ? 'آنلاین' : 'آفلاین - حالت محدود'}
-                    {tts.isSpeaking && ' • 🔊 در حال صحبت'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                {/* Reports link */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setIsOpen(false);
-                    window.location.href = '/assistant-reports';
-                  }}
-                  className="hover:bg-muted/50"
-                  title="گزارش‌های دستیار"
-                >
-                  <BarChart3 className="h-5 w-5" />
-                </Button>
-                {/* Voice Mode Toggle */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsVoiceMode(true)}
-                  className="hover:bg-muted/50"
-                  title="حالت صوتی تمام‌صفحه"
-                >
-                  <Maximize2 className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="hover:bg-muted/50"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Messages - Improved Scroll */}
-            <ScrollArea 
-              ref={scrollRef}
-              className="flex-1 p-4 min-h-[200px] max-h-[50vh] overflow-y-auto"
+            {/* Header */}
+            <header
+              className="flex items-center justify-between gap-2 border-b border-border px-4 py-3"
+              style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
             >
-              {messages.length === 0 ? (
-                <div className="text-center py-8">
-                  <MoraRobotIcon size="lg" className="mx-auto text-primary/40 mb-4 h-12 w-12" />
-                  <p className="text-muted-foreground mb-4">
-                    سلام! من دستیار هوشمند شما هستم.
-                    <br />
-                    چطور می‌توانم کمکتان کنم؟
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+                  <MoraRobotIcon size="sm" animate={false} />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold leading-5">مورا</h2>
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className={cn('h-1.5 w-1.5 rounded-full', isOnline ? 'bg-success' : 'bg-muted-foreground')} />
+                    {status}
                   </p>
-                  
-                  {/* Quick suggestions */}
-                  <div className="flex flex-wrap justify-center gap-2 mt-4">
-                    {suggestions.map((suggestion, idx) => (
+                </div>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground" onClick={startNewChat} title="گفتگوی جدید" aria-label="گفتگوی جدید" disabled={isLoading}>
+                  <SquarePen className="h-[18px] w-[18px]" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground" onClick={() => setIsVoiceMode(true)} title="حالت صوتی" aria-label="حالت صوتی">
+                  <AudioLines className="h-[18px] w-[18px]" />
+                </Button>
+                <Button
+                  variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground"
+                  onClick={() => { setIsOpen(false); navigate('/assistant-reports'); }}
+                  title="گزارش‌های دستیار" aria-label="گزارش‌های دستیار"
+                >
+                  <BarChart3 className="h-[18px] w-[18px]" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground" onClick={() => setIsOpen(false)} title="بستن" aria-label="بستن">
+                  <X className="h-[18px] w-[18px]" />
+                </Button>
+              </div>
+            </header>
+
+            {/* Conversation */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain px-4 py-5">
+              {messages.length === 0 ? (
+                <div className="flex h-full flex-col justify-end gap-6 pb-2">
+                  <div>
+                    <p className="text-xl font-semibold tracking-tight">سلام{firstName ? ` ${firstName}` : ''} 👋</p>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                      هر چیزی که در ذهن دارید بنویسید یا بگویید؛ ثبتش می‌کنم، یادم می‌ماند و وقتی لازم شد پیدایش می‌کنم.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SUGGESTIONS.map((s) => (
                       <button
-                        key={idx}
-                        onClick={() => handleQuickOption(suggestion.text)}
-                        className={cn(
-                          'flex items-center gap-2 px-3 py-2 rounded-full',
-                          'glass-button text-sm hover:scale-105 transition-transform',
-                          suggestion.color
-                        )}
+                        key={s.text}
+                        onClick={() => pickSuggestion(s)}
+                        className="flex flex-col items-start gap-2 rounded-xl border border-border p-3 text-start text-sm transition-colors hover:bg-muted/60"
                       >
-                        <suggestion.icon className="h-4 w-4" />
-                        <span>{suggestion.text}</span>
+                        <s.icon className="h-4 w-4 text-muted-foreground" />
+                        <span className="leading-5">{s.hint || s.text}</span>
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={cn(
-                        'flex',
-                        message.role === 'user' ? 'justify-start' : 'justify-end'
+                    <div key={message.id} className={cn('flex', message.role === 'user' ? 'justify-start' : 'justify-end')}>
+                      {message.role === 'user' ? (
+                        <div className="max-w-[85%] rounded-2xl rounded-ss-md bg-muted px-3.5 py-2.5 text-sm leading-6">
+                          {message.attachment && (
+                            <div className="mb-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <FileIcon type={message.attachment.type} className="h-3.5 w-3.5" />
+                              <span className="truncate">{message.attachment.fileName}</span>
+                            </div>
+                          )}
+                          <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                        </div>
+                      ) : (
+                        <div className="w-full min-w-0 space-y-2.5">
+                          {message.steps && message.steps.length > 0 && (
+                            <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+                              <Search className="h-3 w-3" />
+                              {message.steps.map((s) => s.label).join(' · ')}
+                            </p>
+                          )}
+
+                          {message.isLoading ? (
+                            <ThinkingDots />
+                          ) : (
+                            <div className={cn('break-words text-sm leading-7', message.isError && 'flex items-start gap-2 text-destructive')}>
+                              {message.isError && <AlertCircle className="mt-1.5 h-4 w-4 shrink-0" />}
+                              {message.isError ? <p>{message.content}</p> : <AssistantMarkdown content={message.content} />}
+                            </div>
+                          )}
+
+                          {message.actions && message.actions.length > 0 && (
+                            <div className="space-y-2">
+                              {message.actions.map((action) => (
+                                <ActionRow
+                                  key={action.id}
+                                  action={action}
+                                  disabled={isLoading}
+                                  onConfirm={() => runAction(message.id, action)}
+                                  onDismiss={() => updateAction(message.id, action.id, { state: 'dismissed' })}
+                                />
+                              ))}
+                            </div>
+                          )}
+
+                          {message.id === lastAssistantId && message.questions?.some((q) => q.options?.length) && (
+                            <div className="flex flex-wrap gap-2">
+                              {message.questions.flatMap((q) => q.options || []).map((option) => (
+                                <button
+                                  key={option}
+                                  onClick={() => sendMessage(option)}
+                                  disabled={isLoading}
+                                  className="rounded-full border border-border px-3 py-1.5 text-xs transition-colors hover:bg-muted disabled:opacity-50"
+                                >
+                                  {option}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
-                    >
-                      <div
-                        className={cn(
-                          'max-w-[85%] rounded-2xl px-4 py-3',
-                          message.role === 'user'
-                            ? 'bg-primary text-primary-foreground rounded-br-md'
-                            : 'glass-card rounded-bl-md'
-                        )}
-                      >
-                        {message.isLoading ? (
-                          <div className="flex items-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <span className="text-sm">در حال فکر کردن...</span>
-                          </div>
-                        ) : (
-                          <>
-                            {/* Attachment preview */}
-                            {message.attachment && (
-                              <div className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-background/30">
-                                {getFileIcon(message.attachment.type)}
-                                <span className="text-xs truncate">{message.attachment.fileName}</span>
-                              </div>
-                            )}
-
-                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                            
-                            {/* Questions with options */}
-                            {message.questions && message.questions.length > 0 && (
-                              <div className="mt-3 space-y-2">
-                                {message.questions.map((q, idx) => (
-                                  <div key={idx} className="space-y-2">
-                                    {q.options && q.options.length > 0 && (
-                                      <div className="flex flex-wrap gap-2">
-                                        {q.options.map((option, optIdx) => (
-                                          <button
-                                            key={optIdx}
-                                            onClick={() => handleQuickOption(option)}
-                                            className="px-3 py-1.5 text-xs rounded-full glass-button hover:bg-primary/20"
-                                          >
-                                            {option}
-                                          </button>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Action confirmations with feedback */}
-                            {message.actions && message.actions.length > 0 && (
-                              <div className="mt-3 space-y-2">
-                                {message.actions.map((action, idx) => (
-                                  <div 
-                                    key={idx}
-                                    className="p-3 rounded-lg bg-background/50 space-y-2"
-                                  >
-                                    <div className="flex items-center justify-between gap-2">
-                                      <span className="text-xs font-medium">
-                                        {action.function === 'create_meeting' && '📅 ایجاد قرار'}
-                                        {action.function === 'cancel_meeting' && '❌ لغو قرار'}
-                                        {action.function === 'update_meeting' && '✏️ ویرایش قرار'}
-                                        {action.function === 'create_task' && '✅ ایجاد وظیفه'}
-                                        {action.function === 'send_notification' && '📨 ارسال پیام'}
-                                        {action.function === 'create_reminder' && '🔔 یادآوری'}
-                                        {action.function === 'save_journal_entry' && '📝 دل‌نوشته'}
-                                        {action.function === 'save_gratitude' && '🙏 شکرگذاری'}
-                                        {action.function === 'save_meeting_summary' && '📋 صورتجلسه'}
-                                        {action.function === 'create_contact' && '👤 ایجاد مخاطب'}
-                                        {action.function === 'save_meeting_recording' && '🎤 ذخیره ضبط'}
-                                        {action.function === 'create_tasks_batch' && '✅ ایجاد وظایف'}
-                                        {action.function === 'import_contacts_batch' && '👥 ورود مخاطبین'}
-                                        {action.function === 'save_for_later' && '📚 ذخیره برای بعد'}
-                                        {action.function === 'send_sms' && `📱 ارسال پیامک به ${(action.params as any)?.phone || ''}`}
-                                      </span>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-7 px-2 text-xs"
-                                        onClick={() => executeAction(action)}
-                                        disabled={isLoading}
-                                      >
-                                        <CheckCircle className="h-3.5 w-3.5 ml-1" />
-                                        تأیید
-                                      </Button>
-                                    </div>
-                                    
-                                    {/* Feedback info */}
-                                    {action.feedback && (
-                                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <MapPin className="h-3 w-3" />
-                                        <span>{action.feedback.location}</span>
-                                        {action.feedback.details && (
-                                          <span>• {action.feedback.details}</span>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
                     </div>
                   ))}
                 </div>
               )}
-            </ScrollArea>
+            </div>
 
-            {/* Attached file preview */}
-            {attachedFile && (
-              <div className="px-4 py-2 border-t border-border/50">
-                <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-2">
-                    {getFileIcon(attachedFile.type)}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium truncate">{attachedFile.fileName}</p>
-                      <p className="text-xs text-muted-foreground">{attachedFile.summary}</p>
+            {/* Composer */}
+            <div className="border-t border-border p-3" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
+              {(attachedFile || interimTranscript) && (
+                <div className="mb-2 space-y-1.5">
+                  {attachedFile && (
+                    <div className="flex items-center gap-2 rounded-lg bg-muted px-2.5 py-1.5 text-xs">
+                      <FileIcon type={attachedFile.type} className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1 truncate">{attachedFile.fileName}</span>
+                      <button onClick={clearAttachment} className="text-muted-foreground hover:text-foreground" aria-label="حذف فایل">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                  </div>
+                  )}
+                  {interimTranscript && <p className="px-1 text-xs text-muted-foreground">{interimTranscript}…</p>}
+                </div>
+              )}
+
+              <div className="rounded-2xl border border-border bg-muted/30 transition-colors focus-within:border-foreground/20 focus-within:bg-background">
+                <textarea
+                  ref={inputRef}
+                  rows={1}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={isListening ? 'در حال شنیدن…' : 'از مورا بپرس یا چیزی ثبت کن…'}
+                  className="block max-h-40 w-full resize-none bg-transparent px-3.5 pt-3 text-[15px] leading-6 outline-none placeholder:text-muted-foreground/70 focus-visible:outline-none"
+                />
+                <div className="flex items-center gap-1 px-2 pb-2 pt-1">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 shrink-0"
-                    onClick={removeAttachment}
+                    variant="ghost" size="icon"
+                    className="h-8 w-8 rounded-lg text-muted-foreground"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isProcessingFile}
+                    title="پیوست فایل" aria-label="پیوست فایل"
                   >
-                    <XCircle className="h-4 w-4" />
+                    {isProcessingFile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,audio/*,.pdf,.xlsx,.xls,.csv,.mp3,.wav,.m4a,.webm"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  {voiceSupported && (
+                    <Button
+                      variant="ghost" size="icon"
+                      className={cn('h-8 w-8 rounded-lg text-muted-foreground', isListening && 'bg-destructive/10 text-destructive')}
+                      onClick={() => (isListening ? stopListening() : startListening())}
+                      title={isListening ? 'توقف' : 'گفتن به‌جای نوشتن'} aria-label="ورودی صوتی"
+                    >
+                      {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                    </Button>
+                  )}
+                  {tts.isSupported && (
+                    <Button
+                      variant="ghost" size="icon"
+                      className={cn('h-8 w-8 rounded-lg text-muted-foreground', tts.isEnabled && 'text-foreground')}
+                      onClick={() => { if (tts.isEnabled) tts.stop(); tts.toggleEnabled(); }}
+                      title={tts.isEnabled ? 'پاسخ صوتی روشن است' : 'پاسخ صوتی خاموش است'}
+                      aria-label="پاسخ صوتی" aria-pressed={tts.isEnabled}
+                    >
+                      {tts.isEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                    </Button>
+                  )}
+                  <Button
+                    size="icon"
+                    onClick={() => sendMessage(input)}
+                    disabled={(!input.trim() && !attachedFile) || isLoading}
+                    className="ms-auto h-8 w-8 rounded-lg"
+                    aria-label="ارسال"
+                  >
+                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
-            )}
-
-            {/* Interim transcript display */}
-            {interimTranscript && (
-              <div className="px-4 py-2 border-t border-border/50">
-                <p className="text-xs text-muted-foreground italic">
-                  🎤 {interimTranscript}...
-                </p>
-              </div>
-            )}
-
-            {/* Voice Toggle + Input - Liquid Glass Design */}
-            <div className="p-4 border-t border-white/20 dark:border-white/10 space-y-3 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm">
-              {/* TTS Toggle */}
-              <div className="flex items-center justify-between">
-                <VoiceToggle size="sm" showLabel={true} />
-                {tts.isSpeaking && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => tts.stop()}
-                    className="text-xs text-muted-foreground hover:bg-white/20"
-                  >
-                    متوقف کردن
-                  </Button>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-3">
-                {/* Voice button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleVoice}
-                  disabled={!voiceSupported}
-                  className={cn(
-                    'shrink-0 h-10 w-10 rounded-xl',
-                    'bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm',
-                    'border border-white/30 dark:border-white/10',
-                    'hover:bg-white/60 dark:hover:bg-slate-700/60',
-                    'transition-all duration-200',
-                    isListening && 'bg-destructive/20 text-destructive animate-pulse border-destructive/30'
-                  )}
-                >
-                  {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-                </Button>
-
-                {/* File upload button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isProcessingFile}
-                  className={cn(
-                    'shrink-0 h-10 w-10 rounded-xl',
-                    'bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm',
-                    'border border-white/30 dark:border-white/10',
-                    'hover:bg-white/60 dark:hover:bg-slate-700/60',
-                    'transition-all duration-200'
-                  )}
-                >
-                  {isProcessingFile ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Paperclip className="h-5 w-5" />
-                  )}
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,audio/*,.pdf,.xlsx,.xls,.csv,.mp3,.wav,.m4a,.webm"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                
-                <Input
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
-                  placeholder="اینجا بنویسید یا صحبت کنید..."
-                  className={cn(
-                    'flex-1 h-11 rounded-2xl',
-                    'bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm',
-                    'border border-white/40 dark:border-white/10',
-                    'focus:ring-2 focus:ring-primary/30 focus:border-primary/50',
-                    'placeholder:text-muted-foreground/70',
-                    'transition-all duration-200'
-                  )}
-                  disabled={isLoading}
-                />
-                
-                {/* Prominent Send Button */}
-                <Button
-                  onClick={() => sendMessage(input)}
-                  disabled={(!input.trim() && !attachedFile) || isLoading}
-                  className={cn(
-                    'shrink-0 h-12 w-12 rounded-2xl',
-                    'bg-gradient-to-br from-primary to-primary/80',
-                    'hover:from-primary/90 hover:to-primary/70',
-                    'shadow-lg shadow-primary/25',
-                    'hover:shadow-xl hover:shadow-primary/30',
-                    'border border-white/20',
-                    'transition-all duration-300',
-                    'disabled:opacity-50 disabled:shadow-none'
-                  )}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-white" />
-                  ) : (
-                    <Send className="h-5 w-5 text-white" />
-                  )}
-                </Button>
-              </div>
             </div>
-          </motion.div>
+          </motion.aside>
         )}
       </AnimatePresence>
 
-      {/* Full-screen Voice Mode */}
       <AnimatePresence>
-        {isVoiceMode && (
-          <MoraVoiceAssistant onClose={() => setIsVoiceMode(false)} />
-        )}
+        {isVoiceMode && <MoraVoiceAssistant onClose={() => setIsVoiceMode(false)} />}
       </AnimatePresence>
     </>
   );

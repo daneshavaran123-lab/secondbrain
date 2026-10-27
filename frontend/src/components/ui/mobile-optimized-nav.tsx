@@ -1,115 +1,67 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Home,
-  CheckSquare,
-  Users,
-  Brain,
-  Calendar,
-  Settings,
-  Plus
-} from 'lucide-react';
+import { Home, CheckSquare, Briefcase, Calendar } from 'lucide-react';
+import { askAssistant } from '@/lib/assistant';
+import { MoraRobotIcon } from '@/components/assistant/MoraRobotIcon';
 
 interface MobileOptimizedNavProps {
   className?: string;
 }
 
+const NAV_ITEMS = [
+  { id: 'home', label: 'خانه', icon: Home, route: '/' },
+  { id: 'personal', label: 'شخصی', icon: CheckSquare, route: '/personal-planning' },
+  { id: 'professional', label: 'حرفه‌ای', icon: Briefcase, route: '/professional-planning' },
+  { id: 'calendar', label: 'تقویم', icon: Calendar, route: '/calendar' },
+];
+
 export function MobileOptimizedNav({ className }: MobileOptimizedNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navItems = [
-    {
-      id: 'home',
-      label: 'خانه',
-      icon: Home,
-      route: '/',
-      color: 'text-primary'
-    },
-    {
-      id: 'personal',
-      label: 'شخصی',
-      icon: CheckSquare,
-      route: '/personal-planning',
-      color: 'text-medical-green'
-    },
-    {
-      id: 'professional',
-      label: 'حرفه‌ای',
-      icon: Users,
-      route: '/professional-planning',
-      color: 'text-medical-blue'
-    },
-    {
-      id: 'ai',
-      label: 'هوشمند',
-      icon: Brain,
-      route: '/ai-chat',
-      color: 'text-tech-cyan'
-    },
-    {
-      id: 'calendar',
-      label: 'تقویم',
-      icon: Calendar,
-      route: '/calendar',
-      color: 'text-medical-amber'
-    }
-  ];
-
-  const isActive = (route: string) => location.pathname === route;
+  const renderItem = (item: (typeof NAV_ITEMS)[number]) => {
+    const active = location.pathname === item.route;
+    return (
+      <button
+        key={item.id}
+        onClick={() => navigate(item.route)}
+        aria-current={active ? 'page' : undefined}
+        className={cn(
+          'flex flex-1 flex-col items-center gap-1 py-1.5 text-[11px] font-medium transition-colors',
+          active ? 'text-foreground' : 'text-muted-foreground'
+        )}
+      >
+        <item.icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.75} />
+        {item.label}
+      </button>
+    );
+  };
 
   return (
-    <div className={cn(
-      "fixed bottom-0 left-0 right-0 z-50",
-      "bg-card/95 backdrop-blur-sm border-t border-border/50",
-      "safe-area-pb",
-      className
-    )}>
-      <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map((item) => (
+    <nav
+      className={cn(
+        'fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur',
+        className
+      )}
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      <div className="flex items-center px-2 pt-1.5 pb-1">
+        {NAV_ITEMS.slice(0, 2).map(renderItem)}
+        <div className="flex flex-1 justify-center">
           <button
-            key={item.id}
-            onClick={() => navigate(item.route)}
-            className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200",
-              "min-w-[60px] flex-1 max-w-[80px]",
-              isActive(item.route)
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            )}
+            onClick={() => {
+              if ('vibrate' in navigator) navigator.vibrate(20);
+              askAssistant();
+            }}
+            aria-label="گفتگو با مورا"
+            className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background shadow-lg shadow-foreground/15 transition-transform active:scale-95"
           >
-            <item.icon className={cn(
-              "w-5 h-5 transition-colors",
-              isActive(item.route) && item.color
-            )} />
-            <span className="text-xs font-medium truncate">
-              {item.label}
-            </span>
+            <MoraRobotIcon size="sm" animate={false} />
           </button>
-        ))}
-        
-        {/* Quick Add FAB */}
-        <button 
-          onClick={() => {
-            // Add haptic feedback for native apps
-            if ('vibrate' in navigator) {
-              navigator.vibrate(50);
-            }
-            // Navigate to quick actions
-            navigate('/personal-planning');
-          }}
-          className={cn(
-            "relative flex items-center justify-center",
-            "w-12 h-12 rounded-full bg-gradient-primary text-primary-foreground",
-            "shadow-glow hover:shadow-luxury-glow transition-all duration-300",
-            "hover:scale-105 active:scale-95",
-            "touch-manipulation" // Improves touch responsiveness
-          )}
-        >
-          <Plus className="w-6 h-6" />
-        </button>
+        </div>
+        {NAV_ITEMS.slice(2).map(renderItem)}
       </div>
-    </div>
+    </nav>
   );
 }

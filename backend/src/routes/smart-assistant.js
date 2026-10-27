@@ -163,7 +163,8 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(503).json({ ...result, message: busy, error: busy });
     }
     console.error('[agent] error:', error);
-    res.status(500).json({ ...result, message: 'متأسفانه مشکلی پیش آمد. لطفاً دوباره تلاش کنید.', error: error.message });
+    const failed = 'متأسفانه مشکلی پیش آمد. لطفاً دوباره تلاش کنید.';
+    res.status(500).json({ ...result, message: failed, error: failed });
   }
 });
 

@@ -474,14 +474,23 @@ export function stepLabel(name, args) {
 const DOMAIN_LABEL = { personal: 'شخصی', professional: 'حرفه‌ای', organizational: 'سازمانی' };
 const RESUME_LABEL = { education: 'تحصیلات', work: 'سوابق کاری', skills: 'مهارت‌ها', certificates: 'گواهینامه‌ها', awards: 'افتخارات', affiliations: 'عضویت‌ها' };
 
-function feedbackFor(name, p) {
+/** «پنجشنبه ۷ آبان ۱۴۰۵، ساعت ۱۰:۰۰» for normalised ISO values; raw text otherwise. */
+function whenLabel(date, time, ctx) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return [date, time].filter(Boolean).join(' ');
+  const hasTime = /^\d{2}:\d{2}$/.test(time || '');
+  const d = zonedToUtc(date, hasTime ? time : '12:00', ctx.tz);
+  return `${persianDateLabel(d, ctx.tz)}${hasTime ? `، ساعت ${persianTime(d, ctx.tz)}` : ''}`;
+}
+
+function feedbackFor(name, p, ctx) {
+  const reminderAt = String(p.datetime || '').split(' ');
   switch (name) {
-    case 'create_meeting': return { location: 'تقویم', details: `«${p.title}» ${p.date || ''} ${p.time || ''}`.trim() };
+    case 'create_meeting': return { location: 'تقویم', details: `«${p.title}» · ${whenLabel(p.date, p.time, ctx)}` };
     case 'cancel_meeting': return { location: 'تقویم', details: `لغو ${p.title ? `«${p.title}»` : 'قرار'}` };
     case 'update_meeting': return { location: 'تقویم', details: `ویرایش ${p.title ? `«${p.title}»` : 'قرار'}` };
-    case 'create_task': return { location: `وظایف ${DOMAIN_LABEL[p.domain] || ''}`.trim(), details: `«${p.title}»${p.due_date ? ` تا ${p.due_date}` : ''}` };
+    case 'create_task': return { location: `وظایف ${DOMAIN_LABEL[p.domain] || ''}`.trim(), details: `«${p.title}»${p.due_date ? ` · موعد ${whenLabel(p.due_date, null, ctx)}` : ''}` };
     case 'create_tasks_batch': return { location: 'وظایف', details: `${(p.tasks || []).length} وظیفه` };
-    case 'create_reminder': return { location: 'یادآورها', details: `«${p.title}» ${p.datetime || ''}`.trim() };
+    case 'create_reminder': return { location: 'یادآورها', details: `«${p.title}» · ${whenLabel(reminderAt[0], reminderAt[1], ctx)}` };
     case 'save_idea': return { location: 'بانک ایده‌ها', details: `«${p.title}»` };
     case 'save_journal_entry': return { location: 'دل‌نوشته‌ها', details: clip(p.content, 40) };
     case 'save_gratitude': return { location: 'شکرگزاری', details: clip(p.item_1, 40) };
@@ -571,6 +580,6 @@ export async function planWriteAction(name, rawArgs, ctx) {
 
   const status = NEEDS_CONFIRMATION.has(name) ? 'needs_confirmation' : 'pending';
   return {
-    action: { type: 'action', id: `act_${Math.random().toString(36).slice(2, 10)}`, function: name, params, status, feedback: feedbackFor(name, params) },
+    action: { type: 'action', id: `act_${Math.random().toString(36).slice(2, 10)}`, function: name, params, status, feedback: feedbackFor(name, params, ctx) },
   };
 }
