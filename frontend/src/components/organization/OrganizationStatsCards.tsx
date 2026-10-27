@@ -76,7 +76,7 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
             transition={{ delay: index * 0.1 }}
             whileHover={{ scale: 1.03, y: -5 }}
           >
-            <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 relative group">
+            <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition duration-300 relative group">
               {/* Background gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-50 group-hover:opacity-70 transition-opacity`} />
               
@@ -85,7 +85,7 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
               
               <CardContent className="p-6 relative z-10">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition duration-300`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   <div className={`flex items-center gap-1 text-sm font-medium ${getTrendColor(stat.trend, isNegativeStat)}`}>

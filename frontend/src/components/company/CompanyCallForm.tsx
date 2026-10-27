@@ -199,7 +199,7 @@ export const CompanyCallForm = ({ companyId, call, onSave, onCancel }: CompanyCa
 
       <div>
         <Label htmlFor="outcome">نتیجه تماس</Label>
-        <Input id="outcome" {...register('outcome')} placeholder="موفق، نیاز به پیگیری، ..." />
+        <Input id="outcome" {...register('outcome')} placeholder="موفق، نیاز به پیگیری،…" />
       </div>
 
       <div>

@@ -100,7 +100,7 @@ export function CSRTeamManager({ projectId }: CSRTeamManagerProps) {
                   id="name"
                   value={formData.member_name}
                   onChange={(e) => setFormData({ ...formData, member_name: e.target.value })}
-                  placeholder="نام عضو..."
+                  placeholder="نام عضو…"
                 />
               </div>
               <div>
@@ -133,7 +133,7 @@ export function CSRTeamManager({ projectId }: CSRTeamManagerProps) {
                   id="responsibilities"
                   value={formData.responsibilities}
                   onChange={(e) => setFormData({ ...formData, responsibilities: e.target.value })}
-                  placeholder="شرح مسئولیت‌ها..."
+                  placeholder="شرح مسئولیت‌ها…"
                 />
               </div>
               <Button onClick={handleSubmit} className="w-full">

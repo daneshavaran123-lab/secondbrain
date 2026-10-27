@@ -224,7 +224,7 @@ export const DocumentProcessor: React.FC<DocumentProcessorProps> = ({
                 {processing ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    در حال پردازش...
+                    در حال پردازش…
                   </>
                 ) : (
                   <>
@@ -292,7 +292,7 @@ export const DocumentProcessor: React.FC<DocumentProcessorProps> = ({
                       id="tags"
                       value={tags}
                       onChange={(e) => setTags(e.target.value)}
-                      placeholder="برچسب1، برچسب2، ..."
+                      placeholder="برچسب1، برچسب2،…"
                     />
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export const DocumentProcessor: React.FC<DocumentProcessorProps> = ({
                     onChange={(e) => setEditedText(e.target.value)}
                     rows={10}
                     className="mt-2"
-                    placeholder="متن استخراج شده..."
+                    placeholder="متن استخراج شده…"
                   />
                 </div>
 

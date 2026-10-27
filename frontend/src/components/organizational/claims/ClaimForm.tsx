@@ -117,7 +117,7 @@ export function ClaimForm({ organizationId, claim, onSuccess, onCancel }: ClaimF
                       value={field.value || ''}
                       onChange={field.onChange}
                       type="textarea"
-                      placeholder="توضیحات تکمیلی..."
+                      placeholder="توضیحات تکمیلی…"
                       rows={4}
                       enableVoice={true}
                       className="text-right min-h-[100px]"

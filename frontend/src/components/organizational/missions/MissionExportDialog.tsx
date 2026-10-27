@@ -132,7 +132,7 @@ const MissionExportDialog: React.FC<MissionExportDialogProps> = ({
                 className="w-full"
                 variant="outline"
               >
-                {isExporting ? 'در حال تولید گزارش...' : 'دانلود JSON'}
+                {isExporting ? 'در حال تولید گزارش…' : 'دانلود JSON'}
               </Button>
             </CardContent>
           </Card>
@@ -154,7 +154,7 @@ const MissionExportDialog: React.FC<MissionExportDialogProps> = ({
                 className="w-full"
                 variant="outline"
               >
-                {isExporting ? 'در حال تولید گزارش...' : 'دانلود CSV'}
+                {isExporting ? 'در حال تولید گزارش…' : 'دانلود CSV'}
               </Button>
             </CardContent>
           </Card>

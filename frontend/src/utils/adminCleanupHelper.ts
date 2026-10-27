@@ -20,7 +20,7 @@ export interface CleanupResult {
 
 export async function executeAdminCleanup(): Promise<CleanupResult> {
   try {
-    console.log('🧹 شروع فرآیند پاکسازی داده‌های تستی...');
+    console.log('🧹 شروع فرآیند پاکسازی داده‌های تستی…');
     
     // مرحله 1: بررسی محیط توسعه
     const isDev = process.env.NODE_ENV === 'development' || 
@@ -64,7 +64,7 @@ export async function executeAdminCleanup(): Promise<CleanupResult> {
 
     // اگر احراز هویت نشده، ورود محلی
     if (!isAuthenticated) {
-      console.log('🔄 تلاش برای ورود محلی...');
+      console.log('🔄 تلاش برای ورود محلی…');
       try {
         await localSignIn('admin@brainforge.com', 'Admin123456');
         console.log('✅ ورود محلی admin موفق');
@@ -87,7 +87,7 @@ export async function executeAdminCleanup(): Promise<CleanupResult> {
     }
 
     // مرحله 3: بررسی آمار داده‌های موجود
-    console.log('📊 بررسی داده‌های موجود...');
+    console.log('📊 بررسی داده‌های موجود…');
     const initialStats = await cleanupService.getCleanupStats();
     
     const totalLocalItems = initialStats.localStorageItems;
@@ -108,7 +108,7 @@ export async function executeAdminCleanup(): Promise<CleanupResult> {
     }
 
     // مرحله 4: اجرای پاکسازی کامل
-    console.log('🧹 شروع پاکسازی کامل...');
+    console.log('🧹 شروع پاکسازی کامل…');
     const cleanupResult = await cleanupService.performFullCleanup();
 
     if (cleanupResult.success) {

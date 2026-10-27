@@ -44,7 +44,7 @@ export function LawyerNoteCard({
   const isToday = note.reminderDate && new Date(note.reminderDate).toDateString() === new Date().toDateString();
 
   return (
-    <Card className={`transition-all hover:shadow-md ${note.isStarred ? 'border-yellow-300 bg-yellow-50/30' : ''} ${isOverdue ? 'border-red-300 bg-red-50/30' : ''}`}>
+    <Card className={`transition hover:shadow-md ${note.isStarred ? 'border-yellow-300 bg-yellow-50/30' : ''} ${isOverdue ? 'border-red-300 bg-red-50/30' : ''}`}>
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Header */}

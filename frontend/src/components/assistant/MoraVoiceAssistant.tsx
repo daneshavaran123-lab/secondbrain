@@ -59,7 +59,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
     onWakeWord: () => {
       // Play activation sound or feedback
       setState('listening');
-      setStatusText('گوش می‌دهم...');
+      setStatusText('گوش می‌دهم…');
       startListeningForCommand();
     },
     onError: (error) => {
@@ -105,7 +105,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
   // Process spoken command
   const processCommand = useCallback(async (command: string) => {
     setState('processing');
-    setStatusText('در حال پردازش...');
+    setStatusText('در حال پردازش…');
     speechRecognition.stopListening();
 
     try {
@@ -151,7 +151,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
       // Speak response
       if (tts.isEnabled) {
         setState('speaking');
-        setStatusText('پاسخ می‌دهم...');
+        setStatusText('پاسخ می‌دهم…');
         await tts.speak(response);
       }
 
@@ -242,7 +242,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
   // Update status based on wake word state
   useEffect(() => {
     if (wakeWord.status === 'loading') {
-      setStatusText('در حال راه‌اندازی...');
+      setStatusText('در حال راه‌اندازی…');
     } else if (wakeWord.status === 'fallback') {
       setStatusText('بگویید «هی دستیار» یا «سلام دستیار»...');
     } else if (wakeWord.status === 'error') {
@@ -254,7 +254,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
   const getPulseClass = () => {
     switch (state) {
       case 'listening':
-        return 'animate-pulse bg-green-500/30';
+        return 'animate-pulse bg-signal/30';
       case 'speaking':
         return 'animate-pulse bg-primary/30';
       case 'processing':
@@ -268,7 +268,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
     <div 
       className={cn(
         'fixed inset-0 z-50 flex flex-col',
-        'bg-gradient-to-br from-background via-background to-primary/10',
+        'bg-background',
         className
       )}
       dir="rtl"
@@ -294,7 +294,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
         <motion.h1 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-bold text-primary mb-8"
+          className="mb-8 text-3xl font-bold text-foreground"
         >
           مغز دوم من
         </motion.h1>
@@ -315,7 +315,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
                   transition={{ duration: 1.5, repeat: Infinity }}
                   className={cn(
                     'absolute inset-0 rounded-full',
-                    state === 'listening' ? 'bg-green-500' : 'bg-primary'
+                    state === 'listening' ? 'bg-signal' : 'bg-foreground'
                   )}
                 />
                 <motion.div
@@ -324,7 +324,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
                   transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
                   className={cn(
                     'absolute inset-0 rounded-full',
-                    state === 'listening' ? 'bg-green-500' : 'bg-primary'
+                    state === 'listening' ? 'bg-signal' : 'bg-foreground'
                   )}
                 />
               </>
@@ -336,8 +336,8 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
             className={cn(
               'relative w-32 h-32 rounded-full flex items-center justify-center',
               'border-4 transition-colors duration-300',
-              state === 'listening' && 'border-green-500 bg-green-500/10',
-              state === 'speaking' && 'border-primary bg-primary/10',
+              state === 'listening' && 'border-signal bg-signal-soft',
+              state === 'speaking' && 'border-foreground bg-foreground/5',
               state === 'processing' && 'border-yellow-500 bg-yellow-500/10',
               state === 'error' && 'border-destructive bg-destructive/10',
               state === 'waiting' && 'border-muted-foreground/30 bg-muted/10'
@@ -359,7 +359,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
             ) : (
               <Mic className={cn(
                 'h-12 w-12 transition-colors',
-                state === 'listening' ? 'text-green-500' : 'text-muted-foreground'
+                state === 'listening' ? 'text-signal' : 'text-muted-foreground'
               )} />
             )}
           </motion.div>
@@ -408,7 +408,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
           <Button
             onClick={() => {
               setState('listening');
-              setStatusText('گوش می‌دهم...');
+              setStatusText('گوش می‌دهم…');
               startListeningForCommand();
             }}
             size="lg"
@@ -450,7 +450,7 @@ export function MoraVoiceAssistant({ onClose, className }: MoraVoiceAssistantPro
         <span 
           className={cn(
             'w-2 h-2 rounded-full',
-            wakeWord.isListening ? 'bg-green-500' : 'bg-muted-foreground/30'
+            wakeWord.isListening ? 'bg-signal' : 'bg-muted-foreground/30'
           )} 
         />
         {wakeWord.useFallback ? 'تشخیص صوتی' : 'Wake Word فعال'}

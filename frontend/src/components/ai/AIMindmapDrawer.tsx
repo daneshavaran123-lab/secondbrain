@@ -178,7 +178,7 @@ export const AIMindmapDrawer: React.FC<AIMindmapDrawerProps> = ({
                   id="sourceText"
                   value={sourceText}
                   onChange={(e) => setSourceText(e.target.value)}
-                  placeholder="خلاصه کتاب یا متن اصلی را اینجا وارد کنید..."
+                  placeholder="خلاصه کتاب یا متن اصلی را اینجا وارد کنید…"
                   rows={4}
                 />
               </div>
@@ -189,7 +189,7 @@ export const AIMindmapDrawer: React.FC<AIMindmapDrawerProps> = ({
                   id="customPrompt"
                   value={customPrompt}
                   onChange={(e) => setCustomPrompt(e.target.value)}
-                  placeholder="مثلاً: روی مفاهیم فلسفی تمرکز کن یا ساختار کتاب را نمایش بده..."
+                  placeholder="مثلاً: روی مفاهیم فلسفی تمرکز کن یا ساختار کتاب را نمایش بده…"
                   rows={2}
                 />
               </div>
@@ -202,7 +202,7 @@ export const AIMindmapDrawer: React.FC<AIMindmapDrawerProps> = ({
                 {isGenerating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    در حال تولید مایندمپ...
+                    در حال تولید مایندمپ…
                   </>
                 ) : (
                   'تولید مایندمپ'

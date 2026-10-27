@@ -141,7 +141,7 @@ export function debugSystemState(queryClient?: any) {
  * پاکسازی اجباری تمام مشکلات Cache
  */
 export function forceCleanupAll(queryClient?: any) {
-    console.log('🧹 شروع پاکسازی اجباری...');
+    console.log('🧹 شروع پاکسازی اجباری…');
 
     try {
         // پاکسازی localStorage

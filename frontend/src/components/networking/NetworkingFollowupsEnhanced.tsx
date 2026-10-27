@@ -240,7 +240,7 @@ export function NetworkingFollowupsEnhanced({ companyId, organizationId }: Netwo
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className={`hover:shadow-md transition-all group ${
+                    <Card className={`hover:shadow-md transition group ${
                       group === "overdue" ? "border-destructive/50 bg-destructive/5" : ""
                     }`}>
                       <CardContent className="p-4">

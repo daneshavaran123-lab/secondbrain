@@ -192,7 +192,7 @@ export default function UserManagementPage() {
             <div className="relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="جستجوی نام، ایمیل یا شماره تلفن..."
+                placeholder="جستجوی نام، ایمیل یا شماره تلفن…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pr-10"
@@ -237,7 +237,7 @@ export default function UserManagementPage() {
           {isLoading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">در حال دریافت کاربران...</p>
+              <p className="mt-2 text-muted-foreground">در حال دریافت کاربران…</p>
             </div>
           ) : users && users.length > 0 ? (
             <div className="overflow-x-auto">

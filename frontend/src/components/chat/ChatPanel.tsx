@@ -89,7 +89,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ open, onOpenChange, channe
 
         {typingUsers.length > 0 && (
           <div className="text-xs text-muted-foreground py-1">
-            {typingUsers.join('، ')} در حال تایپ...
+            {typingUsers.join('، ')} در حال تایپ…
           </div>
         )}
 

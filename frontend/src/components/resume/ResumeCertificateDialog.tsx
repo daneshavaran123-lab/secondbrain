@@ -198,7 +198,7 @@ export function ResumeCertificateDialog({ open, onClose, certificate }: ResumeCe
               انصراف
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'در حال ذخیره...' : 'ذخیره'}
+              {loading ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </form>

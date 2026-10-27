@@ -196,7 +196,7 @@ const TaskCalendar: React.FC<TaskCalendarProps> = ({
               <div
                 key={day}
                 className={`
-                  aspect-square border border-gray-200 p-2 cursor-pointer transition-all hover:bg-gray-50
+                  aspect-square border border-gray-200 p-2 cursor-pointer transition hover:bg-gray-50
                   ${isToday(day) ? 'bg-blue-50 border-blue-300' : ''}
                   ${hasOverdue ? 'bg-red-50 border-red-300' : ''}
                   ${hasHighPriority ? 'ring-2 ring-orange-300' : ''}

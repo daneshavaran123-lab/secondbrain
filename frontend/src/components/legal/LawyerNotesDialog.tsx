@@ -113,7 +113,7 @@ export function LawyerNotesDialog({
       
       toast({
         title: "ضبط شروع شد",
-        description: "صحبت کنید..."
+        description: "صحبت کنید…"
       });
     } catch (error) {
       console.error('Error starting recording:', error);
@@ -134,7 +134,7 @@ export function LawyerNotesDialog({
       
       toast({
         title: "ضبط متوقف شد",
-        description: "در حال پردازش صوت..."
+        description: "در حال پردازش صوت…"
       });
     }
   };
@@ -395,7 +395,7 @@ export function LawyerNotesDialog({
                 
                 {isListening && (
                   <Badge variant="default" className="animate-pulse">
-                    🔴 در حال شنیدن...
+                    🔴 در حال شنیدن…
                   </Badge>
                 )}
               </div>
@@ -440,13 +440,13 @@ export function LawyerNotesDialog({
                 
                 {isRecording && (
                   <Badge variant="destructive" className="animate-pulse">
-                    در حال ضبط...
+                    در حال ضبط…
                   </Badge>
                 )}
                 
                 {isProcessing && (
                   <Badge variant="secondary">
-                    در حال پردازش...
+                    در حال پردازش…
                   </Badge>
                 )}
               </div>
@@ -490,7 +490,7 @@ export function LawyerNotesDialog({
             <Textarea
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              placeholder="نکات مهم برای جلسه بعدی با وکیل را اینجا بنویسید..."
+              placeholder="نکات مهم برای جلسه بعدی با وکیل را اینجا بنویسید…"
               rows={8}
               className="resize-none"
             />
@@ -512,7 +512,7 @@ export function LawyerNotesDialog({
                 id="note-title"
                 value={noteTitle}
                 onChange={(e) => setNoteTitle(e.target.value)}
-                placeholder="عنوان کوتاه برای یادداشت..."
+                placeholder="عنوان کوتاه برای یادداشت…"
               />
             </div>
 
@@ -587,7 +587,7 @@ export function LawyerNotesDialog({
           className="flex items-center gap-2"
         >
           <Save className="h-4 w-4" />
-          {isSaving ? 'در حال ذخیره...' : 'ذخیره یادداشت'}
+          {isSaving ? 'در حال ذخیره…' : 'ذخیره یادداشت'}
         </Button>
       </div>
     </ResponsiveDialog>

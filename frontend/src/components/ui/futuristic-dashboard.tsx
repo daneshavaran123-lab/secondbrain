@@ -31,7 +31,7 @@ export function FuturisticDashboard({
       )}
 
       <div className={cn(
-        "relative z-10 transition-all duration-500 ease-in-out w-full",
+        "relative z-10 transition duration-500 ease-in-out w-full",
         !isMobile && sidebarOpen ? "lg:mr-64" : "mr-0"
       )}>
         <div className={cn(

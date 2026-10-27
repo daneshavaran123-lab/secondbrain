@@ -328,7 +328,7 @@ class SecretaryService {
 
   // پاکسازی کامل داده‌های دبیرخانه
   cleanupAllData(): void {
-    console.log('🏢 پاکسازی داده‌های دبیرخانه...');
+    console.log('🏢 پاکسازی داده‌های دبیرخانه…');
     
     // پاک کردن تمام localStorage keys مرتبط
     localStorage.removeItem('secretary_users');

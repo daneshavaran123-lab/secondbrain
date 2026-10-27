@@ -133,7 +133,7 @@ export function ResumeMediaInterviewDialog({ open, onClose, interview }: ResumeM
                 value={formData.media_source}
                 onChange={(e) => setFormData({ ...formData, media_source: e.target.value })}
                 required
-                placeholder="نام روزنامه، سایت، رادیو..."
+                placeholder="نام روزنامه، سایت، رادیو…"
               />
             </div>
             <div>
@@ -206,7 +206,7 @@ export function ResumeMediaInterviewDialog({ open, onClose, interview }: ResumeM
             <Input
               value={formData.content_url}
               onChange={(e) => setFormData({ ...formData, content_url: e.target.value })}
-              placeholder="لینک یوتیوب، آپارات، یا آپلود فایل..."
+              placeholder="لینک یوتیوب، آپارات، یا آپلود فایل…"
               className="mb-2"
             />
             <ResumeFileUploader
@@ -222,7 +222,7 @@ export function ResumeMediaInterviewDialog({ open, onClose, interview }: ResumeM
               انصراف
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'در حال ذخیره...' : 'ذخیره'}
+              {loading ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </form>

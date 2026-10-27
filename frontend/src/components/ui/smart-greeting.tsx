@@ -30,7 +30,7 @@ export function SmartGreeting() {
           isMobile ? "gap-3" : "gap-4 lg:gap-6"
         )}>
           <div className={cn(
-            "rounded-2xl bg-gradient-glow shadow-glow transition-all duration-300 hover:scale-105",
+            "rounded-2xl bg-gradient-glow shadow-glow transition duration-300 hover:scale-105",
             isMobile ? "p-2.5" : "p-3 lg:p-4"
           )}>
             <TimeIcon className={cn(

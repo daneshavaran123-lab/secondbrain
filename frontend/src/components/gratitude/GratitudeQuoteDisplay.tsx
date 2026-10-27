@@ -159,7 +159,7 @@ const GratitudeQuoteDisplay: React.FC = () => {
 
   return (
     <Card className="p-6 mb-6 bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20 shadow-sm">
-      <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
+      <div className={`transition duration-300 ${isAnimating ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'}`}>
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
             <Book className="h-5 w-5 text-primary" />

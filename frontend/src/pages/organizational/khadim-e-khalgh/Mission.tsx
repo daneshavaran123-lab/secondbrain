@@ -75,7 +75,7 @@ const Mission = () => {
                   value={missionData.personalStatement}
                   onChange={(e) => setMissionData({...missionData, personalStatement: e.target.value})}
                   className="min-h-32"
-                  placeholder="بیانیه رسالت شخصی خود را بنویسید..."
+                  placeholder="بیانیه رسالت شخصی خود را بنویسید…"
                 />
               ) : (
                 <p className="text-lg leading-relaxed text-foreground italic border-r-4 border-rose-500 pr-4 bg-rose-50 p-4 rounded">
@@ -144,7 +144,7 @@ const Mission = () => {
                   value={missionData.strategicGoal}
                   onChange={(e) => setMissionData({...missionData, strategicGoal: e.target.value})}
                   className="min-h-24"
-                  placeholder="هدف راهبردی خود را تعریف کنید..."
+                  placeholder="هدف راهبردی خود را تعریف کنید…"
                 />
               ) : (
                 <p className="text-lg leading-relaxed text-foreground bg-blue-50 p-4 rounded border-r-4 border-blue-500">

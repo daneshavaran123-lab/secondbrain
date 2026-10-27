@@ -11,13 +11,14 @@ import { CrossPlatformOptimized } from "@/components/ui/cross-platform-optimized
 import { MobileOptimizedNav } from "@/components/ui/mobile-optimized-nav";
 import { OfflineBanner, OfflineIndicator } from "@/components/ui/offline-banner";
 import { SmartAssistant } from "@/components/assistant/SmartAssistant";
+import { CommandPalette } from "@/components/command/CommandPalette";
+import { BrandMark } from "@/components/brand/BrandMark";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useDeviceDetection } from "@/hooks/useDeviceDetection";
 import { useResponsiveBreakpoints } from "@/hooks/useResponsiveBreakpoints";
 import { useServiceWorker } from "@/hooks/useOffline";
 import { useWakeWord } from "@/hooks/useWakeWord";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Index = () => {
@@ -112,16 +113,11 @@ const Index = () => {
   // نمایش loading در حین بررسی احراز هویت
   if (isLoading) {
     return (
-      <div className="loading-screen gradient-mesh">
-        <div className="loading-logo">
-          <Brain className="h-6 w-6" />
-        </div>
-        <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-foreground">مغز دوم من</p>
-          <p className="text-xs text-muted-foreground">در حال بارگذاری...</p>
-        </div>
-        <div className="loading-dots">
-          <span /><span /><span />
+      <div className="loading-screen gradient-mesh" role="status" aria-live="polite">
+        <BrandMark size={44} active className="text-foreground" />
+        <div className="text-center space-y-1">
+          <p className="font-brand text-sm text-foreground">مغز دوم من</p>
+          <p className="text-xs text-muted-foreground">در حال بارگذاری…</p>
         </div>
       </div>
     );
@@ -130,13 +126,8 @@ const Index = () => {
   // اگر احراز هویت نشده باشد، نمایش لودینگ
   if (!isAuthenticated) {
     return (
-      <div className="loading-screen gradient-mesh">
-        <div className="loading-logo">
-          <Brain className="h-6 w-6" />
-        </div>
-        <div className="loading-dots">
-          <span /><span /><span />
-        </div>
+      <div className="loading-screen gradient-mesh" role="status" aria-label="در حال بارگذاری">
+        <BrandMark size={44} active className="text-foreground" />
       </div>
     );
   }
@@ -177,11 +168,17 @@ const Index = () => {
         />
       )}
 
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:right-4 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-sm focus:shadow-lg"
+      >
+        رفتن به محتوای اصلی
+      </a>
       <OfflineBanner />
       <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
 
-      <main className={cn(
-        "flex-1 overflow-auto transition-all duration-300 ease-out",
+      <main id="main-content" tabIndex={-1} className={cn(
+        "flex-1 overflow-auto transition-[margin] duration-200 ease-out",
         !isDesktop ? 'mr-0' : sidebarOpen ? 'mr-72' : 'mr-16'
       )}>
         <div className={cn(
@@ -208,6 +205,7 @@ const Index = () => {
         isOpen={assistantOpen}
         onOpenChange={setAssistantOpen}
       />
+      <CommandPalette />
     </CrossPlatformOptimized>
   );
 };

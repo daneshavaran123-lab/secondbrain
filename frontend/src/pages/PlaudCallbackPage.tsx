@@ -54,10 +54,10 @@ export const PlaudCallbackPage = () => {
           </>
         )}
         {status === 'success' && (
-          <p className="text-green-500">اتصال موفق! در حال انتقال...</p>
+          <p className="text-green-500">اتصال موفق! در حال انتقال…</p>
         )}
         {status === 'error' && (
-          <p className="text-red-500">خطا در اتصال. در حال بازگشت...</p>
+          <p className="text-red-500">خطا در اتصال. در حال بازگشت…</p>
         )}
       </div>
     </div>

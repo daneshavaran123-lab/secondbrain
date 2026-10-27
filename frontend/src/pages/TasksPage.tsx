@@ -123,7 +123,7 @@ const TasksPage = () => {
       >
         <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-3`}>
           <Input
-            placeholder="عنوان وظیفه..."
+            placeholder="عنوان وظیفه…"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && addTask()}

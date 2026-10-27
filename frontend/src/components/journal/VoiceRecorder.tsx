@@ -274,7 +274,7 @@ export const VoiceRecorder = ({ onTextReceived, onCancel }: VoiceRecorderProps) 
             </div>
             
             <p className="text-sm text-muted-foreground">
-              {isListening ? '🔴 در حال شنیدن...' : 'برای شروع، دکمه شروع را فشار دهید'}
+              {isListening ? '🔴 در حال شنیدن…' : 'برای شروع، دکمه شروع را فشار دهید'}
             </p>
             
             {!isListening && (
@@ -371,7 +371,7 @@ export const VoiceRecorder = ({ onTextReceived, onCancel }: VoiceRecorderProps) 
             </div>
             
             <p className="text-sm text-muted-foreground">
-              {isRecording ? 'در حال ضبط...' : audioBlob ? 'آماده برای تبدیل' : 'روی دکمه میکروفن کلیک کنید'}
+              {isRecording ? 'در حال ضبط…' : audioBlob ? 'آماده برای تبدیل' : 'روی دکمه میکروفن کلیک کنید'}
             </p>
           </div>
 
@@ -407,7 +407,7 @@ export const VoiceRecorder = ({ onTextReceived, onCancel }: VoiceRecorderProps) 
                   className="w-full"
                   glow
                 >
-                  {isProcessing ? 'در حال پردازش...' : 'تبدیل به متن'}
+                  {isProcessing ? 'در حال پردازش…' : 'تبدیل به متن'}
                 </ModernButton>
 
                 <div className="flex gap-2">

@@ -28,7 +28,7 @@ export default function AuditLogsPage() {
   };
 
   if (isLoading) {
-    return <div className="container max-w-6xl mx-auto p-6 text-center">در حال بارگذاری...</div>;
+    return <div className="container max-w-6xl mx-auto p-6 text-center">در حال بارگذاری…</div>;
   }
 
   return (

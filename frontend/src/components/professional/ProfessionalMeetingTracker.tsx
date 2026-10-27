@@ -263,7 +263,7 @@ export const ProfessionalMeetingTracker: React.FC = () => {
   const completionRate = totalResolutions > 0 ? Math.round((completedResolutions / totalResolutions) * 100) : 0;
 
   if (isLoading) {
-    return <div className="flex justify-center p-8">در حال بارگذاری...</div>;
+    return <div className="flex justify-center p-8">در حال بارگذاری…</div>;
   }
 
   return (

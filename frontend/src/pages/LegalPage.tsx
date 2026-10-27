@@ -470,7 +470,7 @@ const LegalPage = () => {
               <div className="relative">
                 <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="جستجو در پرونده‌ها..."
+                  placeholder="جستجو در پرونده‌ها…"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pr-10"
@@ -616,7 +616,7 @@ const LegalPage = () => {
                       onClick={handleSubmitCase}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "در حال ایجاد..." : "ایجاد پرونده"}
+                      {isSubmitting ? "در حال ایجاد…" : "ایجاد پرونده"}
                     </Button>
                   </div>
                 </div>

@@ -191,7 +191,7 @@ class OrganizationExportService {
    */
   async exportMembersToExcel(organizationId: string, members: any[]): Promise<void> {
     try {
-      toast.info('در حال تولید لیست اعضا...');
+      toast.info('در حال تولید لیست اعضا…');
 
       const organization = await organizationService.getOrganizationById(organizationId);
       if (!organization) {

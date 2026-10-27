@@ -145,7 +145,7 @@ export function IdeaList({ domain }: IdeaListProps) {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="جستجو در عنوان و توضیحات..."
+                placeholder="جستجو در عنوان و توضیحات…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50"

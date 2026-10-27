@@ -38,7 +38,7 @@ export function MobileEnhancedCard({
   return (
     <Card 
       className={cn(
-        "bg-card border-border transition-all duration-300",
+        "bg-card border-border transition duration-300",
         hover && "hover:shadow-lg hover:-translate-y-1",
         glow && "shadow-luxury-soft",
         onClick && "cursor-pointer touch-manipulation",

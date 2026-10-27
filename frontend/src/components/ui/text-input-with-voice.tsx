@@ -82,7 +82,7 @@ const TextInputWithVoice = React.forwardRef<HTMLTextAreaElement, TextInputWithVo
             <div className="flex items-center gap-2">
               {isListening && (
                 <Badge variant="default" className="animate-pulse text-xs">
-                  در حال شنیدن...
+                  در حال شنیدن…
                 </Badge>
               )}
               <Button
@@ -136,7 +136,7 @@ const TextInputWithVoice = React.forwardRef<HTMLTextAreaElement, TextInputWithVo
         
         {isListening && (
           <p className="text-xs text-muted-foreground">
-            صحبت کنید... (برای توقف روی دکمه میکروفون کلیک کنید)
+            صحبت کنید… (برای توقف روی دکمه میکروفون کلیک کنید)
           </p>
         )}
       </div>

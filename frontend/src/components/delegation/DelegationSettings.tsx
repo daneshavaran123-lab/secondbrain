@@ -113,7 +113,7 @@ export function DelegationSettings({ domain = 'personal', onSettingsUpdate }: De
           {isSaving ? (
             <>
               <RefreshCw className="h-4 w-4 ml-2 animate-spin" />
-              در حال ذخیره...
+              در حال ذخیره…
             </>
           ) : (
             <>

@@ -192,7 +192,7 @@ export function QuickLaunchPad() {
       <div className="pt-4">
         <button className={cn(
           "w-full p-4 rounded-xl border-2 border-dashed border-border/50",
-          "hover:border-primary/50 hover:bg-primary/5 transition-all duration-300",
+          "hover:border-primary/50 hover:bg-primary/5 transition duration-300",
           "flex items-center justify-center gap-2 text-muted-foreground hover:text-primary",
           "animate-fade-in"
         )}
@@ -228,7 +228,7 @@ function QuickActionCard({ action, onClick, delay = '0ms', isMobile = false }: Q
       onClick={onClick}
       className={cn(
         "glass-card backdrop-blur-sm bg-card/40 rounded-xl border border-border/50",
-        "shadow-card hover:shadow-glass transition-all duration-300 hover:scale-105",
+        "shadow-card hover:shadow-glass transition duration-300 hover:scale-105",
         "text-right group animate-fade-in relative overflow-hidden",
         isMobile ? "p-3" : "p-4"
       )}
@@ -239,7 +239,7 @@ function QuickActionCard({ action, onClick, delay = '0ms', isMobile = false }: Q
         isMobile ? "gap-2.5" : "gap-3"
       )}>
         <div className={cn(
-          "rounded-xl transition-all duration-300",
+          "rounded-xl transition duration-300",
           bgColor,
           "group-hover:shadow-glow",
           isMobile ? "p-2" : "p-2.5 lg:p-3"

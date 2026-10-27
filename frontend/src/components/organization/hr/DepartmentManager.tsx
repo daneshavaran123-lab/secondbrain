@@ -83,7 +83,7 @@ export function DepartmentManager({ organizationId }: DepartmentManagerProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">در حال بارگذاری...</div>
+          <div className="text-center py-8 text-muted-foreground">در حال بارگذاری…</div>
         ) : departments.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             هنوز دپارتمانی اضافه نشده است

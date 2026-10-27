@@ -134,7 +134,7 @@ export function RoadmapList({ items, onEdit, onDelete, onView }: RoadmapListProp
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.3 }}
           >
-            <Card className="overflow-hidden hover:shadow-luxury-soft transition-all duration-300">
+            <Card className="overflow-hidden hover:shadow-luxury-soft transition duration-300">
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
               
               <CardHeader>

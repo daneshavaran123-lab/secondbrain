@@ -26,7 +26,7 @@ export function SetupSystem({ onSetupComplete }: SetupSystemProps) {
 
   const checkSystemSetup = async () => {
     try {
-      console.log('🔍 بررسی وضعیت سیستم...');
+      console.log('🔍 بررسی وضعیت سیستم…');
       
       // بررسی کاربر فعلی
       const { user } = await checkCurrentUser();
@@ -66,10 +66,10 @@ export function SetupSystem({ onSetupComplete }: SetupSystemProps) {
 
   const handleSetupSystem = async () => {
     setIsLoading(true);
-    setMessage('در حال راه‌اندازی سیستم...');
+    setMessage('در حال راه‌اندازی سیستم…');
 
     try {
-      console.log('🚀 شروع راه‌اندازی سیستم با تابع اجباری...');
+      console.log('🚀 شروع راه‌اندازی سیستم با تابع اجباری…');
       
       // استفاده از تابع ایجاد اجباری کاربر ادمین
       const result = await forceCreateAdminUser();
@@ -103,7 +103,7 @@ export function SetupSystem({ onSetupComplete }: SetupSystemProps) {
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
             <CardTitle className="text-2xl text-green-700">سیستم آماده است!</CardTitle>
             <CardDescription>
-              در حال انتقال به داشبورد...
+              در حال انتقال به داشبورد…
             </CardDescription>
           </CardHeader>
         </Card>
@@ -183,7 +183,7 @@ export function SetupSystem({ onSetupComplete }: SetupSystemProps) {
             <Button 
               onClick={async () => {
                 setIsLoading(true);
-                setMessage('در حال ایجاد مجدد کاربر ادمین...');
+                setMessage('در حال ایجاد مجدد کاربر ادمین…');
                 
                 try {
                   const result = await forceCreateAdminUser();

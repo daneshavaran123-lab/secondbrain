@@ -9,7 +9,7 @@ export async function forceCreateAdminUser() {
   const adminPassword = 'Admin123456';
   const adminMobile = '09123456789';
 
-  console.log('🚀 شروع ایجاد اجباری کاربر ادمین...');
+  console.log('🚀 شروع ایجاد اجباری کاربر ادمین…');
 
   try {
     // 1. ابتدا سعی می‌کنیم کاربر موجود را خارج کنیم
@@ -20,7 +20,7 @@ export async function forceCreateAdminUser() {
     }
 
     // 2. ابتدا بررسی کنیم آیا کاربر قبلاً وجود دارد
-    console.log('🔍 بررسی وجود کاربر موجود...');
+    console.log('🔍 بررسی وجود کاربر موجود…');
     const { data: signInAttempt, error: existingSignInError } = await supabase.auth.signInWithPassword({
       email: adminEmail,
       password: adminPassword,
@@ -47,7 +47,7 @@ export async function forceCreateAdminUser() {
     }
 
     // 3. اگر کاربر وجود ندارد، سعی کن آن را ایجاد کنی
-    console.log('📝 کاربر موجود نیست، در حال ایجاد...');
+    console.log('📝 کاربر موجود نیست، در حال ایجاد…');
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: adminEmail,
       password: adminPassword,
@@ -67,7 +67,7 @@ export async function forceCreateAdminUser() {
       
       // اگر کاربر از قبل وجود دارد، سعی کن وارد شوی
       if (signUpError.message.includes('already registered')) {
-        console.log('👤 کاربر از قبل وجود دارد، تلاش مجدد برای ورود...');
+        console.log('👤 کاربر از قبل وجود دارد، تلاش مجدد برای ورود…');
         const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
           email: adminEmail,
           password: adminPassword,
@@ -98,7 +98,7 @@ export async function forceCreateAdminUser() {
     }
 
     // 4. تلاش برای ورود
-    console.log('🔐 در حال ورود به عنوان ادمین...');
+    console.log('🔐 در حال ورود به عنوان ادمین…');
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: adminEmail,
       password: adminPassword,
@@ -156,7 +156,7 @@ export async function simpleAdminLogin() {
   const adminPassword = 'Admin123456';
 
   try {
-    console.log('🔐 تلاش برای ورود مستقیم...');
+    console.log('🔐 تلاش برای ورود مستقیم…');
     
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: adminEmail,

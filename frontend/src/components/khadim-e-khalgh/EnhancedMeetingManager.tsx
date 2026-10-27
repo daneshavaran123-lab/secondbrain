@@ -430,7 +430,7 @@ const EnhancedMeetingManager = () => {
                 <div className="relative">
                   <Search className="w-4 h-4 absolute right-3 top-3 text-muted-foreground" />
                   <Input
-                    placeholder="جستجو بر اساس عنوان، تاریخ یا نوع جلسه..."
+                    placeholder="جستجو بر اساس عنوان، تاریخ یا نوع جلسه…"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pr-10"
@@ -448,7 +448,7 @@ const EnhancedMeetingManager = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group">
+                  <Card className="hover:shadow-lg transition duration-300 hover:scale-[1.02] group">
                     <CardHeader>
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
@@ -555,7 +555,7 @@ const EnhancedMeetingManager = () => {
               id="title"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="عنوان جلسه را وارد کنید..."
+              placeholder="عنوان جلسه را وارد کنید…"
             />
           </div>
 
@@ -593,7 +593,7 @@ const EnhancedMeetingManager = () => {
                 <Input
                   value={participant}
                   onChange={(e) => handleParticipantChange(index, e.target.value)}
-                  placeholder="نام شرکت‌کننده..."
+                  placeholder="نام شرکت‌کننده…"
                 />
                 {formData.participants.length > 1 && (
                   <Button
@@ -618,7 +618,7 @@ const EnhancedMeetingManager = () => {
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="توضیحات اضافی..."
+              placeholder="توضیحات اضافی…"
               rows={3}
             />
           </div>
@@ -628,7 +628,7 @@ const EnhancedMeetingManager = () => {
               انصراف
             </Button>
             <Button onClick={handleCreateMeeting} disabled={isLoading}>
-              {isLoading ? 'در حال ایجاد...' : 'ایجاد جلسه'}
+              {isLoading ? 'در حال ایجاد…' : 'ایجاد جلسه'}
             </Button>
           </div>
         </div>

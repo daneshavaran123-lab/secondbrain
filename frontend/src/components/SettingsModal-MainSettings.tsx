@@ -71,7 +71,7 @@ export function MainCompanyOrgSettings() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">در حال بارگذاری...</div>;
+    return <div className="text-center py-8">در حال بارگذاری…</div>;
   }
 
   return (
@@ -110,7 +110,7 @@ export function MainCompanyOrgSettings() {
                 <button
                   key={company.id}
                   onClick={() => handleSetMainCompany(company)}
-                  className={`p-3 rounded-lg border text-right transition-all ${
+                  className={`p-3 rounded-lg border text-right transition ${
                     mainCompany?.id === company.id
                       ? 'border-primary bg-primary/5'
                       : 'border-border hover:border-primary/50 hover:bg-muted'
@@ -179,7 +179,7 @@ export function MainCompanyOrgSettings() {
                 <button
                   key={org.id}
                   onClick={() => handleSetMainOrg(org)}
-                  className={`p-3 rounded-lg border text-right transition-all ${
+                  className={`p-3 rounded-lg border text-right transition ${
                     mainOrg?.id === org.id
                       ? 'border-purple-500 bg-purple-500/5'
                       : 'border-border hover:border-purple-500/50 hover:bg-muted'

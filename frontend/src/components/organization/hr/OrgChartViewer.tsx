@@ -147,7 +147,7 @@ export function OrgChartViewer({ organizationId, onSuccess }: OrgChartViewerProp
   );
 
   if (isLoading) {
-    return <div className="text-center py-8">در حال بارگیری...</div>;
+    return <div className="text-center py-8">در حال بارگیری…</div>;
   }
 
   return (
@@ -158,7 +158,7 @@ export function OrgChartViewer({ organizationId, onSuccess }: OrgChartViewerProp
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="جستجو در چارت سازمانی..."
+            placeholder="جستجو در چارت سازمانی…"
             className="pr-10"
           />
         </div>
@@ -188,7 +188,7 @@ export function OrgChartViewer({ organizationId, onSuccess }: OrgChartViewerProp
                 <Input
                   value={newNode.position}
                   onChange={(e) => setNewNode({ ...newNode, position: e.target.value })}
-                  placeholder="مدیر، کارشناس، ..."
+                  placeholder="مدیر، کارشناس،…"
                 />
               </div>
               <div>
@@ -205,7 +205,7 @@ export function OrgChartViewer({ organizationId, onSuccess }: OrgChartViewerProp
                 <Input
                   value={newNode.department}
                   onChange={(e) => setNewNode({ ...newNode, department: e.target.value })}
-                  placeholder="فروش، توسعه، ..."
+                  placeholder="فروش، توسعه،…"
                 />
               </div>
               <div>

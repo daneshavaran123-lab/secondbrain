@@ -89,7 +89,7 @@ export const ResponsiblePartiesSelector = ({ parties, onChange }: ResponsiblePar
       {/* افزودن مسئول جدید */}
       <div className="flex gap-2">
         <Input
-          placeholder="نام مسئول جدید..."
+          placeholder="نام مسئول جدید…"
           value={newPartyName}
           onChange={(e) => setNewPartyName(e.target.value)}
           onKeyDown={(e) => {

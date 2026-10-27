@@ -187,7 +187,7 @@ export function QuickNetworkingEmail({ open, onOpenChange }: QuickNetworkingEmai
                     <Label htmlFor="recipientTitle">عنوان شغلی</Label>
                     <Input
                       id="recipientTitle"
-                      placeholder="مدیرعامل، مدیر فروش..."
+                      placeholder="مدیرعامل، مدیر فروش…"
                       value={recipientTitle}
                       onChange={(e) => setRecipientTitle(e.target.value)}
                     />
@@ -205,7 +205,7 @@ export function QuickNetworkingEmail({ open, onOpenChange }: QuickNetworkingEmai
                     <Label htmlFor="howMet">نحوه آشنایی</Label>
                     <Input
                       id="howMet"
-                      placeholder="لینکدین، کنفرانس، معرفی..."
+                      placeholder="لینکدین، کنفرانس، معرفی…"
                       value={howMet}
                       onChange={(e) => setHowMet(e.target.value)}
                     />
@@ -214,7 +214,7 @@ export function QuickNetworkingEmail({ open, onOpenChange }: QuickNetworkingEmai
                     <Label htmlFor="goal">هدف ارتباط</Label>
                     <Input
                       id="goal"
-                      placeholder="همکاری، مشاوره، فروش..."
+                      placeholder="همکاری، مشاوره، فروش…"
                       value={goal}
                       onChange={(e) => setGoal(e.target.value)}
                     />
@@ -245,7 +245,7 @@ export function QuickNetworkingEmail({ open, onOpenChange }: QuickNetworkingEmai
                       <Label htmlFor="customDesc">توضیحات سفارشی</Label>
                       <Textarea
                         id="customDesc"
-                        placeholder="توضیح دهید چه نوع ایمیلی می‌خواهید..."
+                        placeholder="توضیح دهید چه نوع ایمیلی می‌خواهید…"
                         value={customDescription}
                         onChange={(e) => setCustomDescription(e.target.value)}
                         rows={2}
@@ -357,7 +357,7 @@ export function QuickNetworkingEmail({ open, onOpenChange }: QuickNetworkingEmai
                 {isGenerating ? (
                   <>
                     <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                    در حال تولید...
+                    در حال تولید…
                   </>
                 ) : (
                   <>

@@ -188,7 +188,7 @@ export function CompanyContactsSection({ companyId }: ContactsSectionProps) {
                     <Input
                       value={formData.role || ''}
                       onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                      placeholder="مدیر، کارشناس، ..."
+                      placeholder="مدیر، کارشناس،…"
                     />
                   </div>
 

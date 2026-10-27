@@ -149,7 +149,7 @@ export const MeetingList: React.FC<MeetingListProps> = ({ refreshTrigger }) => {
       <CardContent>
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="animate-pulse text-muted-foreground">در حال بارگذاری...</div>
+            <div className="animate-pulse text-muted-foreground">در حال بارگذاری…</div>
           </div>
         ) : meetings.length === 0 ? (
           <div className="text-center py-8">
@@ -240,7 +240,7 @@ export const MeetingList: React.FC<MeetingListProps> = ({ refreshTrigger }) => {
                           ))}
                           {meeting.action_items.length > 3 && (
                             <p className="text-xs text-muted-foreground">
-                              و {meeting.action_items.length - 3} وظیفه دیگر...
+                              و {meeting.action_items.length - 3} وظیفه دیگر…
                             </p>
                           )}
                         </div>

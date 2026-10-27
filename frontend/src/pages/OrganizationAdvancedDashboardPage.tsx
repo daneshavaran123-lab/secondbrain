@@ -106,7 +106,7 @@ export default function OrganizationAdvancedDashboardPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full blur-xl opacity-50 animate-pulse" />
                 <div className="relative w-24 h-24 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
               </div>
-              <p className="text-lg font-medium text-muted-foreground">در حال بارگذاری داشبورد...</p>
+              <p className="text-lg font-medium text-muted-foreground">در حال بارگذاری داشبورد…</p>
             </motion.div>
           </div>
         </div>

@@ -230,7 +230,7 @@ export function NetworkingEmailGenerator({ contact, open, onOpenChange }: Networ
                       <Label htmlFor="customDesc">توضیحات سفارشی</Label>
                       <Textarea
                         id="customDesc"
-                        placeholder="توضیح دهید چه نوع ایمیلی می‌خواهید..."
+                        placeholder="توضیح دهید چه نوع ایمیلی می‌خواهید…"
                         value={customDescription}
                         onChange={(e) => setCustomDescription(e.target.value)}
                         rows={3}
@@ -356,7 +356,7 @@ export function NetworkingEmailGenerator({ contact, open, onOpenChange }: Networ
                   {isGenerating ? (
                     <>
                       <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                      در حال تولید...
+                      در حال تولید…
                     </>
                   ) : (
                     <>

@@ -154,7 +154,7 @@ export function DepartmentForm({ organizationId, department, employees, onClose 
               انصراف
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'در حال ذخیره...' : 'ذخیره'}
+              {isSubmitting ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </form>

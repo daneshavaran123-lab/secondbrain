@@ -48,7 +48,7 @@ export function PlanningStatsCards({ stats, overdueCount, variant = 'personal' }
   return (
     <ResponsiveGrid cols={{ default: 1, sm: 3 }} gap="md" className="mb-8">
       {/* Completed Tasks */}
-      <ResponsiveCard className={`${colors.completed} hover:shadow-luxury-soft transition-all duration-200`} hover>
+      <ResponsiveCard className={`${colors.completed} hover:shadow-luxury-soft transition duration-200`} hover>
         <div className="flex items-center justify-between">
           <div>
             <div className="text-2xl md:text-3xl font-bold mb-1">{stats.completed}</div>
@@ -62,7 +62,7 @@ export function PlanningStatsCards({ stats, overdueCount, variant = 'personal' }
       </ResponsiveCard>
 
       {/* In Progress Tasks */}
-      <ResponsiveCard className={`${colors.progress} hover:shadow-luxury-soft transition-all duration-200`} hover>
+      <ResponsiveCard className={`${colors.progress} hover:shadow-luxury-soft transition duration-200`} hover>
         <div className="flex items-center justify-between">
           <div>
             <div className="text-2xl md:text-3xl font-bold mb-1">{stats.in_progress}</div>
@@ -76,7 +76,7 @@ export function PlanningStatsCards({ stats, overdueCount, variant = 'personal' }
       </ResponsiveCard>
 
       {/* Overdue Tasks */}
-      <ResponsiveCard className={`${colors.overdue} hover:shadow-luxury-soft transition-all duration-200`} hover>
+      <ResponsiveCard className={`${colors.overdue} hover:shadow-luxury-soft transition duration-200`} hover>
         <div className="flex items-center justify-between">
           <div>
             <div className="text-2xl md:text-3xl font-bold mb-1">{overdueCount}</div>

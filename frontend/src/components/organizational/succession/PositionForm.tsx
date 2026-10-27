@@ -94,7 +94,7 @@ export function PositionForm({ open, onOpenChange, position, organizationId, ser
             id="position_title"
             value={formData.position_title}
             onChange={(e) => setFormData({ ...formData, position_title: e.target.value })}
-            placeholder="مدیرعامل، مدیر فروش، ..."
+            placeholder="مدیرعامل، مدیر فروش،…"
             required
           />
         </div>
@@ -105,7 +105,7 @@ export function PositionForm({ open, onOpenChange, position, organizationId, ser
             id="department"
             value={formData.department}
             onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-            placeholder="فروش، مالی، منابع انسانی، ..."
+            placeholder="فروش، مالی، منابع انسانی،…"
           />
         </div>
 
@@ -171,7 +171,7 @@ export function PositionForm({ open, onOpenChange, position, organizationId, ser
             id="qualifications_required"
             value={formData.qualifications_required}
             onChange={(e) => setFormData({ ...formData, qualifications_required: e.target.value })}
-            placeholder="مدرک تحصیلی، سابقه کار، ..."
+            placeholder="مدرک تحصیلی، سابقه کار،…"
             rows={3}
           />
         </div>

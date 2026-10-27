@@ -163,7 +163,7 @@ export function OKRForm({ organizationId, onSuccess, onCancel, existingData }: O
           <TextInputWithVoice
             value={objective}
             onChange={setObjective}
-            placeholder="هدف اصلی خود را وارد کنید..."
+            placeholder="هدف اصلی خود را وارد کنید…"
             type="textarea"
             rows={2}
           />
@@ -174,7 +174,7 @@ export function OKRForm({ organizationId, onSuccess, onCancel, existingData }: O
           <TextInputWithVoice
             value={description}
             onChange={setDescription}
-            placeholder="توضیحات تکمیلی..."
+            placeholder="توضیحات تکمیلی…"
             type="textarea"
             rows={3}
           />
@@ -245,7 +245,7 @@ export function OKRForm({ organizationId, onSuccess, onCancel, existingData }: O
               <TextInputWithVoice
                 value={kr.title}
                 onChange={(v) => updateKeyResult(kr.id, 'title', v)}
-                placeholder="عنوان نتیجه کلیدی..."
+                placeholder="عنوان نتیجه کلیدی…"
                 type="textarea"
                 rows={2}
               />
@@ -328,7 +328,7 @@ export function OKRForm({ organizationId, onSuccess, onCancel, existingData }: O
           </Button>
         )}
         <Button type="submit" disabled={isSubmitting} className="flex-1">
-          {isSubmitting ? 'در حال ذخیره...' : existingData ? 'به‌روزرسانی OKR' : 'ذخیره OKR'}
+          {isSubmitting ? 'در حال ذخیره…' : existingData ? 'به‌روزرسانی OKR' : 'ذخیره OKR'}
         </Button>
       </div>
     </form>

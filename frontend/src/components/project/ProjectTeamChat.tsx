@@ -204,7 +204,7 @@ export function ProjectTeamChat({ project, task, currentUserId = 'member_1' }: P
                   <div className="w-1 h-1 bg-current rounded-full animate-bounce delay-100"></div>
                   <div className="w-1 h-1 bg-current rounded-full animate-bounce delay-200"></div>
                 </div>
-                <span className="text-xs">در حال تایپ...</span>
+                <span className="text-xs">در حال تایپ…</span>
               </div>
             )}
             
@@ -221,7 +221,7 @@ export function ProjectTeamChat({ project, task, currentUserId = 'member_1' }: P
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="پیام خود را تایپ کنید..."
+            placeholder="پیام خود را تایپ کنید…"
             className="flex-1"
           />
           <Button onClick={sendMessage} size="sm" disabled={!newMessage.trim()}>

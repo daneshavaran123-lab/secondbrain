@@ -117,7 +117,7 @@ export function QuickClaimEntry({ organizationId, onSuccess }: QuickClaimEntryPr
                     <FormItem>
                       <FormLabel>عنوان مطالبه *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="عنوان مطالبه..." />
+                        <Input {...field} placeholder="عنوان مطالبه…" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -178,7 +178,7 @@ export function QuickClaimEntry({ organizationId, onSuccess }: QuickClaimEntryPr
                     <FormItem>
                       <FormLabel>توضیحات</FormLabel>
                       <FormControl>
-                        <Textarea {...field} placeholder="توضیح مختصری از مطالبه..." rows={3} />
+                        <Textarea {...field} placeholder="توضیح مختصری از مطالبه…" rows={3} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -190,7 +190,7 @@ export function QuickClaimEntry({ organizationId, onSuccess }: QuickClaimEntryPr
                     انصراف
                   </Button>
                   <Button type="submit" disabled={submitting}>
-                    {submitting ? 'در حال ایجاد...' : 'ایجاد مطالبه'}
+                    {submitting ? 'در حال ایجاد…' : 'ایجاد مطالبه'}
                   </Button>
                 </div>
               </form>

@@ -174,7 +174,7 @@ export function ResumeWorkExperienceDialog({ open, onClose, editItem }: ResumeWo
               id="description"
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="توضیحات کلی در مورد شغل..."
+              placeholder="توضیحات کلی در مورد شغل…"
               rows={3}
             />
           </div>
@@ -185,7 +185,7 @@ export function ResumeWorkExperienceDialog({ open, onClose, editItem }: ResumeWo
               <Input
                 value={newResponsibility}
                 onChange={(e) => setNewResponsibility(e.target.value)}
-                placeholder="مسئولیت جدید..."
+                placeholder="مسئولیت جدید…"
                 onKeyPress={(e) => e.key === 'Enter' && addResponsibility()}
               />
               <Button type="button" onClick={addResponsibility}>
@@ -214,7 +214,7 @@ export function ResumeWorkExperienceDialog({ open, onClose, editItem }: ResumeWo
               <Input
                 value={newAchievement}
                 onChange={(e) => setNewAchievement(e.target.value)}
-                placeholder="دستاورد جدید..."
+                placeholder="دستاورد جدید…"
                 onKeyPress={(e) => e.key === 'Enter' && addAchievement()}
               />
               <Button type="button" onClick={addAchievement}>
@@ -245,7 +245,7 @@ export function ResumeWorkExperienceDialog({ open, onClose, editItem }: ResumeWo
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  در حال ذخیره...
+                  در حال ذخیره…
                 </>
               ) : (
                 'ذخیره'

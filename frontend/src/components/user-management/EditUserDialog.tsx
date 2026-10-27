@@ -104,7 +104,7 @@ export default function EditUserDialog({ open, onOpenChange, userId }: EditUserD
         <DialogContent className="max-w-2xl" dir="rtl">
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="mr-2">در حال دریافت اطلاعات...</span>
+            <span className="mr-2">در حال دریافت اطلاعات…</span>
           </div>
         </DialogContent>
       </Dialog>
@@ -329,7 +329,7 @@ export default function EditUserDialog({ open, onOpenChange, userId }: EditUserD
                 {updateUser.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                    در حال بروزرسانی...
+                    در حال بروزرسانی…
                   </>
                 ) : (
                   'بروزرسانی'

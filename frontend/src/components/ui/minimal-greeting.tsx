@@ -25,9 +25,9 @@ export function MinimalGreeting({ className }: { className?: string }) {
   const name = user?.first_name || user?.display_name || '';
 
   return (
-    <div className={cn('page-enter space-y-1.5', className)}>
-      <p className="text-sm text-muted-foreground">{todayLabel()}</p>
-      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+    <div className={cn('space-y-1.5', className)}>
+      <p className="text-sm text-muted-foreground lg:hidden">{todayLabel()}</p>
+      <h1 className="text-2xl font-bold md:text-3xl">
         {greetingFor(getTehranHour())}{name ? `، ${name}` : ''}
       </h1>
       <AnimatedSubtitle className="pt-1" />

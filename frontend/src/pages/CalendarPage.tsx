@@ -880,7 +880,7 @@ const [selectedPacks, setSelectedPacks] = useState<{ IR: boolean; UN: boolean; T
                   <Input
                     value={newEvent.contact_info}
                     onChange={(e) => setNewEvent({...newEvent, contact_info: e.target.value})}
-                    placeholder="شماره تماس، ایمیل و..."
+                    placeholder="شماره تماس، ایمیل و…"
                   />
                 </div>
 
@@ -926,7 +926,7 @@ const [selectedPacks, setSelectedPacks] = useState<{ IR: boolean; UN: boolean; T
       <Card className="bg-card border-border">
         <CardContent className={`${isMobile ? 'p-3' : 'p-6'}`}>
           {loading ? (
-            <div className="text-center py-8">در حال بارگیری...</div>
+            <div className="text-center py-8">در حال بارگیری…</div>
           ) : (
             <EnhancedJalaliMonthGrid
               currentDate={currentDate}

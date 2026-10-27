@@ -439,7 +439,7 @@ const Needs = () => {
               <div className="relative">
                 <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="جستجو در نیازها..."
+                  placeholder="جستجو در نیازها…"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pr-9"

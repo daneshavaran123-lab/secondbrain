@@ -226,7 +226,7 @@ export function OKRDetail({ strategyId, organizationId, onBack, onEdit, onDelete
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="p-4 border rounded-lg hover:shadow-md transition-all"
+                      className="p-4 border rounded-lg hover:shadow-md transition"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">

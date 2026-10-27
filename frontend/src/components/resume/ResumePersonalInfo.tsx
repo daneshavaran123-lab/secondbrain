@@ -122,7 +122,7 @@ export function ResumePersonalInfo() {
               id="bio"
               value={formData.bio || ''}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              placeholder="توضیحات کوتاهی در مورد خودتان بنویسید..."
+              placeholder="توضیحات کوتاهی در مورد خودتان بنویسید…"
               rows={4}
             />
           </div>
@@ -189,7 +189,7 @@ export function ResumePersonalInfo() {
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  در حال ذخیره...
+                  در حال ذخیره…
                 </>
               ) : (
                 <>

@@ -355,7 +355,7 @@ const MeetingMinutes: React.FC<MeetingMinutesProps> = ({ organizationName }) => 
               <div className="relative">
                 <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="جستجو بر اساس عنوان، تاریخ یا نوع جلسه..."
+                  placeholder="جستجو بر اساس عنوان، تاریخ یا نوع جلسه…"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pr-10"
@@ -591,7 +591,7 @@ const MeetingMinutes: React.FC<MeetingMinutesProps> = ({ organizationName }) => 
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Input placeholder="جستجو در آرشیو..." />
+                <Input placeholder="جستجو در آرشیو…" />
                 <div className="text-center py-8 text-muted-foreground">
                   <Archive className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   <p>آرشیو جلسات و پیوست‌ها</p>
@@ -706,7 +706,7 @@ const MeetingMinutes: React.FC<MeetingMinutesProps> = ({ organizationName }) => 
             لغو
           </Button>
           <Button onClick={handleCreateMeeting} disabled={isLoading}>
-            {isLoading ? 'در حال ایجاد...' : 'ایجاد جلسه'}
+            {isLoading ? 'در حال ایجاد…' : 'ایجاد جلسه'}
           </Button>
         </div>
       </ResponsiveDialog>

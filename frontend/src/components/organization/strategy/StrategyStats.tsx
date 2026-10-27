@@ -252,7 +252,7 @@ function StatCard({ icon, label, value, gradient, delay }: StatCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
     >
-      <Card className="relative overflow-hidden hover:shadow-luxury-soft transition-all duration-300">
+      <Card className="relative overflow-hidden hover:shadow-luxury-soft transition duration-300">
         <div className={`absolute top-0 left-0 w-24 h-24 bg-gradient-to-br ${gradient} opacity-10 rounded-full -ml-12 -mt-12`} />
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">

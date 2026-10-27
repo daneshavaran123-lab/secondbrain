@@ -110,7 +110,7 @@ export function NetworkingInteractionForm({ contactId, onSuccess, onCancel }: Ne
         <Textarea
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="خلاصه‌ای از تعامل..."
+          placeholder="خلاصه‌ای از تعامل…"
           rows={3}
         />
       </div>
@@ -165,7 +165,7 @@ export function NetworkingInteractionForm({ contactId, onSuccess, onCancel }: Ne
           انصراف
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? "در حال ثبت..." : "ثبت تعامل"}
+          {loading ? "در حال ثبت…" : "ثبت تعامل"}
         </Button>
       </div>
     </form>

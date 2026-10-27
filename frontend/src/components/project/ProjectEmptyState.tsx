@@ -65,7 +65,7 @@ export function ProjectEmptyState({ onCreateProject, onDataInitialized }: Projec
             {isInitializing ? (
               <>
                 <AppIcon size="sm" className="animate-spin"><Sparkles /></AppIcon>
-                در حال ایجاد...
+                در حال ایجاد…
               </>
             ) : (
               'ایجاد داده‌های نمونه'

@@ -151,7 +151,7 @@ export function ChecklistBuilder({ organizationId, onSuccess, existingData }: Ch
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="عنوان چک‌لیست..."
+            placeholder="عنوان چک‌لیست…"
           />
         </div>
 
@@ -160,7 +160,7 @@ export function ChecklistBuilder({ organizationId, onSuccess, existingData }: Ch
           <TextInputWithVoice
             value={description}
             onChange={setDescription}
-            placeholder="توضیحات کلی..."
+            placeholder="توضیحات کلی…"
             type="textarea"
             rows={2}
           />
@@ -219,7 +219,7 @@ export function ChecklistBuilder({ organizationId, onSuccess, existingData }: Ch
                       <TextInputWithVoice
                         value={item.text}
                         onChange={(v) => updateItem(item.id, 'text', v)}
-                        placeholder="متن آیتم چک‌لیست..."
+                        placeholder="متن آیتم چک‌لیست…"
                         type="textarea"
                         rows={2}
                       />
@@ -283,7 +283,7 @@ export function ChecklistBuilder({ organizationId, onSuccess, existingData }: Ch
 
       <div className="flex justify-end gap-3">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'در حال ذخیره...' : 'ذخیره چک‌لیست'}
+          {isSubmitting ? 'در حال ذخیره…' : 'ذخیره چک‌لیست'}
         </Button>
       </div>
     </form>

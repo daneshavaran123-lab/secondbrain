@@ -302,7 +302,7 @@ export function ClaimExporter({ organizationId, claims }: ClaimExporterProps) {
               onClick={exportToCSV} 
               disabled={selectedFieldCount === 0 || filteredCount === 0 || exporting}
             >
-              {exporting ? 'در حال ایجاد...' : 'دانلود CSV'}
+              {exporting ? 'در حال ایجاد…' : 'دانلود CSV'}
             </Button>
           </div>
         </div>

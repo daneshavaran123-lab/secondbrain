@@ -296,7 +296,7 @@ export const MeetingAudioRecorder: React.FC<MeetingAudioRecorderProps> = ({
                 <div className="space-y-2">
                   <div className="text-lg font-mono">{formatTime(recordingTime)}</div>
                   <Badge variant="default" className="animate-pulse">
-                    🔴 در حال شنیدن...
+                    🔴 در حال شنیدن…
                   </Badge>
                 </div>
               )}
@@ -419,13 +419,13 @@ export const MeetingAudioRecorder: React.FC<MeetingAudioRecorderProps> = ({
             disabled={isProcessing}
             className="w-full"
           >
-            {isProcessing ? 'در حال پردازش...' : 'تبدیل به متن و ذخیره'}
+            {isProcessing ? 'در حال پردازش…' : 'تبدیل به متن و ذخیره'}
           </Button>
         )}
 
         {isProcessing && (
           <div className="space-y-2">
-            <div className="text-sm text-center">در حال پردازش صوت...</div>
+            <div className="text-sm text-center">در حال پردازش صوت…</div>
             <Progress value={45} className="w-full" />
           </div>
         )}

@@ -119,7 +119,7 @@ export default function UserPermissionsDialog({ open, onOpenChange, userId }: Us
         <DialogContent className="max-w-4xl" dir="rtl">
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="mr-2">در حال دریافت اطلاعات...</span>
+            <span className="mr-2">در حال دریافت اطلاعات…</span>
           </div>
         </DialogContent>
       </Dialog>
@@ -249,7 +249,7 @@ export default function UserPermissionsDialog({ open, onOpenChange, userId }: Us
                     <div className="relative">
                       <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        placeholder="جستجوی دسترسی..."
+                        placeholder="جستجوی دسترسی…"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pr-10"
@@ -340,7 +340,7 @@ export default function UserPermissionsDialog({ open, onOpenChange, userId }: Us
                   <div>
                     <label className="text-sm font-medium mb-2 block">دلیل (اختیاری)</label>
                     <Textarea
-                      placeholder="دلیل تخصیص این دسترسی را توضیح دهید..."
+                      placeholder="دلیل تخصیص این دسترسی را توضیح دهید…"
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                       rows={2}
@@ -355,7 +355,7 @@ export default function UserPermissionsDialog({ open, onOpenChange, userId }: Us
                       {assignUserPermission.isPending ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white ml-2"></div>
-                          در حال افزودن...
+                          در حال افزودن…
                         </>
                       ) : (
                         'افزودن دسترسی'

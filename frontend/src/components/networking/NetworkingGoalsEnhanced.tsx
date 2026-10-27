@@ -270,7 +270,7 @@ export function NetworkingGoalsEnhanced({ companyId, organizationId }: Networkin
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className={`transition-all ${isCompleted ? "border-green-500 bg-green-500/5" : ""}`}>
+                  <Card className={`transition ${isCompleted ? "border-green-500 bg-green-500/5" : ""}`}>
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -439,7 +439,7 @@ export function NetworkingGoalsEnhanced({ companyId, organizationId }: Networkin
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="جزئیات بیشتر..."
+                placeholder="جزئیات بیشتر…"
                 rows={2}
               />
             </div>

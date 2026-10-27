@@ -211,7 +211,7 @@ export const KnowledgeCapture: React.FC<KnowledgeCaptureProps> = ({ onKnowledgeA
             <div className="space-y-3">
               <label className="text-readable font-semibold text-foreground">عنوان (اختیاری)</label>
               <Input
-                placeholder="عنوان یادداشت را وارد کنید..."
+                placeholder="عنوان یادداشت را وارد کنید…"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="input-readable"
@@ -221,7 +221,7 @@ export const KnowledgeCapture: React.FC<KnowledgeCaptureProps> = ({ onKnowledgeA
             <div className="space-y-3">
               <label className="text-readable font-semibold text-foreground">محتوا</label>
               <Textarea
-                placeholder="محتوای دانش خود را با جزئیات وارد کنید..."
+                placeholder="محتوای دانش خود را با جزئیات وارد کنید…"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={8}
@@ -274,7 +274,7 @@ export const KnowledgeCapture: React.FC<KnowledgeCaptureProps> = ({ onKnowledgeA
             <Upload className="h-16 w-16 mx-auto mb-6 text-muted-foreground" />
             
             {isDragActive ? (
-              <p className="text-primary text-large-readable">فایل را اینجا رها کنید...</p>
+              <p className="text-primary text-large-readable">فایل را اینجا رها کنید…</p>
             ) : (
               <div>
                 <p className="text-foreground mb-4 text-large-readable">فایل را اینجا بکشید یا کلیک کنید</p>
@@ -302,7 +302,7 @@ export const KnowledgeCapture: React.FC<KnowledgeCaptureProps> = ({ onKnowledgeA
               {isRecording ? (
                 <>
                   <div className="animate-pulse h-4 w-4 bg-red-500 rounded-full ml-2" />
-                  در حال ضبط... (کلیک برای توقف)
+                  در حال ضبط… (کلیک برای توقف)
                 </>
               ) : (
                 <>
@@ -316,7 +316,7 @@ export const KnowledgeCapture: React.FC<KnowledgeCaptureProps> = ({ onKnowledgeA
               <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="متن تبدیل شده از صوت..."
+                placeholder="متن تبدیل شده از صوت…"
                 rows={4}
                 className="bg-background/50"
               />

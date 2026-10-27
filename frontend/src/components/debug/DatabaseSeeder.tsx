@@ -135,7 +135,7 @@ export function DatabaseSeeder() {
           {isSeeding ? (
             <>
               <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              در حال راه‌اندازی...
+              در حال راه‌اندازی…
             </>
           ) : (
             <>

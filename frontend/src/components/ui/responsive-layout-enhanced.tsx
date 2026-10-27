@@ -131,7 +131,7 @@ export function ResponsiveLayoutEnhanced({
     // Prevent layout shifts
     'box-border',
     // Smooth transitions
-    'transition-all duration-300 ease-in-out',
+    'transition duration-300 ease-in-out',
     className
   );
 

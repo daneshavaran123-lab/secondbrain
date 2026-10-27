@@ -225,7 +225,7 @@ export function ClaimAttachments({
             {uploading && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">در حال بارگذاری...</span>
+                  <span className="text-sm">در حال بارگذاری…</span>
                   <span className="text-sm">{uploadProgress}%</span>
                 </div>
                 <Progress value={uploadProgress} />

@@ -124,7 +124,7 @@ export function ProtectedRoute({
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <LoadingSpinner />
-          <p className="text-muted-foreground">در حال بررسی دسترسی...</p>
+          <p className="text-muted-foreground">در حال بررسی دسترسی…</p>
           <p className="text-xs text-muted-foreground">
             Loading: {isLoading.toString()} | Auth: {authorized?.toString() ?? 'checking'}
           </p>

@@ -18,44 +18,44 @@ import { toast } from 'sonner';
 
 export async function executeCompleteDataCleanup(): Promise<void> {
   try {
-    console.log('🧹 شروع پاکسازی کامل تمام داده‌های تستی...');
+    console.log('🧹 شروع پاکسازی کامل تمام داده‌های تستی…');
     
     // پاکسازی سرویس‌های جلسات
-    console.log('🏢 پاکسازی داده‌های جلسات حرفه‌ای...');
+    console.log('🏢 پاکسازی داده‌های جلسات حرفه‌ای…');
     professionalMeetingService.cleanupAllData();
     
-    console.log('🏛️ پاکسازی داده‌های جلسات سازمانی...');
+    console.log('🏛️ پاکسازی داده‌های جلسات سازمانی…');
     meetingService.cleanupAllData();
     
-    console.log('📋 پاکسازی داده‌های برنامه‌ریزی سازمانی...');
+    console.log('📋 پاکسازی داده‌های برنامه‌ریزی سازمانی…');
     organizationalPlanningService.cleanupAllData();
     
-    console.log('🏗️ پاکسازی داده‌های مدیریت پروژه...');
+    console.log('🏗️ پاکسازی داده‌های مدیریت پروژه…');
     projectManagementService.cleanupAllData();
     
-    console.log('👥 پاکسازی داده‌های دبیرخانه...');
+    console.log('👥 پاکسازی داده‌های دبیرخانه…');
     secretaryService.cleanupAllData();
     
-    console.log('🤲 پاکسازی داده‌های بخش خادم خلق...');
+    console.log('🤲 پاکسازی داده‌های بخش خادم خلق…');
     khadimEKhalghService.cleanupAllData();
     
-    console.log('🎭 پاکسازی داده‌های محتوای فرهنگی...');
+    console.log('🎭 پاکسازی داده‌های محتوای فرهنگی…');
     culturalContentService.cleanupAllData();
     
-    console.log('📊 پاکسازی کش آمارهای سازمانی...');
+    console.log('📊 پاکسازی کش آمارهای سازمانی…');
     await organizationalStatsService.cleanupAllData();
     
-    console.log('🤲 پاکسازی کش آمارهای خادم خلق...');
+    console.log('🤲 پاکسازی کش آمارهای خادم خلق…');
     await khadimEKhalghStatsService.cleanupAllData();
     
-    console.log('❤️ پاکسازی داده‌های سلامت...');
+    console.log('❤️ پاکسازی داده‌های سلامت…');
     await healthService.cleanupAllData();
     
-    console.log('📱 پاکسازی داده‌های رسانه‌های اجتماعی...');
+    console.log('📱 پاکسازی داده‌های رسانه‌های اجتماعی…');
     socialMediaService.cleanupAllData();
     
     // Dashboard Service
-    console.log('📊 پاکسازی داده‌های داشبورد خادم خلق...');
+    console.log('📊 پاکسازی داده‌های داشبورد خادم خلق…');
     try {
       const { khadimEKhalghDashboardService } = await import('../services/khadimEKhalghDashboardService');
       khadimEKhalghDashboardService.cleanup();
@@ -64,7 +64,7 @@ export async function executeCompleteDataCleanup(): Promise<void> {
     }
     
     // Enhanced Gratitude Service
-    console.log('🙏 پاکسازی داده‌های شکرگذاری پیشرفته...');
+    console.log('🙏 پاکسازی داده‌های شکرگذاری پیشرفته…');
     try {
       const { gratitudeLocalService } = await import('../services/enhancedGratitudeService');
       gratitudeLocalService.cleanup();
@@ -132,7 +132,7 @@ export async function executeCompleteDataCleanup(): Promise<void> {
     
     // reload صفحه برای نمایش تغییرات
     setTimeout(() => {
-      console.log('🔄 بارگیری مجدد صفحه...');
+      console.log('🔄 بارگیری مجدد صفحه…');
       window.location.reload();
     }, 1500);
     

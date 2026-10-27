@@ -196,7 +196,7 @@ const MissionForm: React.FC<MissionFormProps> = ({ missionId, onSave, onCancel }
               انصراف
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'در حال ذخیره...' : 'ذخیره'}
+              {isLoading ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </form>

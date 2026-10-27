@@ -182,7 +182,7 @@ export function PersonalInfoSection() {
               id="bio"
               value={formData.bio}
               onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder="درباره خود بنویسید..."
+              placeholder="درباره خود بنویسید…"
               rows={4}
             />
           </div>

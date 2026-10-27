@@ -24,7 +24,7 @@ export const GlowButton = React.forwardRef<HTMLButtonElement, GlowButtonProps>(
       <Button
         ref={ref}
         className={cn(
-          'motion-safe:transition-all motion-safe:duration-300 motion-safe:hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          'motion-safe:transition motion-safe:duration-300 motion-safe:hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           styles[glowVariant],
           className
         )}

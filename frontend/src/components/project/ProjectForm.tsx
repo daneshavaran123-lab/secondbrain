@@ -213,7 +213,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="نام پروژه را وارد کنید..."
+                placeholder="نام پروژه را وارد کنید…"
                 required
               />
             </div>
@@ -248,7 +248,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="توضیحات پروژه..."
+              placeholder="توضیحات پروژه…"
               rows={3}
             />
           </div>
@@ -260,7 +260,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
               id="goal"
               value={formData.goal}
               onChange={(e) => setFormData(prev => ({ ...prev, goal: e.target.value }))}
-              placeholder="هدف اصلی و نتیجه مورد انتظار از این پروژه..."
+              placeholder="هدف اصلی و نتیجه مورد انتظار از این پروژه…"
               rows={2}
               required
             />
@@ -275,7 +275,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
                 onValueChange={(value) => setFormData(prev => ({ ...prev, managerId: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="انتخاب مدیر..." />
+                  <SelectValue placeholder="انتخاب مدیر…" />
                 </SelectTrigger>
                 <SelectContent>
                   {availableMembers.filter(m => m.role === 'manager' || m.role === 'member').map((member) => (
@@ -404,7 +404,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
               {/* Add member selector */}
               <Select onValueChange={addMember}>
                 <SelectTrigger>
-                  <SelectValue placeholder="افزودن عضو جدید..." />
+                  <SelectValue placeholder="افزودن عضو جدید…" />
                 </SelectTrigger>
                 <SelectContent>
                   {availableMembers
@@ -452,7 +452,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="برچسب جدید..."
+                placeholder="برچسب جدید…"
                 className="flex-1"
               />
               <Button type="button" onClick={addTag} variant="outline" size="sm">
@@ -466,7 +466,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
               انصراف
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'در حال ذخیره...' : project ? 'به‌روزرسانی' : 'ایجاد پروژه'}
+              {isLoading ? 'در حال ذخیره…' : project ? 'به‌روزرسانی' : 'ایجاد پروژه'}
             </Button>
           </DialogFooter>
         </form>

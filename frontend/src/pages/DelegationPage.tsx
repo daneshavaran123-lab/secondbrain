@@ -81,7 +81,7 @@ export default function DelegationPage() {
 
   const domainInfo = getDomainInfo(domain);
   return (
-    <div className={`min-h-screen bg-gradient-subtle p-6 transition-all duration-300`}>
+    <div className={`min-h-screen bg-gradient-subtle p-6 transition duration-300`}>
       <div className={`mx-auto space-y-6 ${sidebarOpen ? 'max-w-5xl' : 'max-w-7xl'}`}>
         <SectionHeader
           title={domainInfo.title}

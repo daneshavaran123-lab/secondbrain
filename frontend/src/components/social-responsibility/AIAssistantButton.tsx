@@ -125,7 +125,7 @@ export function AIAssistantButton({
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                در حال پردازش...
+                در حال پردازش…
               </>
             ) : (
               <>

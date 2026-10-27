@@ -117,7 +117,7 @@ export function DecisionLogList({ items, onEdit, onDelete, onView }: DecisionLog
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.3 }}
           >
-            <Card className="relative overflow-hidden hover:shadow-luxury-soft transition-all duration-300 cursor-pointer h-full"
+            <Card className="relative overflow-hidden hover:shadow-luxury-soft transition duration-300 cursor-pointer h-full"
                   onClick={() => onView(item.id)}>
               {/* Gradient accent bar */}
               <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${impactColor}`} />

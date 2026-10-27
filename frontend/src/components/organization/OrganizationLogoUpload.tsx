@@ -104,7 +104,7 @@ export function OrganizationLogoUpload({
               onClick={() => document.getElementById('logo-upload')?.click()}
             >
               <Upload className="w-4 h-4 ml-2" />
-              {uploading ? 'در حال آپلود...' : 'انتخاب تصویر'}
+              {uploading ? 'در حال آپلود…' : 'انتخاب تصویر'}
             </Button>
             <input
               id="logo-upload"

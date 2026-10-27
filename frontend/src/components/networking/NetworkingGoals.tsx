@@ -275,7 +275,7 @@ export function NetworkingGoals({ companyId, organizationId }: NetworkingGoalsPr
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="جزئیات بیشتر..."
+                placeholder="جزئیات بیشتر…"
                 rows={2}
               />
             </div>

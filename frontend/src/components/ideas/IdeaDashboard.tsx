@@ -26,8 +26,9 @@ export function IdeaDashboard() {
       // Calculate statistics
       const totalIdeas = ideas.length;
       const personalIdeas = ideas.filter(idea => !idea.organization_id).length;
-      const averageFeasibility = ideas.reduce((acc, idea) => acc + (idea.feasibility_score || 0), 0) / totalIdeas;
-      const averageImpact = ideas.reduce((acc, idea) => acc + (idea.impact_score || 0), 0) / totalIdeas;
+      // No ideas yet means no average, not NaN
+      const averageFeasibility = totalIdeas ? ideas.reduce((acc, idea) => acc + (idea.feasibility_score || 0), 0) / totalIdeas : null;
+      const averageImpact = totalIdeas ? ideas.reduce((acc, idea) => acc + (idea.impact_score || 0), 0) / totalIdeas : null;
       const totalRisks = ideas.reduce((acc, idea) => acc + (idea.idea_risks?.length || 0), 0);
       const completedMilestones = ideas.reduce((acc, idea) => 
         acc + (idea.idea_milestones?.filter((m: any) => m.completed).length || 0), 0
@@ -47,8 +48,8 @@ export function IdeaDashboard() {
       return {
         totalIdeas,
         personalIdeas,
-        averageFeasibility: Math.round(averageFeasibility * 10) / 10,
-        averageImpact: Math.round(averageImpact * 10) / 10,
+        averageFeasibility: averageFeasibility === null ? null : Math.round(averageFeasibility * 10) / 10,
+        averageImpact: averageImpact === null ? null : Math.round(averageImpact * 10) / 10,
         totalRisks,
         completedMilestones,
         totalMilestones,
@@ -101,7 +102,7 @@ export function IdeaDashboard() {
               <span className="text-sm font-medium">میانگین امکان‌پذیری</span>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">{stats.averageFeasibility}/10</div>
+              <div className="text-2xl font-bold">{stats.averageFeasibility === null ? <span className="text-muted-foreground">—</span> : `${stats.averageFeasibility.toLocaleString('fa-IR')} از ۱۰`}</div>
               <p className="text-xs text-muted-foreground">امتیاز متوسط</p>
             </div>
           </CardContent>
@@ -114,7 +115,7 @@ export function IdeaDashboard() {
               <span className="text-sm font-medium">میانگین تأثیر</span>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">{stats.averageImpact}/10</div>
+              <div className="text-2xl font-bold">{stats.averageImpact === null ? <span className="text-muted-foreground">—</span> : `${stats.averageImpact.toLocaleString('fa-IR')} از ۱۰`}</div>
               <p className="text-xs text-muted-foreground">امتیاز متوسط</p>
             </div>
           </CardContent>
@@ -153,7 +154,7 @@ export function IdeaDashboard() {
                     <div className="flex items-center gap-2">
                       <div className="w-16 bg-muted rounded-full h-2">
                         <div 
-                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          className="bg-primary h-2 rounded-full transition duration-300"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -182,7 +183,7 @@ export function IdeaDashboard() {
               
               <div className="w-full bg-muted rounded-full h-3">
                 <div 
-                  className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition duration-300"
                   style={{ 
                     width: `${stats.totalMilestones > 0 ? (stats.completedMilestones / stats.totalMilestones) * 100 : 0}%` 
                   }}

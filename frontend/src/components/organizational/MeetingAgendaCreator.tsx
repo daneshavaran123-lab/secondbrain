@@ -305,7 +305,7 @@ export const MeetingAgendaCreator: React.FC<MeetingAgendaCreatorProps> = ({
               <Input
                 value={newItem.title}
                 onChange={(e) => setNewItem({...newItem, title: e.target.value})}
-                placeholder="عنوان موضوع دستور جلسه..."
+                placeholder="عنوان موضوع دستور جلسه…"
               />
             </div>
 
@@ -333,7 +333,7 @@ export const MeetingAgendaCreator: React.FC<MeetingAgendaCreatorProps> = ({
                 <Input
                   value={newItem.presenter}
                   onChange={(e) => setNewItem({...newItem, presenter: e.target.value})}
-                  placeholder="نام ارائه‌دهنده..."
+                  placeholder="نام ارائه‌دهنده…"
                 />
               </div>
               <div>
@@ -353,7 +353,7 @@ export const MeetingAgendaCreator: React.FC<MeetingAgendaCreatorProps> = ({
               <Textarea
                 value={newItem.description}
                 onChange={(e) => setNewItem({...newItem, description: e.target.value})}
-                placeholder="توضیحات اضافی..."
+                placeholder="توضیحات اضافی…"
                 rows={3}
               />
             </div>

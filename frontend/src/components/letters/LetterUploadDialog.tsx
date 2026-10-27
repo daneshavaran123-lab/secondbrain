@@ -147,7 +147,7 @@ export function LetterUploadDialog({ open, onOpenChange, onCreated }: LetterUplo
           <div
             {...getRootProps()}
             className={cn(
-              'flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors',
+              'flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors',
               isDragActive ? 'border-primary bg-primary/5' : 'border-border'
             )}
           >

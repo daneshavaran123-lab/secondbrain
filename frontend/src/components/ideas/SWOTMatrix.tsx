@@ -32,7 +32,7 @@ export const SWOTMatrix: React.FC<SWOTMatrixProps> = ({
     bgColor: string,
     textColor: string
   ) => (
-    <Card className={`${bgColor} border hover:shadow-lg transition-all duration-300 group h-full`}>
+    <Card className={`${bgColor} border hover:shadow-lg transition duration-300 group h-full`}>
       <CardHeader className="pb-4">
         <CardTitle className={`text-base font-bold ${textColor} flex items-center gap-3 group-hover:scale-105 transition-transform`}>
           <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">

@@ -140,7 +140,7 @@ const SessionSidebar: React.FC<SessionSidebarProps> = ({ currentSessionId, onSes
         <div className="relative mb-3">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="جستجو در مکالمات..."
+            placeholder="جستجو در مکالمات…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pr-10"

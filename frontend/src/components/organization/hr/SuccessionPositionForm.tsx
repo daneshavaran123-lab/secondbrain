@@ -150,7 +150,7 @@ export function SuccessionPositionForm({ organizationId, onSuccess }: Succession
           id="required_qualifications"
           value={formData.required_qualifications}
           onChange={(e) => setFormData({ ...formData, required_qualifications: e.target.value })}
-          placeholder="مدرک، تجربه، مهارت‌های فنی..."
+          placeholder="مدرک، تجربه، مهارت‌های فنی…"
           rows={3}
         />
       </div>

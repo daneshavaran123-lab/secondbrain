@@ -93,7 +93,7 @@ export function clearAppSessionStorage() {
  */
 export function fullUserSwitchCleanup(queryClient: QueryClient, currentUserId?: string) {
     try {
-        console.log('🧹 شروع پاکسازی کامل برای تغییر کاربر...');
+        console.log('🧹 شروع پاکسازی کامل برای تغییر کاربر…');
 
         // پاکسازی LocalStorage
         const keysToRemove: string[] = [];

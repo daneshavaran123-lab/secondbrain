@@ -112,7 +112,7 @@ export function HourlyDayView({
                 onClick={() => onEventClick?.(event)}
                 className={cn(
                   "px-3 py-1 rounded text-sm cursor-pointer",
-                  "border-r-4 transition-all hover:shadow-md"
+                  "border-r-4 transition hover:shadow-md"
                 )}
                 style={{
                   backgroundColor: `${event.color || '#3b82f6'}15`,
@@ -173,7 +173,7 @@ export function HourlyDayView({
                       }}
                       className={cn(
                         "rounded-md px-3 py-2 text-sm mb-1",
-                        "border-r-4 transition-all hover:shadow-md cursor-pointer"
+                        "border-r-4 transition hover:shadow-md cursor-pointer"
                       )}
                       style={{
                         backgroundColor: `${event.color || '#3b82f6'}15`,

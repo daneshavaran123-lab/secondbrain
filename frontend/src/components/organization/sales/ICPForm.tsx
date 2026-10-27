@@ -175,7 +175,7 @@ export function ICPForm({ organizationId, profile, onClose, onSuccess }: ICPForm
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="توضیحات اضافی..."
+                placeholder="توضیحات اضافی…"
                 rows={4}
               />
             </div>
@@ -185,7 +185,7 @@ export function ICPForm({ organizationId, profile, onClose, onSuccess }: ICPForm
         <div className="flex gap-2 mt-6">
           <Button type="submit" disabled={saving} className="gap-2">
             <Save className="w-4 h-4" />
-            {saving ? 'در حال ذخیره...' : 'ذخیره'}
+            {saving ? 'در حال ذخیره…' : 'ذخیره'}
           </Button>
           <Button type="button" variant="outline" onClick={onClose}>
             لغو

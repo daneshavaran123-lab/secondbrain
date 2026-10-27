@@ -165,7 +165,7 @@ export function NewDeadlineDialog({
             id="notes"
             value={formData.notes}
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-            placeholder="توضیحات اضافی در مورد این مهلت..."
+            placeholder="توضیحات اضافی در مورد این مهلت…"
             rows={3}
           />
         </div>

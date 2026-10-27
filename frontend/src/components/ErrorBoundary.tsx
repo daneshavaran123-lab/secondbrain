@@ -19,18 +19,30 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a', color: '#fff', fontFamily: 'sans-serif', padding: '2rem', flexDirection: 'column', gap: '1rem' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>خطا در بارگذاری</h2>
-          <p style={{ color: '#aaa', textAlign: 'center' }}>مشکلی در اجرای برنامه پیش آمد.</p>
-          <pre style={{ background: '#111', padding: '1rem', borderRadius: '8px', fontSize: '0.75rem', color: '#f87171', maxWidth: '600px', overflow: 'auto', whiteSpace: 'pre-wrap', direction: 'ltr' }}>
-            {this.state.error?.message}
-          </pre>
-          <button
-            onClick={() => { localStorage.clear(); window.location.href = '/auth'; }}
-            style={{ background: '#6366f1', color: '#fff', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontSize: '1rem' }}
-          >
-            پاک‌سازی و ورود مجدد
-          </button>
+        <div role="alert" className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-8 text-center text-foreground">
+          <h2 className="text-xl font-bold">این صفحه باز نشد</h2>
+          <p className="max-w-md text-sm text-muted-foreground">
+            خطایی در اجرای برنامه پیش آمد. دوباره امتحان کنید؛ اگر تکرار شد، از حساب خارج شوید و دوباره وارد شوید.
+          </p>
+          {this.state.error?.message && (
+            <pre dir="ltr" className="max-w-xl overflow-auto whitespace-pre-wrap rounded-lg border border-border bg-card px-4 py-3 text-left text-xs text-destructive">
+              {this.state.error.message}
+            </pre>
+          )}
+          <div className="flex flex-wrap justify-center gap-2">
+            <button
+              onClick={() => window.location.reload()}
+              className="h-10 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+            >
+              تلاش دوباره
+            </button>
+            <button
+              onClick={() => { localStorage.clear(); window.location.href = '/auth'; }}
+              className="h-10 rounded-md border border-input bg-card px-5 text-sm transition-colors hover:bg-accent"
+            >
+              خروج و ورود دوباره
+            </button>
+          </div>
         </div>
       );
     }

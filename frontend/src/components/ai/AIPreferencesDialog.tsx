@@ -113,7 +113,7 @@ export const AIPreferencesDialog: React.FC<AIPreferencesDialogProps> = ({
                   {connectionStatus === 'unknown' && isTestingConnection && (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">در حال بررسی...</span>
+                      <span className="text-sm text-muted-foreground">در حال بررسی…</span>
                     </>
                   )}
                   {connectionStatus === 'success' && (
@@ -151,7 +151,7 @@ export const AIPreferencesDialog: React.FC<AIPreferencesDialogProps> = ({
                   {isTestingConnection ? (
                     <>
                       <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                      در حال تست...
+                      در حال تست…
                     </>
                   ) : (
                     'تست اتصال'

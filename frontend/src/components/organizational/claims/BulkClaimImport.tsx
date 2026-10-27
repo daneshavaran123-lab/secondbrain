@@ -232,7 +232,7 @@ export function BulkClaimImport({ organizationId, onImportComplete }: BulkClaimI
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">در حال وارد کردن...</span>
+                    <span className="text-sm font-medium">در حال وارد کردن…</span>
                     <span className="text-sm text-muted-foreground">{progress}%</span>
                   </div>
                   <Progress value={progress} />
@@ -291,7 +291,7 @@ export function BulkClaimImport({ organizationId, onImportComplete }: BulkClaimI
               onClick={handleImport} 
               disabled={!file || importing}
             >
-              {importing ? 'در حال وارد کردن...' : 'شروع وارد کردن'}
+              {importing ? 'در حال وارد کردن…' : 'شروع وارد کردن'}
             </Button>
           </div>
         </div>

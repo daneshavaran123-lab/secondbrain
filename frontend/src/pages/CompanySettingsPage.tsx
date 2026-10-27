@@ -236,7 +236,7 @@ export default function CompanySettingsPage() {
 
           <Button onClick={handleSave} disabled={isSaving} className="gap-2">
             <Save className="w-4 h-4" />
-            {isSaving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
+            {isSaving ? 'در حال ذخیره…' : 'ذخیره تغییرات'}
           </Button>
         </div>
       </div>

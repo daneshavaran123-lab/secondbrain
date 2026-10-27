@@ -62,7 +62,7 @@ const MeetingsPage = () => {
 
   return (
     <div className={cn(
-      "min-h-screen bg-gradient-subtle transition-all duration-300 mx-auto",
+      "min-h-screen bg-gradient-subtle transition duration-300 mx-auto",
       isMobile ? "p-3" : "p-6",
       sidebarOpen ? 'max-w-5xl' : 'max-w-7xl'
     )} dir="rtl">

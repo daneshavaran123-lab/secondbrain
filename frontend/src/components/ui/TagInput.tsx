@@ -15,7 +15,7 @@ interface TagInputProps {
 export function TagInput({
   value,
   onChange,
-  placeholder = "اضافه کردن برچسب...",
+  placeholder = "اضافه کردن برچسب…",
   suggestions = [],
   className,
 }: TagInputProps) {

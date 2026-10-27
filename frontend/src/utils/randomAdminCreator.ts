@@ -18,7 +18,7 @@ export async function createRandomAdminUser() {
     await supabase.auth.signOut();
 
     // 2. ایجاد کاربر جدید با ایمیل تصادفی
-    console.log('📝 در حال ایجاد کاربر...');
+    console.log('📝 در حال ایجاد کاربر…');
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: adminEmail,
       password: adminPassword,
@@ -42,7 +42,7 @@ export async function createRandomAdminUser() {
     console.log('✅ کاربر ایجاد شد:', signUpData.user?.id);
 
     // 3. تلاش برای ورود فوری
-    console.log('🔐 تلاش برای ورود...');
+    console.log('🔐 تلاش برای ورود…');
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: adminEmail,
       password: adminPassword,
@@ -131,7 +131,7 @@ export async function loginWithSavedCredentials() {
  */
 export async function cleanAndCreateFreshAdmin() {
   try {
-    console.log('🧹 تمیز کردن تمام session ها...');
+    console.log('🧹 تمیز کردن تمام session ها…');
     
     // پاک کردن localStorage
     localStorage.removeItem('brainforge_admin_credentials');

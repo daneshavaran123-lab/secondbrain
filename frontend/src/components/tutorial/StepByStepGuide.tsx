@@ -88,7 +88,7 @@ export function StepByStepGuide({
               
               <div className="w-full bg-secondary rounded-full h-3 mb-4">
                 <div 
-                  className="h-3 rounded-full transition-all duration-300"
+                  className="h-3 rounded-full transition duration-300"
                   style={{ 
                     width: `${completionRate}%`,
                     backgroundColor: config.color 
@@ -118,7 +118,7 @@ export function StepByStepGuide({
                   return (
                     <div
                       key={step.id}
-                      className={`flex items-center gap-4 p-4 rounded-lg border transition-all cursor-pointer hover:bg-muted/50 ${
+                      className={`flex items-center gap-4 p-4 rounded-lg border transition cursor-pointer hover:bg-muted/50 ${
                         isCurrent ? 'border-primary bg-primary/5' : 
                         isCompleted ? 'border-success/30 bg-success/5' : 'border-border'
                       }`}

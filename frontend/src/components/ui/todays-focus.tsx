@@ -118,7 +118,7 @@ function TaskCard({ task, priorityConfig, delay = '0ms' }: TaskCardProps) {
     <div 
       className={cn(
         "glass-card backdrop-blur-sm bg-card/40 rounded-xl p-4 border border-border/50",
-        "shadow-card hover:shadow-glass transition-all duration-300 hover:scale-[1.02]",
+        "shadow-card hover:shadow-glass transition duration-300 hover:scale-[1.02]",
         "animate-fade-in group",
         task.completed && "opacity-75"
       )}
@@ -127,7 +127,7 @@ function TaskCard({ task, priorityConfig, delay = '0ms' }: TaskCardProps) {
       <div className="flex items-start gap-4">
         {/* Status Indicator */}
         <div className={cn(
-          "flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all",
+          "flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 transition",
           task.completed 
             ? "bg-medical-green border-medical-green" 
             : "border-border group-hover:border-primary"
@@ -165,7 +165,7 @@ function TaskCard({ task, priorityConfig, delay = '0ms' }: TaskCardProps) {
           <div className="w-full bg-muted/30 rounded-full h-1.5 mt-2 overflow-hidden">
             <div 
               className={cn(
-                "h-full transition-all duration-500 rounded-full",
+                "h-full transition duration-500 rounded-full",
                 task.completed ? "bg-medical-green" : "bg-primary"
               )}
               style={{ width: `${task.progress}%` }}
@@ -190,7 +190,7 @@ function SummaryItem({ icon: Icon, label, value, color, delay = '0ms' }: Summary
     <div 
       className={cn(
         "glass-card backdrop-blur-sm bg-card/40 rounded-lg p-4 border border-border/50",
-        "shadow-card hover:shadow-glass transition-all duration-300",
+        "shadow-card hover:shadow-glass transition duration-300",
         "animate-fade-in"
       )}
       style={{ animationDelay: delay }}

@@ -9,7 +9,7 @@ export const PageLoadingSkeleton = ({ variant = "page" }: PageLoadingSkeletonPro
   return (
     <AuroraBackground intensity="subtle" className="min-h-[60vh] flex items-stretch">
       <div className="w-full" role="status" aria-busy="true" aria-live="polite">
-        <span className="sr-only">در حال بارگذاری...</span>
+        <span className="sr-only">در حال بارگذاری…</span>
         <SmartSkeleton variant={variant} />
       </div>
     </AuroraBackground>

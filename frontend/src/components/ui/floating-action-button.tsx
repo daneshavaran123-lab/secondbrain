@@ -23,7 +23,7 @@ export function FloatingActionButton() {
     <div className="fixed bottom-6 right-6 z-50">
       {/* Action buttons */}
       <div className={cn(
-        "flex flex-col-reverse items-end gap-3 mb-3 transition-all duration-300",
+        "flex flex-col-reverse items-end gap-3 mb-3 transition duration-300",
         isOpen ? "opacity-100 visible" : "opacity-0 invisible"
       )}>
         {fabActions.map((item, index) => (

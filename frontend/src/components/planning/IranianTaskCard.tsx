@@ -67,7 +67,7 @@ export const IranianTaskCard: React.FC<IranianTaskCardProps> = ({ task }) => {
 
   return (
     <Card className={`
-      p-4 space-y-3 transition-all duration-300 cursor-grab active:cursor-grabbing
+      p-4 space-y-3 transition duration-300 cursor-grab active:cursor-grabbing
       hover:shadow-lg hover:scale-[1.02] transform-gpu
       ${config.bgColor}
       ${isOverdue ? 'ring-2 ring-red-300 shadow-red-100' : ''}

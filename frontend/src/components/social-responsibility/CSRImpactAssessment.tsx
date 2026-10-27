@@ -142,7 +142,7 @@ export function CSRImpactAssessment({ projectId }: CSRImpactAssessmentProps) {
                   id="method"
                   value={formData.assessment_method}
                   onChange={(e) => setFormData({ ...formData, assessment_method: e.target.value })}
-                  placeholder="مصاحبه، نظرسنجی، مشاهده، ..."
+                  placeholder="مصاحبه، نظرسنجی، مشاهده،…"
                 />
               </div>
               <div>
@@ -151,7 +151,7 @@ export function CSRImpactAssessment({ projectId }: CSRImpactAssessmentProps) {
                   id="feedback"
                   value={formData.feedback}
                   onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
-                  placeholder="بازخورد کلی از پروژه..."
+                  placeholder="بازخورد کلی از پروژه…"
                 />
               </div>
               <Button onClick={handleSubmit} className="w-full">

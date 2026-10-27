@@ -144,7 +144,7 @@ const MissionDashboard: React.FC<MissionDashboardProps> = ({ organizationName })
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span>در حال بارگذاری...</span>
+            <span>در حال بارگذاری…</span>
           </div>
         </div>
       </div>

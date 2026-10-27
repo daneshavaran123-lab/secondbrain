@@ -307,7 +307,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({
         {/* Tasks */}
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="text-app-subtitle text-lg">در حال بارگذاری...</div>
+            <div className="text-app-subtitle text-lg">در حال بارگذاری…</div>
           </div>
         ) : tasks.length === 0 ? (
           <div className="text-center py-12 card-app-spacious">
@@ -329,7 +329,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({
               return (
                 <div
                   key={task.id}
-                  className={`card-app-spacious border-2 transition-all hover:shadow-md ${
+                  className={`card-app-spacious border-2 transition hover:shadow-md ${
                     isTaskOverdue ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   } ${
                     selectedTasks.includes(task.id) ? 'ring-2 ring-primary ring-opacity-50' : ''

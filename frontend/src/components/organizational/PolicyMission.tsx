@@ -288,7 +288,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                 ) : (
                   <Plus className="w-4 h-4 ml-2" />
                 )}
-                {isLoading ? 'بارگذاری...' : 'افزودن جدید'}
+                {isLoading ? 'بارگذاری…' : 'افزودن جدید'}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
@@ -302,7 +302,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                     id="title"
                     value={newItemTitle}
                     onChange={(e) => setNewItemTitle(e.target.value)}
-                    placeholder="عنوان مأموریت یا سیاست را وارد کنید..."
+                    placeholder="عنوان مأموریت یا سیاست را وارد کنید…"
                     className="text-right"
                   />
                 </div>
@@ -312,7 +312,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                     id="description"
                     value={newItemDescription}
                     onChange={(e) => setNewItemDescription(e.target.value)}
-                    placeholder="توضیحات تفصیلی را وارد کنید..."
+                    placeholder="توضیحات تفصیلی را وارد کنید…"
                     className="text-right min-h-[100px]"
                   />
                 </div>
@@ -363,7 +363,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                       id="owner"
                       value={newItemOwner}
                       onChange={(e) => setNewItemOwner(e.target.value)}
-                      placeholder="نام مسئول..."
+                      placeholder="نام مسئول…"
                       className="text-right"
                     />
                   </div>
@@ -411,7 +411,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 space-x-reverse">
                     <Input
-                      placeholder="جستجو..."
+                      placeholder="جستجو…"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-64"
@@ -620,7 +620,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                 id="edit-title"
                 value={newItemTitle}
                 onChange={(e) => setNewItemTitle(e.target.value)}
-                placeholder="عنوان را وارد کنید..."
+                placeholder="عنوان را وارد کنید…"
                 className="text-right"
               />
             </div>
@@ -630,7 +630,7 @@ const PolicyMission: React.FC<PolicyMissionProps> = ({ organizationName }) => {
                 id="edit-description"
                 value={newItemDescription}
                 onChange={(e) => setNewItemDescription(e.target.value)}
-                placeholder="توضیحات را وارد کنید..."
+                placeholder="توضیحات را وارد کنید…"
                 className="text-right min-h-[100px]"
               />
             </div>

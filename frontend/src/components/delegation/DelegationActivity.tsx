@@ -234,7 +234,7 @@ export function DelegationActivity({ taskId, limit = 50 }: DelegationActivityPro
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            در حال بارگذاری...
+            در حال بارگذاری…
           </div>
         </CardContent>
       </Card>

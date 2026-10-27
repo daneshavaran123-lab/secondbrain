@@ -62,7 +62,7 @@ const KnowledgePage = () => {
   
   return (
     <div className={cn(
-      "transition-all duration-300 mx-auto",
+      "transition duration-300 mx-auto",
       isMobile ? "p-3 space-y-4" : "p-6 md:p-12 space-y-8 md:space-y-12",
       sidebarOpen ? 'max-w-5xl' : 'max-w-7xl'
     )}>
@@ -79,7 +79,7 @@ const KnowledgePage = () => {
             loading={isSeeding}
             magnetic
           >
-            {isSeeding ? 'در حال افزودن...' : 'افزودن نمونه‌ها'}
+            {isSeeding ? 'در حال افزودن…' : 'افزودن نمونه‌ها'}
           </ModernButton>
         }
       />
@@ -138,7 +138,7 @@ const KnowledgePage = () => {
               <CardContent>
                 <p className="text-muted-foreground mb-6">برای مشاهده نمودار دانش، چند نمونه اضافه کنید یا از تب «ذخیره دانش» شروع کنید.</p>
                 <Button variant="default" onClick={handleSeed} disabled={isSeeding}>
-                  {isSeeding ? 'در حال افزودن...' : 'افزودن نمونه‌ها'}
+                  {isSeeding ? 'در حال افزودن…' : 'افزودن نمونه‌ها'}
                 </Button>
               </CardContent>
             </Card>

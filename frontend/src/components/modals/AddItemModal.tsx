@@ -335,7 +335,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="توضیحات کوتاه در مورد این آیتم..."
+              placeholder="توضیحات کوتاه در مورد این آیتم…"
               rows={3}
             />
           </div>
@@ -353,14 +353,14 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                 >
                   {formData.category
                     ? categories.find((category) => category === formData.category)
-                    : "انتخاب دسته‌بندی..."}
+                    : "انتخاب دسته‌بندی…"}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full p-0">
                 <Command>
                   <CommandInput 
-                    placeholder="جستجو در دسته‌بندی‌ها..." 
+                    placeholder="جستجو در دسته‌بندی‌ها…" 
                     value={newCategory}
                     onValueChange={setNewCategory}
                   />
@@ -489,7 +489,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                   disabled={isProcessingImage}
                 />
                 {isProcessingImage && (
-                  <p className="text-xs text-muted-foreground">در حال پردازش تصویر...</p>
+                  <p className="text-xs text-muted-foreground">در حال پردازش تصویر…</p>
                 )}
               </div>
 

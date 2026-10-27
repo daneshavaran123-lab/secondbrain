@@ -78,7 +78,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
 
         {/* Stats Cards - Enhanced Design */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-elegant transition-all duration-500 hover:-translate-y-2 border border-border/50">
+          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-elegant transition duration-500 hover:-translate-y-2 border border-border/50">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
                 <Calendar className="w-6 h-6 text-primary" />
@@ -94,7 +94,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </div>
           </div>
 
-          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-medical transition-all duration-500 hover:-translate-y-2 border border-border/50">
+          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-medical transition duration-500 hover:-translate-y-2 border border-border/50">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-emerald-500/10 rounded-xl group-hover:bg-emerald-500/20 transition-colors">
                 <Target className="w-6 h-6 text-emerald-500" />
@@ -110,7 +110,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </div>
           </div>
 
-          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-elegant transition-all duration-500 hover:-translate-y-2 border border-border/50">
+          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-elegant transition duration-500 hover:-translate-y-2 border border-border/50">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
                 <Users className="w-6 h-6 text-blue-500" />
@@ -126,7 +126,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </div>
           </div>
 
-          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-elegant transition-all duration-500 hover:-translate-y-2 border border-border/50">
+          <div className="group bg-gradient-card backdrop-blur-sm rounded-2xl p-6 shadow-card hover:shadow-elegant transition duration-500 hover:-translate-y-2 border border-border/50">
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 bg-cyan-500/10 rounded-xl group-hover:bg-cyan-500/20 transition-colors">
                 <CheckCircle2 className="w-6 h-6 text-cyan-500" />
@@ -145,7 +145,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
 
         {/* Secondary Stats - Compact Modern Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition-all duration-300 border border-border/50">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition duration-300 border border-border/50">
             <div className="flex flex-col items-center text-center space-y-3">
               <div className="p-3 bg-yellow-500/10 rounded-full">
                 <Lightbulb className="w-6 h-6 text-yellow-500" />
@@ -159,7 +159,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </div>
           </div>
 
-          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition-all duration-300 border border-border/50">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition duration-300 border border-border/50">
             <div className="flex flex-col items-center text-center space-y-3">
               <div className="p-3 bg-indigo-500/10 rounded-full">
                 <TrendingUp className="w-6 h-6 text-indigo-500" />
@@ -173,7 +173,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </div>
           </div>
 
-          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition-all duration-300 border border-border/50">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition duration-300 border border-border/50">
             <div className="flex flex-col items-center text-center space-y-3">
               <div className="p-3 bg-green-500/10 rounded-full">
                 <MessageCircle className="w-6 h-6 text-green-500" />
@@ -187,7 +187,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </div>
           </div>
 
-          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition-all duration-300 border border-border/50">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-5 shadow-card hover:shadow-elegant transition duration-300 border border-border/50">
             <div className="flex flex-col items-center text-center space-y-3">
               <div className="p-3 bg-orange-500/10 rounded-full">
                 <Clock className="w-6 h-6 text-orange-500" />
@@ -224,7 +224,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
         </div>
 
         {/* Main Layout */}
-        <div className={`grid gap-6 ${sidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} transition-all duration-300`}>
+        <div className={`grid gap-6 ${sidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} transition duration-300`}>
           {/* Quick Actions */}
           <div className={`${sidebarOpen ? 'lg:col-span-2' : 'lg:col-span-3'} space-y-6`}>
             {showQuickActions && <QuickActions />}

@@ -63,7 +63,7 @@ export function OrganizationQuickActions() {
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-card to-card/50 overflow-hidden group">
+              <Card className="cursor-pointer hover:shadow-lg transition duration-300 border-0 bg-gradient-to-br from-card to-card/50 overflow-hidden group">
                 <CardContent className="p-4 text-center">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
                     <Icon className="w-8 h-8 text-white" />

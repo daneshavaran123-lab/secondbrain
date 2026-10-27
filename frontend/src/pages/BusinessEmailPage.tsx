@@ -317,7 +317,7 @@ export default function BusinessEmailPage() {
                 <CardContent>
                   <Select value={purpose} onValueChange={setPurpose}>
                     <SelectTrigger className="glass-input rounded-xl border-0">
-                      <SelectValue placeholder="انتخاب کنید..." />
+                      <SelectValue placeholder="انتخاب کنید…" />
                     </SelectTrigger>
                     <SelectContent className="glass-card rounded-xl border-0">
                       {EMAIL_PURPOSES.map(item => (
@@ -348,7 +348,7 @@ export default function BusinessEmailPage() {
                 <CardContent className="space-y-3">
                   <Select value={industry} onValueChange={setIndustry}>
                     <SelectTrigger className="glass-input rounded-xl border-0">
-                      <SelectValue placeholder="انتخاب کنید..." />
+                      <SelectValue placeholder="انتخاب کنید…" />
                     </SelectTrigger>
                     <SelectContent className="glass-card rounded-xl border-0">
                       {INDUSTRIES.map(item => (
@@ -369,7 +369,7 @@ export default function BusinessEmailPage() {
                         exit={{ opacity: 0, height: 0 }}
                       >
                         <Input 
-                          placeholder="نام صنعت یا حوزه را بنویسید..."
+                          placeholder="نام صنعت یا حوزه را بنویسید…"
                           value={customIndustry}
                           onChange={(e) => setCustomIndustry(e.target.value)}
                           className="glass-input rounded-xl border-0"
@@ -395,7 +395,7 @@ export default function BusinessEmailPage() {
                 <CardContent className="space-y-3">
                   <Select value={recipientType} onValueChange={setRecipientType}>
                     <SelectTrigger className="glass-input rounded-xl border-0">
-                      <SelectValue placeholder="نوع مخاطب..." />
+                      <SelectValue placeholder="نوع مخاطب…" />
                     </SelectTrigger>
                     <SelectContent className="glass-card rounded-xl border-0">
                       {RECIPIENT_TYPES.map(item => (
@@ -586,7 +586,7 @@ export default function BusinessEmailPage() {
                   {isGenerating ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      در حال تولید با هوش مصنوعی...
+                      در حال تولید با هوش مصنوعی…
                     </>
                   ) : (
                     <>

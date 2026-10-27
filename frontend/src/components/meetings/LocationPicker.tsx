@@ -17,7 +17,7 @@ interface LocationPickerProps {
 export const LocationPicker: React.FC<LocationPickerProps> = ({
   value,
   onChange,
-  placeholder = "آدرس جلسه را وارد کنید..."
+  placeholder = "آدرس جلسه را وارد کنید…"
 }) => {
   const [manualAddress, setManualAddress] = useState(value?.type === 'manual' ? value.address : '');
   const [mapAddress, setMapAddress] = useState(value?.type === 'map' ? value.address : '');
@@ -263,7 +263,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
 
                 <div className="flex gap-2">
                   <Input
-                    placeholder="جستجوی آدرس..."
+                    placeholder="جستجوی آدرس…"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && searchLocation()}

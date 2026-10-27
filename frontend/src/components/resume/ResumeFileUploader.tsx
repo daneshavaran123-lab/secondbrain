@@ -107,7 +107,7 @@ export function ResumeFileUploader({
         <div className="space-y-2">
           <Progress value={progress} />
           <p className="text-sm text-center text-muted-foreground">
-            در حال آپلود... {progress}%
+            در حال آپلود… {progress}%
           </p>
         </div>
       )}

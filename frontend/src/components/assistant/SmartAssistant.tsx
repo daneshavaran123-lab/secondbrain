@@ -47,7 +47,7 @@ import { useRealtimeSpeechRecognition } from '@/hooks/useRealtimeSpeechRecogniti
 import { usePersianTTS } from '@/hooks/usePersianTTS';
 import { useAuth } from '@/contexts/AuthContext';
 import { MoraVoiceAssistant } from './MoraVoiceAssistant';
-import { MoraRobotIcon } from './MoraRobotIcon';
+import { BrandMark } from '@/components/brand/BrandMark';
 import { cn } from '@/lib/utils';
 
 type ActionState = 'running' | 'done' | 'failed' | 'awaiting' | 'dismissed';
@@ -198,8 +198,8 @@ function ActionRow({
 
   return (
     <div className={cn(
-      'rounded-xl border px-3 py-2.5 text-xs transition-colors',
-      state === 'awaiting' ? 'border-primary/30 bg-primary/[0.04]' : 'border-border bg-muted/40',
+      'rounded-lg border px-3 py-2.5 text-xs transition-colors',
+      state === 'awaiting' ? 'border-signal/40 bg-signal-soft' : 'border-border bg-muted/40',
       state === 'dismissed' && 'opacity-60'
     )}>
       <div className="flex items-start gap-2.5">
@@ -207,8 +207,9 @@ function ActionRow({
           'mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full',
           state === 'done' && 'bg-success/15 text-success',
           state === 'failed' && 'bg-destructive/10 text-destructive',
-          state === 'awaiting' && 'bg-primary/10 text-primary',
-          (state === 'running' || state === 'dismissed') && 'bg-muted text-muted-foreground'
+          state === 'awaiting' && 'bg-signal/15 text-signal',
+          state === 'running' && 'bg-signal/10 text-signal',
+          state === 'dismissed' && 'bg-muted text-muted-foreground'
         )}>
           {icon}
         </span>
@@ -237,11 +238,7 @@ function ActionRow({
 function ThinkingDots() {
   return (
     <div className="flex items-center gap-2 py-1 text-sm text-muted-foreground" role="status">
-      <span className="flex gap-1" aria-hidden>
-        {[0, 1, 2].map((i) => (
-          <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" style={{ animationDelay: `${i * 0.15}s` }} />
-        ))}
-      </span>
+      <BrandMark size={16} active className="text-foreground" />
       در حال فکر کردن…
     </div>
   );
@@ -290,10 +287,11 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
     },
   });
 
-  // Restore the last conversation (stored newest-first).
+  // Restore the last conversation (stored newest-first). Anything sent while it loads
+  // (an ask from the home screen right after start-up) stays after the restored history.
   useEffect(() => {
     offlineStorage.getRecentHistory(30).then((history) => {
-      setMessages(history.reverse().map((h) => ({
+      const restored: Message[] = history.reverse().map((h) => ({
         id: h.id,
         role: h.role,
         content: h.content,
@@ -307,7 +305,11 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
           resultMessage: a.error && a.error !== 'dismissed' ? a.error : undefined,
           state: fromStoredStatus(a.status, a.error),
         })),
-      })));
+      }));
+      setMessages((current) => {
+        const live = new Set(current.map((m) => m.id));
+        return [...restored.filter((m) => !live.has(m.id)), ...current];
+      });
     }).catch(() => {}).finally(() => setHistoryLoaded(true));
   }, []);
 
@@ -542,29 +544,6 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
   return (
     <>
       <AnimatePresence>
-        {!isOpen && (
-          <motion.button
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            whileTap={{ scale: 0.94 }}
-            onClick={() => setIsOpen(true)}
-            aria-label="گفتگو با دستیار"
-            className={cn(
-              'fixed bottom-6 left-6 z-50 hidden md:flex',
-              'h-12 items-center gap-2 rounded-full ps-3 pe-4',
-              'bg-foreground text-background shadow-lg shadow-foreground/10',
-              'transition-transform hover:-translate-y-0.5',
-              className
-            )}
-          >
-            <MoraRobotIcon size="sm" animate={false} />
-            <span className="text-sm font-medium">از دستیار بپرس</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {isOpen && (
           <motion.aside
             aria-label="دستیار مغز دوم من"
@@ -576,7 +555,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
               'fixed z-[60] flex flex-col overflow-hidden bg-background text-foreground',
               'inset-0 sm:inset-auto sm:bottom-6 sm:left-6',
               'sm:h-[min(720px,calc(100dvh-3rem))] sm:w-[420px]',
-              'sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl sm:shadow-foreground/10'
+              'sm:rounded-xl sm:border sm:border-border sm:shadow-[0_24px_60px_-20px_hsl(var(--foreground)/0.35)]'
             )}
           >
             {/* Header */}
@@ -585,13 +564,11 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
               style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
             >
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
-                  <MoraRobotIcon size="sm" animate={false} />
-                </div>
+                <BrandMark size={28} active={isLoading} className="text-foreground" />
                 <div className="min-w-0">
-                  <h2 className="text-sm font-semibold leading-5">دستیار مغز دوم</h2>
-                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span className={cn('h-1.5 w-1.5 rounded-full', isOnline ? 'bg-success' : 'bg-muted-foreground')} />
+                  <h2 className="text-sm font-semibold leading-5">دستیار</h2>
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground" aria-live="polite">
+                    <span className={cn('h-1.5 w-1.5 rounded-full', !isOnline ? 'bg-muted-foreground' : isLoading ? 'bg-signal' : 'bg-success')} />
                     {status}
                   </p>
                 </div>
@@ -621,19 +598,19 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
               {messages.length === 0 ? (
                 <div className="flex h-full flex-col justify-end gap-6 pb-2">
                   <div>
-                    <p className="text-xl font-semibold tracking-tight">سلام{firstName ? ` ${firstName}` : ''} 👋</p>
+                    <p className="text-xl font-semibold">سلام{firstName ? ` ${firstName}` : ''}</p>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       هر چیزی که در ذهن دارید بنویسید یا بگویید؛ ثبتش می‌کنم، یادم می‌ماند و وقتی لازم شد پیدایش می‌کنم.
                     </p>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
                     {SUGGESTIONS.map((s) => (
                       <button
                         key={s.text}
                         onClick={() => pickSuggestion(s)}
-                        className="flex flex-col items-start gap-2 rounded-xl border border-border p-3 text-start text-sm transition-colors hover:bg-muted/60"
+                        className="flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm transition-colors hover:bg-muted/60"
                       >
-                        <s.icon className="h-4 w-4 text-muted-foreground" />
+                        <s.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                         <span className="leading-5">{s.hint || s.text}</span>
                       </button>
                     ))}
@@ -656,10 +633,14 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                       ) : (
                         <div className="w-full min-w-0 space-y-2.5">
                           {message.steps && message.steps.length > 0 && (
-                            <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
-                              <Search className="h-3 w-3" />
-                              {message.steps.map((s) => s.label).join(' · ')}
-                            </p>
+                            <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground" aria-label="کارهایی که دستیار انجام داد">
+                              {message.steps.map((s, i) => (
+                                <li key={i} className="flex items-center gap-1.5">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
+                                  {s.label}
+                                </li>
+                              ))}
+                            </ol>
                           )}
 
                           {message.isLoading ? (
@@ -724,7 +705,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                 </div>
               )}
 
-              <div className="rounded-2xl border border-border bg-muted/30 transition-colors focus-within:border-foreground/20 focus-within:bg-background">
+              <div className="rounded-xl border border-border bg-card transition-[border-color,box-shadow] focus-within:border-signal focus-within:shadow-[0_0_0_3px_hsl(var(--signal)/0.14)]">
                 <textarea
                   ref={inputRef}
                   rows={1}

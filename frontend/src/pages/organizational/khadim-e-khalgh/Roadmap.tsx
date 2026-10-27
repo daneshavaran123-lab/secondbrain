@@ -590,7 +590,7 @@ const Roadmap = () => {
                         <FormLabel>توضیحات</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="توضیحات کامل برنامه را وارد کنید..."
+                            placeholder="توضیحات کامل برنامه را وارد کنید…"
                             className="min-h-[100px]"
                             {...field} 
                           />
@@ -1047,7 +1047,7 @@ const Roadmap = () => {
                       <FormLabel>توضیحات</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="توضیحات کامل برنامه را وارد کنید..."
+                          placeholder="توضیحات کامل برنامه را وارد کنید…"
                           className="min-h-[100px]"
                           {...field} 
                         />

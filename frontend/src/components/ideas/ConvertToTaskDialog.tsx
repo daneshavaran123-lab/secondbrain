@@ -171,7 +171,7 @@ export function ConvertToTaskDialog({ idea, open, onOpenChange }: ConvertToTaskD
                 id="description"
                 value={taskData.description}
                 onChange={(e) => setTaskData({ ...taskData, description: e.target.value })}
-                placeholder="توضیحات تکمیلی..."
+                placeholder="توضیحات تکمیلی…"
                 rows={6}
                 className="resize-none"
               />
@@ -263,7 +263,7 @@ export function ConvertToTaskDialog({ idea, open, onOpenChange }: ConvertToTaskD
             {isConverting ? (
               <>
                 <span className="animate-spin">⏳</span>
-                در حال ایجاد...
+                در حال ایجاد…
               </>
             ) : (
               <>

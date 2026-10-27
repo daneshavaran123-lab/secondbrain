@@ -39,7 +39,7 @@ export function OrganizationExportButtons({ organizationId }: OrganizationExport
           {loading ? (
             <>
               <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              در حال تولید...
+              در حال تولید…
             </>
           ) : (
             <>

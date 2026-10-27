@@ -108,7 +108,7 @@ export function BusinessModelCanvasEditor({
 
             <div className="flex gap-2">
               <Input
-                placeholder="آیتم جدید..."
+                placeholder="آیتم جدید…"
                 value={newItems[section.key] || ""}
                 onChange={(e) => setNewItems(prev => ({ ...prev, [section.key]: e.target.value }))}
                 onKeyPress={(e) => {

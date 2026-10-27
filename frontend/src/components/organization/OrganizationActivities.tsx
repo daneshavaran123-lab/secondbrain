@@ -102,7 +102,7 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Input
-            placeholder="جستجو در فعالیت‌ها..."
+            placeholder="جستجو در فعالیت‌ها…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-background/50"
@@ -142,12 +142,12 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
                     className="relative flex items-start gap-4 group"
                   >
                     {/* Timeline node */}
-                    <div className={`${colors.bg} ${colors.border} w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border-2 shadow-sm group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 relative z-10`}>
+                    <div className={`${colors.bg} ${colors.border} w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border-2 shadow-sm group-hover:scale-110 group-hover:shadow-lg transition duration-300 relative z-10`}>
                       <Icon className={`w-5 h-5 ${colors.text}`} />
                     </div>
                     
                     {/* Content */}
-                    <div className="flex-1 min-w-0 bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border hover:border-primary/50 hover:shadow-md transition-all duration-300">
+                    <div className="flex-1 min-w-0 bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border hover:border-primary/50 hover:shadow-md transition duration-300">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <p className="text-sm font-medium text-foreground leading-relaxed">
                           {activity.description}

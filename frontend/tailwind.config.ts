@@ -60,6 +60,11 @@ export default {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
+				signal: {
+					DEFAULT: 'hsl(var(--signal))',
+					foreground: 'hsl(var(--signal-foreground))',
+					soft: 'hsl(var(--signal-soft))'
+				},
 				success: 'hsl(var(--success))',
 				warning: 'hsl(var(--warning))',
 				muted: {
@@ -193,28 +198,30 @@ export default {
 				'luxury-deep': 'var(--shadow-luxury-deep)'
 			},
 			fontFamily: {
-				'sans': ['Vazirmatn', 'sans-serif'],
-				'display': ['Vazirmatn', 'sans-serif'],
-				'body': ['Vazirmatn', 'sans-serif'],
-				'vazir': ['Vazirmatn', 'sans-serif'],
-				'persian': ['Vazirmatn', 'sans-serif'],
-				'mono': ['Vazirmatn', 'monospace'],
-				'futuristic': ['Vazirmatn', 'sans-serif']
+				'sans': ['var(--font-sans)'],
+				'display': ['var(--font-display)'],
+				'brand': ['var(--font-display)'],
+				'body': ['var(--font-sans)'],
+				'vazir': ['var(--font-sans)'],
+				'persian': ['var(--font-sans)'],
+				'mono': ['var(--font-mono)'],
+				'futuristic': ['var(--font-sans)']
 			},
+			// Persian text needs a larger size and more leading than Latin at the same step
 			fontSize: {
-				'xs': ['0.6875rem', { lineHeight: '1rem' }],
-				'sm': ['0.75rem', { lineHeight: '1.125rem' }],
-				'base': ['0.875rem', { lineHeight: '1.375rem' }],
-				'lg': ['1rem', { lineHeight: '1.5rem' }],
-				'xl': ['1.125rem', { lineHeight: '1.625rem' }],
-				'2xl': ['1.25rem', { lineHeight: '1.75rem' }],
-				'3xl': ['1.5rem', { lineHeight: '2rem' }],
-				'4xl': ['1.875rem', { lineHeight: '2.25rem' }],
-				'5xl': ['2.25rem', { lineHeight: '1' }],
-				'6xl': ['3rem', { lineHeight: '1' }],
-				'7xl': ['3.75rem', { lineHeight: '1' }],
-				'8xl': ['4.5rem', { lineHeight: '1' }],
-				'9xl': ['6rem', { lineHeight: '1' }]
+				'xs': ['0.75rem', { lineHeight: '1.125rem' }],
+				'sm': ['0.8125rem', { lineHeight: '1.375rem' }],
+				'base': ['0.875rem', { lineHeight: '1.5rem' }],
+				'lg': ['1rem', { lineHeight: '1.625rem' }],
+				'xl': ['1.125rem', { lineHeight: '1.75rem' }],
+				'2xl': ['1.25rem', { lineHeight: '1.875rem' }],
+				'3xl': ['1.5rem', { lineHeight: '2.125rem' }],
+				'4xl': ['1.875rem', { lineHeight: '2.5rem' }],
+				'5xl': ['2.25rem', { lineHeight: '1.2' }],
+				'6xl': ['3rem', { lineHeight: '1.15' }],
+				'7xl': ['3.75rem', { lineHeight: '1.1' }],
+				'8xl': ['4.5rem', { lineHeight: '1.1' }],
+				'9xl': ['6rem', { lineHeight: '1.1' }]
 			},
 			letterSpacing: {
 				'tighter': '-0.05em',

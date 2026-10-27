@@ -341,7 +341,7 @@ export function ExportImportDialog({
               {importing && (
                 <div className="flex items-center space-x-2 space-x-reverse justify-center py-4">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>در حال وارد کردن...</span>
+                  <span>در حال وارد کردن…</span>
                 </div>
               )}
             </CardContent>

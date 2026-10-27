@@ -75,7 +75,7 @@ export function DelegationStats({ stats }: DelegationStatsProps) {
       {/* Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((card, index) => (
-          <Card key={index} className="card-glass hover:card-glow transition-all duration-300">
+          <Card key={index} className="card-glass hover:card-glow transition duration-300">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>

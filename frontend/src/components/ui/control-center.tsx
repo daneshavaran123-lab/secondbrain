@@ -141,7 +141,7 @@ function StatCard({
     <div 
       className={cn(
         "glass-card backdrop-blur-sm bg-card/40 rounded-xl border border-border/50",
-        "shadow-card hover:shadow-glass transition-all duration-300 hover:scale-105",
+        "shadow-card hover:shadow-glass transition duration-300 hover:scale-105",
         "animate-fade-in group",
         isMobile ? "p-3" : "p-4 lg:p-6"
       )}
@@ -214,7 +214,7 @@ function InsightCard({ title, value, description, trend, color, delay = '0ms' }:
     <div 
       className={cn(
         "glass-card backdrop-blur-sm bg-card/40 rounded-xl p-6 border border-border/50",
-        "shadow-card hover:shadow-glass transition-all duration-300",
+        "shadow-card hover:shadow-glass transition duration-300",
         "animate-fade-in"
       )}
       style={{ animationDelay: delay }}

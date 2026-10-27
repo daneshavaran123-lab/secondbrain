@@ -176,7 +176,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="عنوان رویه..."
+          placeholder="عنوان رویه…"
         />
       </div>
 
@@ -242,7 +242,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
                 <Input
                   value={step.title}
                   onChange={(e) => updateStep(step.id, 'title', e.target.value)}
-                  placeholder="عنوان..."
+                  placeholder="عنوان…"
                 />
               </div>
 
@@ -251,7 +251,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
                 <TextInputWithVoice
                   value={step.description}
                   onChange={(v) => updateStep(step.id, 'description', v)}
-                  placeholder="شرح کامل مرحله..."
+                  placeholder="شرح کامل مرحله…"
                   type="textarea"
                   rows={3}
                 />
@@ -287,7 +287,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
                       <TextInputWithVoice
                         value={step.warning}
                         onChange={(v) => updateStep(step.id, 'warning', v)}
-                        placeholder="نکات ایمنی یا هشدارها..."
+                        placeholder="نکات ایمنی یا هشدارها…"
                         type="textarea"
                         rows={2}
                       />
@@ -314,7 +314,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
 
       <div className="flex justify-end gap-3">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'در حال ذخیره...' : 'ذخیره SOP'}
+          {isSubmitting ? 'در حال ذخیره…' : 'ذخیره SOP'}
         </Button>
       </div>
     </form>

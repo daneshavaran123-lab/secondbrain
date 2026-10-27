@@ -33,7 +33,7 @@ export const RealtimeTranscript: React.FC<RealtimeTranscriptProps> = ({
           <span className="text-sm font-medium text-foreground">متن تبدیل شده</span>
           {isListening && (
             <Badge variant="default" className="animate-pulse">
-              در حال شنیدن...
+              در حال شنیدن…
             </Badge>
           )}
         </div>
@@ -51,7 +51,7 @@ export const RealtimeTranscript: React.FC<RealtimeTranscriptProps> = ({
       >
         {!transcript && !interimTranscript && (
           <p className="text-muted-foreground text-sm text-center py-8">
-            متن در اینجا نمایش داده می‌شود...
+            متن در اینجا نمایش داده می‌شود…
           </p>
         )}
         

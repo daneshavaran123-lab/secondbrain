@@ -603,7 +603,7 @@ export function IdeaForm({
                         value={field.value}
                         onChange={field.onChange}
                         type="input"
-                        placeholder="عنوان ایده خود را وارد کنید..."
+                        placeholder="عنوان ایده خود را وارد کنید…"
                         enableVoice={true}
                       />
                     </FormControl>
@@ -619,7 +619,7 @@ export function IdeaForm({
                         value={field.value || ''}
                         onChange={field.onChange}
                         type="textarea"
-                        placeholder="توضیحات کاملی از ایده خود بنویسید..."
+                        placeholder="توضیحات کاملی از ایده خود بنویسید…"
                         rows={5}
                         enableVoice={true}
                         className="min-h-[120px]"
@@ -763,7 +763,7 @@ export function IdeaForm({
                       </SelectContent>
                     </Select>
 
-                    <Input placeholder="توضیحات منبع..." value={inspiration.description} onChange={e => updateInspiration(index, "description", e.target.value)} />
+                    <Input placeholder="توضیحات منبع…" value={inspiration.description} onChange={e => updateInspiration(index, "description", e.target.value)} />
 
                     <Input placeholder="لینک منبع (اختیاری)" value={inspiration.sourceUrl} onChange={e => updateInspiration(index, "sourceUrl", e.target.value)} />
                   </div>
@@ -798,7 +798,7 @@ export function IdeaForm({
                 {analysisStatus === 'pending' || analysisStatus === 'processing' ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    در حال تحلیل... (حدود 10-15 ثانیه)
+                    در حال تحلیل… (حدود 10-15 ثانیه)
                   </>
                 ) : (
                   <>

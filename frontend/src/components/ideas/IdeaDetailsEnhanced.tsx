@@ -143,7 +143,7 @@ export function IdeaDetailsEnhanced({ ideaId }: EnhancedDataProps) {
   }, [ideaId]);
 
   if (loading) {
-    return <div className="text-center py-8 text-muted-foreground">در حال بارگذاری...</div>;
+    return <div className="text-center py-8 text-muted-foreground">در حال بارگذاری…</div>;
   }
 
   return (

@@ -392,7 +392,7 @@ export default function CreateUserDialog({ open, onOpenChange }: CreateUserDialo
                 {createUser.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                    در حال ایجاد...
+                    در حال ایجاد…
                   </>
                 ) : (
                   'ایجاد کاربر'

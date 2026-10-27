@@ -49,7 +49,7 @@ export function ProgressRing({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          className="transition-all duration-500 ease-out"
+          className="transition duration-500 ease-out"
           style={{
             filter: `drop-shadow(0 0 6px ${color}40)`
           }}

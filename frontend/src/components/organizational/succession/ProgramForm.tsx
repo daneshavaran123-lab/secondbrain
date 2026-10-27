@@ -102,7 +102,7 @@ export function ProgramForm({ open, onOpenChange, program, organizationId, servi
             id="program_name"
             value={formData.program_name}
             onChange={(e) => setFormData({ ...formData, program_name: e.target.value })}
-            placeholder="دوره مدیریت ارشد، کارگاه رهبری، ..."
+            placeholder="دوره مدیریت ارشد، کارگاه رهبری،…"
             required
           />
         </div>

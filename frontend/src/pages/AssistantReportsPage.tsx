@@ -198,7 +198,7 @@ export default function AssistantReportsPage() {
         {/* جستجو + تب‌ها */}
         <LuxeCard className="p-4">
           <Input
-            placeholder="جستجو در مکالمات و اقدامات..."
+            placeholder="جستجو در مکالمات و اقدامات…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mb-4"
@@ -307,7 +307,7 @@ function StatusBadge({ status }: { status: string }) {
 function LoadingState() {
   return (
     <div className="flex items-center justify-center py-16 text-muted-foreground">
-      <Loader2 className="h-5 w-5 animate-spin ml-2" /> در حال بارگذاری...
+      <Loader2 className="h-5 w-5 animate-spin ml-2" /> در حال بارگذاری…
     </div>
   );
 }

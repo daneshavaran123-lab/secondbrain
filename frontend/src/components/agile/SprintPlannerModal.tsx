@@ -204,7 +204,7 @@ export function SprintPlannerModal({ isOpen, onClose, scope, projectId, onSprint
 
             <div className="grid gap-3 max-h-60 overflow-y-auto">
               {sprints.map((sprint) => (
-                <Card key={sprint.id} className="transition-all hover:shadow-md">
+                <Card key={sprint.id} className="transition hover:shadow-md">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">

@@ -3,11 +3,9 @@ import { Bell, Search, Settings, Menu, ChevronDown, HelpCircle, Plus, Calendar a
 import SettingsModal from "./SettingsModal";
 import HelpModal from "./HelpModal";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { NotificationCenter, notificationService } from "@/components/ui/notification-center";
-import { PlatformAware } from "@/components/ui/platform-aware";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { PersianNumber } from "@/components/ui/persian-number";
@@ -19,7 +17,9 @@ import { ROLE_NAMES } from "@/types/user-management";
 import { hasCapability } from "@/utils/roleAccess";
 import { cn } from "@/lib/utils";
 import { OfflineChip } from "@/components/ui/luxe/OfflineChip";
+import { BrandMark, Wordmark } from "@/components/brand/BrandMark";
 import { askAssistant } from "@/lib/assistant";
+import { commandShortcutLabel, openCommandPalette } from "@/lib/command";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -30,7 +30,6 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
   const isMobile = useIsMobile();
   const device = useDeviceDetection();
   const layout = useAdaptiveLayout();
-  const [searchValue, setSearchValue] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -84,14 +83,6 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
   const handleNotificationChange = () => {
     setUnreadNotifications(notificationService.getUnreadCount());
   };
-  // Search runs through the assistant, which looks across notes, meetings, ideas, letters and tasks.
-  const submitSearch = () => {
-    const query = searchValue.trim();
-    if (!query) return;
-    askAssistant(`در مغز دومم جستجو کن: ${query}`);
-    setSearchValue("");
-  };
-
   const iconButton = "h-10 w-10 min-h-0 rounded-lg text-muted-foreground hover:text-foreground sm:h-9 sm:w-9";
 
   return (
@@ -101,50 +92,53 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
       device.type !== 'desktop' ? 'mr-0' : sidebarOpen ? 'mr-72' : 'mr-16',
       device.isNative && 'pt-safe'
     )} dir="rtl">
-      {/* Menu, brand and date */}
-      <div className="flex shrink-0 items-center gap-2">
-        <PlatformAware showOn={['mobile']}>
-          <Button variant="ghost" size="icon" className={iconButton} onClick={onMenuClick} aria-label="منو">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </PlatformAware>
-        <span className="text-base font-semibold tracking-tight">مغز دوم من</span>
-        <PlatformAware hideOn={['mobile', 'tablet']}>
-          <span className="ms-2 text-xs text-muted-foreground">{getCurrentPersianDate()}</span>
-        </PlatformAware>
+      {/* Menu and brand on small screens (the sidebar carries them on desktop); the date on desktop */}
+      <div className="flex shrink-0 items-center gap-1.5">
+        {device.type !== 'desktop' && (
+          <>
+            <Button variant="ghost" size="icon" className={iconButton} onClick={onMenuClick} aria-label="منو">
+              <Menu className="h-5 w-5" />
+            </Button>
+            <Wordmark size={20} />
+          </>
+        )}
+        {device.type === 'desktop' && (
+          <span className="text-sm text-muted-foreground">{getCurrentPersianDate()}</span>
+        )}
       </div>
 
-      {/* Search */}
-      <form
-        role="search"
-        className="mx-auto w-full max-w-md flex-1"
-        onSubmit={(e) => { e.preventDefault(); submitSearch(); }}
-      >
-        <div className="relative">
-          <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder={isMobile ? "جستجو…" : "جستجو در یادداشت‌ها، جلسات و کارها…"}
-            aria-label="جستجو"
-            dir="rtl"
-            className={cn(
-              "h-9 rounded-lg border-transparent bg-muted/70 pr-9 pl-3 text-sm shadow-none",
-              "placeholder:text-muted-foreground/80 focus-visible:border-border focus-visible:bg-background",
-              "focus-visible:ring-0 focus-visible:ring-offset-0"
-            )}
-          />
-          {searchValue && !isMobile && (
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">
-              Enter برای جستجو با دستیار
-            </span>
-          )}
-        </div>
-      </form>
+      {/* Search and commands */}
+      {isMobile ? (
+        <Button variant="ghost" size="icon" className={cn(iconButton, "ms-auto")} onClick={openCommandPalette} aria-label="جستجو">
+          <Search className="h-[18px] w-[18px]" />
+        </Button>
+      ) : (
+        <button
+          type="button"
+          onClick={openCommandPalette}
+          className="mx-auto flex h-9 w-full max-w-md flex-1 items-center gap-2 rounded-md border border-border bg-card px-3 text-sm text-muted-foreground transition-colors hover:border-input hover:text-foreground"
+          aria-label="جستجو یا دستور"
+        >
+          <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="flex-1 truncate text-right">جستجوی صفحه‌ها یا پرسش از دستیار…</span>
+          <kbd className="shrink-0 rounded border border-border px-1.5 text-[11px] leading-5" dir="ltr">{commandShortcutLabel()}</kbd>
+        </button>
+      )}
 
       {/* Actions */}
       <div className="flex shrink-0 items-center gap-0.5">
         <OfflineChip compact={isMobile} className="me-1" />
+
+        {!isMobile && (
+          <Button
+            variant="outline"
+            onClick={() => askAssistant('', false)}
+            className="me-1 h-9 min-h-0 gap-2 rounded-md bg-card px-3 text-sm font-medium"
+          >
+            <BrandMark size={18} />
+            دستیار
+          </Button>
+        )}
 
         {!isMobile && (
           <DropdownMenu>

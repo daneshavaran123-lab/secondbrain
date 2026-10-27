@@ -137,7 +137,7 @@ export function TestDataInitializer() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              در حال ایجاد داده‌ها...
+              در حال ایجاد داده‌ها…
             </>
           ) : (
             <>

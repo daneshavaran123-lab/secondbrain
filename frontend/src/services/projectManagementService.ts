@@ -303,7 +303,7 @@ class ProjectManagementService {
 
   // پاکسازی کامل داده‌های مدیریت پروژه
   cleanupAllData(): void {
-    console.log('📋 پاکسازی داده‌های مدیریت پروژه...');
+    console.log('📋 پاکسازی داده‌های مدیریت پروژه…');
     
     // پاک کردن تمام localStorage keys مرتبط
     localStorage.removeItem(this.storageKey);

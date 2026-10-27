@@ -73,7 +73,7 @@ export default function SignupPage() {
     const result = await apiRegister(data.email, data.password, data.firstName, data.lastName);
 
     if (result.success) {
-      setSuccess('ثبت‌نام موفق! در حال ورود...');
+      setSuccess('ثبت‌نام موفق! در حال ورود…');
       toast({ title: 'ثبت‌نام موفق', description: 'حساب شما ایجاد شد.' });
       setTimeout(() => navigate('/'), 1000);
     } else {

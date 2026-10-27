@@ -207,7 +207,7 @@ const GratitudeJournalPage = () => {
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">دفتر شکرگذاری</h1>
-              <p className="text-white/90 text-lg">هر روز، سه چیز که بابتشان شکرگذارم...</p>
+              <p className="text-white/90 text-lg">هر روز، سه چیز که بابتشان شکرگذارم…</p>
             </div>
           </div>
         </div>
@@ -231,19 +231,19 @@ const GratitudeJournalPage = () => {
               value={gratitudeContent}
               onChange={setGratitudeContent}
               type="textarea"
-              placeholder="امروز بابت چه چیزی شکرگذارم..."
+              placeholder="امروز بابت چه چیزی شکرگذارم…"
               rows={8}
               enableVoice={true}
               label="شکرگذاری امروز *"
-              className="rounded-xl border-2 focus:border-primary transition-all bg-background/50"
+              className="rounded-xl border-2 focus:border-primary transition bg-background/50"
             />
             
             <Button
               onClick={saveGratitudeEntry} 
               disabled={isLoading}
-              className="w-full h-12 text-lg font-medium rounded-xl bg-gradient-primary hover:shadow-glow transition-all duration-300"
+              className="w-full h-12 text-lg font-medium rounded-xl bg-gradient-primary hover:shadow-glow transition duration-300"
             >
-              {isLoading ? "در حال ذخیره..." : todayEntry ? "بروزرسانی" : "ثبت شکرگذاری"}
+              {isLoading ? "در حال ذخیره…" : todayEntry ? "بروزرسانی" : "ثبت شکرگذاری"}
             </Button>
           </div>
         </div>

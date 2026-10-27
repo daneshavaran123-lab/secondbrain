@@ -185,7 +185,7 @@ export async function localSignUp(email: string, password: string, displayName: 
     // بررسی وجود کاربر
     const existingUser = users.find(u => u.email === email);
     if (existingUser) {
-      console.log('⚠️ کاربر از قبل وجود دارد، تلاش برای ورود...');
+      console.log('⚠️ کاربر از قبل وجود دارد، تلاش برای ورود…');
       return await localSignIn(email, password);
     }
 
@@ -285,7 +285,7 @@ export async function createEmergencyAdmin() {
   const emergencyEmail = `emergency_admin_${Date.now()}@local.com`;
   const emergencyPassword = 'EmergencyAdmin123!';
 
-  console.log('🚨 ایجاد کاربر ادمین اضطراری...');
+  console.log('🚨 ایجاد کاربر ادمین اضطراری…');
 
   const result = await localSignUp(emergencyEmail, emergencyPassword, 'ادمین اضطراری');
 

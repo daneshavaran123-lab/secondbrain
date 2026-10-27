@@ -421,7 +421,7 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
           <div className="flex items-center gap-3">
             <Search className="w-5 h-5 text-primary" />
             <Input
-              placeholder="جستجو در گراف دانش..."
+              placeholder="جستجو در گراف دانش…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input-readable w-64"

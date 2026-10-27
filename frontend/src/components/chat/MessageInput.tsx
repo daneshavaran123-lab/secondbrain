@@ -74,7 +74,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ channelId, onTyping,
         value={text}
         onChange={handleTyping}
         type="textarea"
-        placeholder="پیام خود را بنویسید..."
+        placeholder="پیام خود را بنویسید…"
         rows={3}
         enableVoice={true}
       />

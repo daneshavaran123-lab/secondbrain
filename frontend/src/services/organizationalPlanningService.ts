@@ -378,7 +378,7 @@ class OrganizationalPlanningService {
 
   // پاکسازی کامل داده‌های برنامه‌ریزی سازمانی
   cleanupAllData(): void {
-    console.log('🏢 پاکسازی داده‌های برنامه‌ریزی سازمانی...');
+    console.log('🏢 پاکسازی داده‌های برنامه‌ریزی سازمانی…');
     
     // پاک کردن تمام localStorage keys مرتبط
     localStorage.removeItem(this.storageKey);

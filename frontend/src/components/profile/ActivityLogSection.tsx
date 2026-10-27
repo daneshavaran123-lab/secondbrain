@@ -69,7 +69,7 @@ export function ActivityLogSection() {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <div className="animate-pulse">در حال بارگذاری...</div>
+          <div className="animate-pulse">در حال بارگذاری…</div>
         </CardContent>
       </Card>
     );

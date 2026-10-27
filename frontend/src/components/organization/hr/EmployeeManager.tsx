@@ -145,7 +145,7 @@ export function EmployeeManager({ organizationId }: EmployeeManagerProps) {
           <div className="relative">
             <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="جستجوی کارمند..."
+              placeholder="جستجوی کارمند…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pr-10"
@@ -153,7 +153,7 @@ export function EmployeeManager({ organizationId }: EmployeeManagerProps) {
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">در حال بارگذاری...</div>
+            <div className="text-center py-8 text-muted-foreground">در حال بارگذاری…</div>
           ) : filteredEmployees.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               {searchQuery ? 'کارمندی یافت نشد' : 'هنوز کارمندی اضافه نشده است'}

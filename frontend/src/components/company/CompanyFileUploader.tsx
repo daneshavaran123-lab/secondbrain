@@ -154,7 +154,7 @@ export const CompanyFileUploader: React.FC<CompanyFileUploaderProps> = ({
         {...getRootProps()}
         className={`
           relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-          transition-all duration-200 hover:border-primary/50 hover:bg-accent/5
+          transition duration-200 hover:border-primary/50 hover:bg-accent/5
           ${isDragActive ? 'border-primary bg-accent/10' : 'border-border'}
           ${uploading ? 'pointer-events-none opacity-50' : ''}
         `}
@@ -164,7 +164,7 @@ export const CompanyFileUploader: React.FC<CompanyFileUploaderProps> = ({
           {uploading ? (
             <>
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="text-sm font-medium">در حال آپلود...</p>
+              <p className="text-sm font-medium">در حال آپلود…</p>
               <div className="w-full max-w-xs">
                 <Progress value={uploadProgress} className="h-2" />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -178,7 +178,7 @@ export const CompanyFileUploader: React.FC<CompanyFileUploaderProps> = ({
               <div>
                 <p className="text-sm font-medium">
                   {isDragActive
-                    ? 'فایل را اینجا رها کنید...'
+                    ? 'فایل را اینجا رها کنید…'
                     : 'فایل را بکشید و اینجا رها کنید'}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">

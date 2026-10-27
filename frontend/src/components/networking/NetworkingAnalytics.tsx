@@ -357,7 +357,7 @@ export function NetworkingAnalytics({ companyId, organizationId }: NetworkingAna
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-primary transition-all duration-500"
+                          className="h-full bg-primary transition duration-500"
                           style={{ width: `${Math.min(100, (goal.current_count / goal.target_count) * 100)}%` }}
                         />
                       </div>

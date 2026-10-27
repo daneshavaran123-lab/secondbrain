@@ -155,7 +155,7 @@ const PersonalContactsPage: React.FC = () => {
               </div>
               <div>
                 <Label>شماره تلفن</Label>
-                <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="۰۹۱۲..." dir="ltr" />
+                <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="۰۹۱۲…" dir="ltr" />
               </div>
               <div>
                 <Label>ایمیل</Label>
@@ -185,14 +185,14 @@ const PersonalContactsPage: React.FC = () => {
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           className="pr-10"
-          placeholder="جستجوی نام، تلفن، ایمیل..."
+          placeholder="جستجوی نام، تلفن، ایمیل…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
       </div>
 
       {loading ? (
-        <div className="text-center py-10 text-muted-foreground">در حال بارگذاری...</div>
+        <div className="text-center py-10 text-muted-foreground">در حال بارگذاری…</div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-10 text-muted-foreground">
           {search ? 'نتیجه‌ای یافت نشد' : 'هنوز مخاطبی اضافه نشده'}

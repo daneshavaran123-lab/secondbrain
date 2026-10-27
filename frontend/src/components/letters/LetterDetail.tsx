@@ -238,7 +238,7 @@ export function LetterDetail({ letterId, onChanged, onDeleted }: LetterDetailPro
                   aria-pressed={tone === t.id}
                   className={cn(
                     'min-h-[32px] rounded-full border px-3 text-xs transition-colors sm:min-h-0 sm:py-1',
-                    tone === t.id ? 'border-foreground bg-foreground text-background' : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
+                    tone === t.id ? 'border-signal bg-signal-soft text-foreground' : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
                 >
                   {t.label}
@@ -277,7 +277,7 @@ export function LetterDetail({ letterId, onChanged, onDeleted }: LetterDetailPro
               aria-label={`پیش‌نویس ${replyName}`}
             />
           ) : (
-            <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
               هنوز پیش‌نویسی نوشته نشده. لحن را انتخاب کنید و «نوشتن پیشنهاد» را بزنید.
             </div>
           )}
@@ -325,7 +325,7 @@ export function LetterDetail({ letterId, onChanged, onDeleted }: LetterDetailPro
         {/* Summary and actions */}
         <TabsContent value="summary" className="space-y-5 p-5">
           {!letter.analyzed_at ? (
-            <div className="space-y-3 rounded-xl border border-dashed border-border p-6 text-center">
+            <div className="space-y-3 rounded-lg border border-dashed border-border p-6 text-center">
               <p className="text-sm text-muted-foreground">این نامه هنوز با هوش مصنوعی تحلیل نشده است.</p>
               <Button
                 onClick={() => run('analyze', async () => {
@@ -359,7 +359,7 @@ export function LetterDetail({ letterId, onChanged, onDeleted }: LetterDetailPro
                       افزودن به کارها
                     </Button>
                   </div>
-                  <ul className="divide-y divide-border rounded-xl border border-border">
+                  <ul className="divide-y divide-border rounded-lg border border-border">
                     {letter.action_items.map((item, i) => (
                       <li key={i} className="flex items-start justify-between gap-3 px-3.5 py-2.5 text-sm">
                         <span className="leading-6">{item.task}</span>

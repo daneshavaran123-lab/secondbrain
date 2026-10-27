@@ -109,7 +109,7 @@ export function CSRTimeline({ projectId }: CSRTimelineProps) {
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="عنوان نقطه عطف..."
+                  placeholder="عنوان نقطه عطف…"
                 />
               </div>
               <div>
@@ -118,7 +118,7 @@ export function CSRTimeline({ projectId }: CSRTimelineProps) {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="توضیحات..."
+                  placeholder="توضیحات…"
                 />
               </div>
               <div>

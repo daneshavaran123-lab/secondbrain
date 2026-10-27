@@ -125,7 +125,7 @@ export function CSRProjectForm({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="توضیحات کامل پروژه..."
+                      placeholder="توضیحات کامل پروژه…"
                       rows={3}
                     />
                   </FormControl>

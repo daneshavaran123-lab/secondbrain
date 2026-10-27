@@ -141,7 +141,7 @@ export function ResumeSkillDialog({ open, onClose, editItem }: ResumeSkillDialog
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  در حال ذخیره...
+                  در حال ذخیره…
                 </>
               ) : (
                 'ذخیره'

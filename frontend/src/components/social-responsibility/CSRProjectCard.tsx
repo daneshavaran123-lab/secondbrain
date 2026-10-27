@@ -78,7 +78,7 @@ export function CSRProjectCard({
 
   return (
     <div
-      className="border rounded-xl bg-card hover:shadow-lg transition-all p-6 space-y-4 cursor-pointer"
+      className="border rounded-xl bg-card hover:shadow-lg transition p-6 space-y-4 cursor-pointer"
       onClick={() => {
         // Navigate to detail page
         window.location.href = `/csr-project/${project.id}`;

@@ -149,7 +149,7 @@ export const AISummaryDrawer: React.FC<AISummaryDrawerProps> = ({
                   id="sourceText"
                   value={sourceText}
                   onChange={(e) => setSourceText(e.target.value)}
-                  placeholder="متن کتاب یا منبع اطلاعات را اینجا وارد کنید..."
+                  placeholder="متن کتاب یا منبع اطلاعات را اینجا وارد کنید…"
                   rows={4}
                 />
               </div>
@@ -191,7 +191,7 @@ export const AISummaryDrawer: React.FC<AISummaryDrawerProps> = ({
                 {isGenerating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    در حال تولید خلاصه...
+                    در حال تولید خلاصه…
                   </>
                 ) : (
                   'تولید خلاصه'

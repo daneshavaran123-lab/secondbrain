@@ -535,7 +535,7 @@ ${formData.description || 'شرح وظیفه در بالا آمده است.'}
                 انصراف
               </Button>
               <Button type="submit" disabled={isLoading} className="btn-primary">
-                {isLoading ? 'در حال ارسال...' : 'واگذاری وظیفه'}
+                {isLoading ? 'در حال ارسال…' : 'واگذاری وظیفه'}
               </Button>
             </div>
           </div>

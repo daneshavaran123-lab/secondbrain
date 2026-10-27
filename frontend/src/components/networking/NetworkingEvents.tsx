@@ -282,7 +282,7 @@ export function NetworkingEvents({ companyId, organizationId }: NetworkingEvents
               <Textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="نکات مهم رویداد..."
+                placeholder="نکات مهم رویداد…"
                 rows={2}
               />
             </div>

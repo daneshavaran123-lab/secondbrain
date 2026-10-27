@@ -127,11 +127,11 @@ export function CSRDocumentManager({ projectId }: CSRDocumentManagerProps) {
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="توضیحات اختیاری..."
+                  placeholder="توضیحات اختیاری…"
                 />
               </div>
               <Button onClick={handleUpload} disabled={uploading} className="w-full">
-                {uploading ? "در حال آپلود..." : "آپلود"}
+                {uploading ? "در حال آپلود…" : "آپلود"}
               </Button>
             </div>
           </DialogContent>

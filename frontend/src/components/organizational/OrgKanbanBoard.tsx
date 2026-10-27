@@ -70,7 +70,7 @@ export const OrgKanbanBoard: React.FC<OrgKanbanBoardProps> = ({ domain }) => {
     }
   };
 
-  if (loading) return <div className="text-center py-10 text-muted-foreground">در حال بارگذاری...</div>;
+  if (loading) return <div className="text-center py-10 text-muted-foreground">در حال بارگذاری…</div>;
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

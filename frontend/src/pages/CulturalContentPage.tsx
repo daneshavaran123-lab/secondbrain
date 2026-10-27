@@ -430,7 +430,7 @@ const CulturalContentPage: React.FC = () => {
             <Search />
           </AppIcon>
           <Input
-            placeholder="جستجو در عنوان یا توضیحات..."
+            placeholder="جستجو در عنوان یا توضیحات…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(

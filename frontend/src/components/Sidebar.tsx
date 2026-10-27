@@ -142,7 +142,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
 
   return (
     <aside className={cn(
-      "glass-sidebar border-r border-border/50 transition-all duration-500 ease-in-out shadow-glass relative z-10",
+      "glass-sidebar border-r border-border/50 transition duration-500 ease-in-out shadow-glass relative z-10",
       isOpen ? "w-72" : "w-18"
     )}>
       <div className="p-5 h-full flex flex-col">
@@ -236,7 +236,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                     <div className="space-y-2">
                       <Input
                         type="text"
-                        placeholder="جستجو..."
+                        placeholder="جستجو…"
                         value={orgSearch}
                         onChange={(e) => setOrgSearch(e.target.value)}
                         className="h-8 text-xs"
@@ -269,7 +269,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
               <div className="space-y-1">
                 {orgsLoading ? (
                   <div className="text-xs text-muted-foreground text-center py-4">
-                    در حال بارگذاری...
+                    در حال بارگذاری…
                   </div>
                 ) : organizations.length === 0 ? (
                   isOpen && (

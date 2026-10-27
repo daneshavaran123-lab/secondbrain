@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Heart, BookOpen, Calendar, Settings, Users, Building2, Briefcase, TrendingUp, Brain, UserCheck, Scale, Zap, Globe, User, Phone, MessageSquare, FileText, Target, BarChart3, Activity, Home, ChevronRight, ChevronLeft, Lightbulb, UserPlus, ClipboardList, Bot, Shield, Leaf, GraduationCap, CheckSquare, Mail } from "lucide-react";
+import { Heart, BookOpen, Calendar, Settings, Users, Building2, Briefcase, TrendingUp, Brain, UserCheck, Scale, Zap, Globe, User, Phone, MessageSquare, FileText, Target, BarChart3, Activity, Home, ChevronLeft, Lightbulb, UserPlus, ClipboardList, Bot, Shield, Leaf, GraduationCap, CheckSquare, Mail } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,38 +16,15 @@ import { useResponsiveBreakpoints } from "@/hooks/useResponsiveBreakpoints";
 import { getSidebarStats, getCurrentUser, type SidebarStats } from '@/services/sidebarStatsService';
 import { companiesService, type BusinessCompany } from '@/services/companiesService';
 import { cn } from "@/lib/utils";
+import { BrandMark, Wordmark } from "@/components/brand/BrandMark";
+import { buildNavigation, type MenuItem } from "@/config/navigation";
 interface DomainSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
 }
 
-interface CategorySection {
-  id: string;
-  title: string;
-  items: MenuItem[];
-}
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{
-    className?: string;
-  }>;
-  path: string;
-  count?: number;
-  organization?: string;
-}
 
-interface DomainSection {
-  id: DomainType;
-  title: string;
-  icon: React.ComponentType<{
-    className?: string;
-  }>;
-  color: string;
-  bgColor: string;
-  categories: CategorySection[];
-}
 const DomainSidebar: React.FC<DomainSidebarProps> = ({
   isOpen,
   onToggle
@@ -97,326 +74,7 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
     count: undefined
   }));
 
-  const domains: DomainSection[] = [{
-    id: 'personal',
-    title: 'حوزه فردی',
-    icon: User,
-    color: 'text-emerald-600',
-    bgColor: 'bg-emerald-50',
-    categories: [{
-      id: 'personal-planning',
-      title: 'برنامه‌ریزی',
-      items: [{
-        id: 'ideas-personal',
-        label: 'ایده‌های شخصی',
-        icon: Lightbulb,
-        path: '/ideas?domain=personal',
-        count: stats?.personalIdeas
-      }, {
-        id: 'calendar',
-        label: 'تقویم شخصی',
-        icon: Calendar,
-        path: '/calendar'
-      }, {
-        id: 'personal-planning',
-        label: 'برنامه‌ریزی فردی',
-        icon: ClipboardList,
-        path: '/personal-planning',
-        count: stats?.personalPlanning
-      }, {
-        id: 'habit-tracker',
-        label: 'عادت‌سازی',
-        icon: CheckSquare,
-        path: '/habits'
-      }, {
-        id: 'delegation-personal',
-        label: 'واگذاری وظایف',
-        icon: UserPlus,
-        path: '/delegation?domain=personal'
-      }]
-    }, {
-      id: 'personal-learning',
-      title: 'یادگیری',
-      items: [{
-        id: 'cultural-content',
-        label: 'مدیریت محتوای فرهنگی',
-        icon: BookOpen,
-        path: '/cultural-content'
-      }]
-    }, {
-      id: 'personal-health',
-      title: 'سلامت',
-      items: [{
-        id: 'health',
-        label: 'سلامت',
-        icon: Activity,
-        path: '/health',
-        count: stats?.personalHealth
-      }]
-    }, {
-      id: 'personal-spiritual',
-      title: 'معنوی',
-      items: [{
-        id: 'gratitude-journal',
-        label: 'دفتر شکرگذاری',
-        icon: Heart,
-        path: '/gratitude-journal'
-      }, {
-        id: 'journal',
-        label: 'دل‌نوشته‌ها',
-        icon: BookOpen,
-        path: '/personal-journal',
-        count: stats?.personalJournal
-      }]
-    }, {
-      id: 'personal-tools',
-      title: 'ابزارها',
-      items: [{
-        id: 'gadgets',
-        label: 'ابزارهای کاربردی',
-        icon: Zap,
-        path: '/gadgets'
-      }, {
-        id: 'ai-chat',
-        label: 'چت با AI',
-        icon: Bot,
-        path: '/ai-chat'
-      }]
-    }]
-  }, {
-    id: 'professional',
-    title: 'حوزه حرفه‌ای',
-    icon: Briefcase,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    categories: [{
-      id: 'professional-profile',
-      title: 'پروفایل',
-      items: [{
-        id: 'resume',
-        label: 'رزومه حرفه‌ای',
-        icon: FileText,
-        path: 'resume'
-      }]
-    }, {
-      id: 'professional-planning',
-      title: 'برنامه‌ریزی',
-      items: [{
-        id: 'professional-planning',
-        label: 'برنامه‌ریزی حرفه‌ای',
-        icon: Briefcase,
-        path: '/professional-planning',
-        count: stats?.professionalPlanning
-      }, {
-        id: 'calendar-professional',
-        label: 'تقویم حرفه‌ای',
-        icon: Calendar,
-        path: '/calendar?domain=professional'
-      }, {
-        id: 'delegation-professional',
-        label: 'واگذاری وظایف',
-        icon: UserPlus,
-        path: '/delegation?domain=professional'
-      }]
-    }, {
-      id: 'professional-meetings',
-      title: 'جلسات',
-      items: [{
-        id: 'meetings',
-        label: 'جلسات',
-        icon: Users,
-        path: '/meetings',
-        count: stats?.professionalMeetings
-      }, {
-        id: 'meeting-preparation',
-        label: 'آمادگی قبل از جلسه',
-        icon: Lightbulb,
-        path: '/meetings/preparation'
-      }, {
-        id: 'projects',
-        label: 'پروژه‌ها',
-        icon: BarChart3,
-        path: '/projects',
-        count: stats?.professionalProjects
-      }]
-    }, {
-    id: 'professional-companies',
-      title: 'شرکت‌ها و کسب‌وکارها',
-      items: [
-        {
-          id: 'companies-management',
-          label: '➕ مدیریت شرکت‌ها',
-          icon: Building2,
-          path: '/companies',
-          count: stats?.companies
-        },
-        ...(userCompanies.length > 0 
-          ? companyMenuItems 
-          : [{
-              id: 'no-companies',
-              label: 'شرکتی ثبت نشده',
-              icon: Building2,
-              path: '/companies',
-              count: undefined
-            }]
-        )
-      ]
-    }, {
-      id: 'professional-knowledge',
-      title: 'دانش',
-      items: [{
-        id: 'ideas-professional',
-        label: 'ایده‌های حرفه‌ای',
-        icon: Lightbulb,
-        path: '/ideas?domain=professional',
-        count: stats?.professionalIdeas
-      }, {
-        id: 'knowledge',
-        label: 'دانش',
-        icon: Brain,
-        path: '/knowledge',
-        count: stats?.knowledge
-      }]
-    }, {
-      id: 'professional-legal',
-      title: 'حقوقی',
-      items: [{
-        id: 'legal',
-        label: 'امور حقوقی',
-        icon: Scale,
-        path: '/legal',
-        count: stats?.legal
-      }]
-    }]
-  }, {
-    id: 'organizational',
-    title: 'حوزه سازمانی',
-    icon: Building2,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    categories: [{
-      id: 'organizational-ideas-planning',
-      title: 'ایده‌ها و برنامه‌ریزی',
-      items: [{
-        id: 'ideas-organizational',
-        label: 'ایده‌های سازمانی',
-        icon: Lightbulb,
-        path: '/ideas?domain=organizational',
-        count: stats?.organizationalIdeas
-      }, {
-        id: 'organizational-planning',
-        label: 'برنامه‌ریزی سازمانی',
-        icon: Target,
-        path: '/organizational-planning',
-        count: stats?.organizationalPlanning
-      }, {
-        id: 'calendar-organizational',
-        label: 'تقویم سازمانی',
-        icon: Calendar,
-        path: '/calendar?domain=organizational'
-      }, {
-        id: 'delegation-organizational',
-        label: 'واگذاری وظایف',
-        icon: UserPlus,
-        path: '/delegation?domain=organizational'
-      }]
-    }, {
-      id: 'organizational-correspondence',
-      title: 'مکاتبات',
-      items: [{
-        id: 'organizational-letters',
-        label: 'نامه‌ها و بخشنامه‌ها',
-        icon: Mail,
-        path: '/organizational-letters'
-      }]
-    }, {
-      id: 'organizational-organizations',
-      title: 'سمت‌ها (سازمان‌ها/انجمن‌ها)',
-      items: [
-        ...((() => {
-          try {
-            const stored = localStorage.getItem('main_organization');
-            if (stored) {
-              const mainOrg = JSON.parse(stored);
-              return [{
-                id: 'main-organization',
-                label: `📍 ${mainOrg.name}`,
-                icon: Building2,
-                path: '/my-organizations',
-                count: undefined
-              }];
-            }
-          } catch (e) {
-            console.error('Error loading main organization:', e);
-          }
-          return [];
-        })()),
-        ...organizationMenuItems,
-        {
-          id: 'all-organizations',
-          label: 'همه سازمان‌ها',
-          icon: Building2,
-          path: '/my-organizations',
-          count: userOrganizations.length
-        }
-      ]
-    }, {
-      id: 'organizational-communication',
-      title: 'ارتباطات',
-      items: [{
-        id: 'social',
-        label: 'رسانه‌های اجتماعی',
-        icon: MessageSquare,
-        path: '/social-media'
-      }]
-    }]
-  }, {
-    id: 'social',
-    title: 'حوزه اجتماعی',
-    icon: Users,
-    color: 'text-pink-600',
-    bgColor: 'bg-pink-50',
-    categories: [{
-      id: 'social-khadim',
-      title: 'خدمات اجتماعی',
-      items: [{
-        id: 'khadim-e-khalgh',
-        label: 'خادم خلق',
-        icon: Heart,
-        path: '/organizational/khadim-e-khalgh'
-      }]
-    }, {
-      id: 'social-responsibility',
-      title: 'مسئولیت‌های اجتماعی',
-      items: [{
-        id: 'csr-projects',
-        label: 'پروژه‌های CSR',
-        icon: Shield,
-        path: '/social-responsibility',
-        count: stats?.csrProjects
-      }, {
-        id: 'charity-activities',
-        label: 'فعالیت‌های خیریه',
-        icon: Heart,
-        path: '/social-responsibility?tab=charity'
-      }, {
-        id: 'environment',
-        label: 'محیط زیست',
-        icon: Leaf,
-        path: '/social-responsibility?tab=environment'
-      }, {
-        id: 'community-education',
-        label: 'آموزش جامعه',
-        icon: GraduationCap,
-        path: '/social-responsibility?tab=education'
-      }, {
-        id: 'csr-reporting',
-        label: 'گزارش‌دهی CSR',
-        icon: FileText,
-        path: '/social-responsibility?tab=reports'
-      }]
-    }]
-  }];
+  const domains = buildNavigation({ stats, companyItems: companyMenuItems, organizationItems: organizationMenuItems });
   const isActivePath = (path: string) => location.pathname === path;
   const getCurrentDomain = (): DomainType => {
     const currentPath = location.pathname;
@@ -543,8 +201,8 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
   return (
     <div className={cn(
       "fixed top-0 right-0 h-full",
-      "bg-card border-l border-border",
-      "transition-all duration-300 ease-in-out flex flex-col",
+      "bg-sidebar border-l border-sidebar-border",
+      "transition-[width,transform,opacity] duration-200 ease-out flex flex-col",
       "touch-manipulation overflow-hidden",
       !isDesktop
         ? cn(
@@ -559,34 +217,35 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
         "flex items-center justify-between sidebar-header-glass",
         !isDesktop ? "p-3 h-14" : "p-4 h-16"
       )}>
-        <button
-          onClick={onToggle}
-          className="sidebar-toggle-btn"
-          aria-label="toggle sidebar"
-        >
-          {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-        </button>
-
+        {isOpen ? (
+          <NavLink to="/" className="mr-1 rounded-md" aria-label="مغز دوم من، داشبورد">
+            <Wordmark />
+          </NavLink>
+        ) : (
+          <button
+            onClick={onToggle}
+            className="mx-auto flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-sidebar-accent"
+            aria-label="باز کردن منو"
+            title="باز کردن منو"
+          >
+            <BrandMark size={22} />
+          </button>
+        )}
         {isOpen && (
-          <div className="flex items-center gap-2.5 mr-1">
-            <div className="text-sm text-right leading-tight">
-              <p className="font-semibold text-foreground text-[13px]">{currentUser?.displayName || 'کاربر'}</p>
-              <p className="text-muted-foreground text-[11px] mt-0.5">{currentUser?.role || 'کاربر'}</p>
-            </div>
-            <Avatar className="h-8 w-8 ring-2 ring-primary/20 ring-offset-1 ring-offset-background">
-              <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.displayName || 'کاربر'} />
-              <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                {currentUser?.displayName?.[0] || 'U'}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+          <button
+            onClick={onToggle}
+            className="sidebar-toggle-btn"
+            aria-label={isDesktop ? 'جمع کردن منو' : 'بستن منو'}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
         )}
       </div>
 
       {/* Domain Tabs */}
       {isOpen && (
-        <div className="px-2.5 py-2 border-b border-border/30">
-          <div className="flex gap-1 p-1 bg-muted/40 rounded-xl">
+        <div className="px-2.5 pb-2">
+          <div className="flex gap-1 rounded-lg bg-sidebar-accent/70 p-1">
             {domains.map(domain => (
               <button
                 key={domain.id}
@@ -617,12 +276,7 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
           >
             <Home className="h-4 w-4 flex-shrink-0" />
             {isOpen && <span className="flex-1">داشبورد</span>}
-            {isOpen && <div className="indicator-dot opacity-0 [.active_&]:opacity-100" />}
           </NavLink>
-        </div>
-
-        <div className="px-2 my-1.5">
-          <div className="h-px bg-border/40" />
         </div>
 
         {/* Selected Domain Section */}
@@ -632,7 +286,6 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
           return (
             <div className="mb-2 px-2">
               <div className="category-header mb-1">
-                <currentDomainData.icon className="h-3 w-3 text-primary" />
                 {currentDomainData.title}
               </div>
 
@@ -653,7 +306,7 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
                       {category.title}
                     </AccordionTrigger>
                     <AccordionContent className="pb-1 pt-0.5">
-                      <div className="space-y-0.5 pr-2 border-r-2 border-border/30 mr-2">
+                      <div className="space-y-0.5 pr-2 border-r border-sidebar-border mr-3">
                         {category.items.map(item => (
                           <NavLink
                             key={item.id}
@@ -689,12 +342,13 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
                 key={item.id}
                 to={item.path}
                 className={({ isActive }) => cn(
-                  "flex items-center justify-center rounded-lg p-2 transition-all duration-200 text-muted-foreground",
+                  "flex items-center justify-center rounded-md p-2 transition-colors text-muted-foreground",
                   isActive
-                    ? "bg-primary/12 text-primary"
-                    : "hover:bg-accent hover:text-foreground"
+                    ? "bg-sidebar-accent text-foreground"
+                    : "hover:bg-sidebar-accent/70 hover:text-foreground"
                 )}
                 title={item.label}
+                aria-label={item.label}
               >
                 <item.icon className="h-4 w-4" />
               </NavLink>
@@ -704,7 +358,7 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-border/30 p-2">
+      <div className="border-t border-sidebar-border p-2">
         <NavLink
           to="/assistant-reports"
           className={({ isActive }) => cn(

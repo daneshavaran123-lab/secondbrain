@@ -142,7 +142,7 @@ export function ResumeInterests() {
                 value={newInterest.interest_name}
                 onChange={(e) => setNewInterest({ ...newInterest, interest_name: e.target.value })}
                 required
-                placeholder="مثلاً: شطرنج، نقاشی، مطالعه..."
+                placeholder="مثلاً: شطرنج، نقاشی، مطالعه…"
               />
             </div>
             <div>
@@ -150,7 +150,7 @@ export function ResumeInterests() {
               <Input
                 value={newInterest.category}
                 onChange={(e) => setNewInterest({ ...newInterest, category: e.target.value })}
-                placeholder="مثلاً: ورزشی، هنری، علمی..."
+                placeholder="مثلاً: ورزشی، هنری، علمی…"
               />
             </div>
             <div className="flex justify-end gap-2">

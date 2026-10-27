@@ -90,7 +90,7 @@ export function CSRFilterPanel({ filters, onChange }: CSRFilterPanelProps) {
           <Input
             value={filters.search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="جستجو در پروژه‌ها..."
+            placeholder="جستجو در پروژه‌ها…"
             className="pr-10"
           />
         </div>

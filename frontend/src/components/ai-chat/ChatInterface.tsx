@@ -167,7 +167,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         console.error('API Error:', errorText);
         
         if (response.status === 429) {
-          throw new Error('درخواست‌های شما زیاد است. لطفاً ۳۰ ثانیه صبر کنید...');
+          throw new Error('درخواست‌های شما زیاد است. لطفاً ۳۰ ثانیه صبر کنید…');
         } else if (response.status === 402) {
           throw new Error('اعتبار AI تمام شده. لطفاً از بخش تنظیمات اعتبار اضافه کنید.');
         }
@@ -460,7 +460,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             {isStreaming && (
               <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg w-fit">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-xs text-primary font-medium">در حال دریافت پاسخ...</span>
+                <span className="text-xs text-primary font-medium">در حال دریافت پاسخ…</span>
               </div>
             )}
           </div>
@@ -488,7 +488,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="پیام خود را تایپ کنید..."
+              placeholder="پیام خود را تایپ کنید…"
               disabled={isLoading}
               className="flex-1"
             />

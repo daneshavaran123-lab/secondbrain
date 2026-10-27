@@ -77,7 +77,7 @@ export function GoalForm({ open, onOpenChange, goal, organizationId, positionId,
         انصراف
       </Button>
       <Button onClick={handleSubmit} disabled={loading}>
-        {loading ? "در حال ذخیره..." : goal?.id ? "بروزرسانی" : "ایجاد"}
+        {loading ? "در حال ذخیره…" : goal?.id ? "بروزرسانی" : "ایجاد"}
       </Button>
     </div>
   );
@@ -125,7 +125,7 @@ export function GoalForm({ open, onOpenChange, goal, organizationId, positionId,
             id="description"
             value={formData.description || ''}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="توضیحات تکمیلی هدف..."
+            placeholder="توضیحات تکمیلی هدف…"
             rows={3}
           />
         </div>
@@ -218,7 +218,7 @@ export function GoalForm({ open, onOpenChange, goal, organizationId, positionId,
             id="notes"
             value={formData.notes || ''}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            placeholder="یادداشت‌های تکمیلی..."
+            placeholder="یادداشت‌های تکمیلی…"
             rows={2}
           />
         </div>

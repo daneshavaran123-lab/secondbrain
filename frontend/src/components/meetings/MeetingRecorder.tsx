@@ -451,7 +451,7 @@ export const MeetingRecorder: React.FC<MeetingRecorderProps> = ({ onMeetingCreat
             <div>
               <label className="text-sm font-medium mb-2 block">عنوان جلسه</label>
               <Input
-                placeholder="عنوان جلسه را وارد کنید..."
+                placeholder="عنوان جلسه را وارد کنید…"
                 value={meetingTitle}
                 onChange={(e) => setMeetingTitle(e.target.value)}
                 className="bg-background/50"
@@ -551,7 +551,7 @@ export const MeetingRecorder: React.FC<MeetingRecorderProps> = ({ onMeetingCreat
                   <div className="text-center text-muted-foreground">
                     <VideoOff className="h-8 w-8 mx-auto mb-2" />
                     <p className="text-sm">
-                      {videoError || (!videoEnabled ? 'تصویر خاموش است' : 'در حال بارگذاری تصویر...')}
+                      {videoError || (!videoEnabled ? 'تصویر خاموش است' : 'در حال بارگذاری تصویر…')}
                     </p>
                   </div>
                 </div>
@@ -575,7 +575,7 @@ export const MeetingRecorder: React.FC<MeetingRecorderProps> = ({ onMeetingCreat
                 {participantCount} نفر شناسایی شده
               </Badge>
               <Badge variant="outline">
-                {isProcessingTranscript ? 'در حال پردازش متن...' : 'گفتار به نوشتار'}
+                {isProcessingTranscript ? 'در حال پردازش متن…' : 'گفتار به نوشتار'}
               </Badge>
               <Badge variant="outline">استخراج وظایف</Badge>
             </div>
@@ -610,7 +610,7 @@ export const MeetingRecorder: React.FC<MeetingRecorderProps> = ({ onMeetingCreat
               disabled={isProcessingTranscript}
             >
               <Square className="h-4 w-4" />
-              {isProcessingTranscript ? 'در حال پردازش...' : 'توقف ضبط و پردازش'}
+              {isProcessingTranscript ? 'در حال پردازش…' : 'توقف ضبط و پردازش'}
             </Button>
           </motion.div>
         )}

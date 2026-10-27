@@ -118,7 +118,7 @@ export function CSRTemplates({ onSelect }: CSRTemplatesProps) {
             <div
               key={template.id}
               onClick={() => onSelect(template)}
-              className="cursor-pointer hover:shadow-lg transition-all hover:scale-105 rounded-xl border bg-card p-6 hover:bg-accent"
+              className="cursor-pointer hover:shadow-lg transition hover:scale-105 rounded-xl border bg-card p-6 hover:bg-accent"
             >
               <div className="flex flex-col items-center text-center space-y-3">
                 <div className={cn(

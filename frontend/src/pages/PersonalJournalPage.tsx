@@ -303,7 +303,7 @@ const PersonalJournalPage = () => {
           <div className="flex-1 relative">
             <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="جستجو در نوشته‌ها..."
+              placeholder="جستجو در نوشته‌ها…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pr-10 bg-card/50 backdrop-blur-sm border-border/50"
@@ -370,7 +370,7 @@ const PersonalJournalPage = () => {
                     value={newEntry.content}
                     onChange={(content) => setNewEntry({...newEntry, content})}
                     type="textarea"
-                    placeholder="متن نوشته خود را اینجا بنویسید یا از voice استفاده کنید..."
+                    placeholder="متن نوشته خود را اینجا بنویسید یا از voice استفاده کنید…"
                     rows={8}
                     enableVoice={true}
                     label="متن"
@@ -475,7 +475,7 @@ const PersonalJournalPage = () => {
             <div key={entry.id} className="break-inside-avoid animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
               <ModernCard
                 title=""
-                className={`bg-card/60 backdrop-blur-md border-border/30 hover:bg-card/80 transition-all duration-500 ${
+                className={`bg-card/60 backdrop-blur-md border-border/30 hover:bg-card/80 transition duration-500 ${
                   entry.favorite ? 'ring-2 ring-primary/20' : ''
                 }`}
                 hover

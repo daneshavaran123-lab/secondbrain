@@ -1,61 +1,30 @@
-/* Vazirmatn — locally hosted (no external CDN dependency) */
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/Vazirmatn-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/Vazirmatn-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/Vazirmatn-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Vazirmatn';
-  src: url('/fonts/Vazirmatn-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Mora Design System
-طراحی سیستم برای اپلیکیشن مدیریت دانش شخصی
-فونت یکپارچه: Vazirmatn 
-پشتیبانی کامل از زبان فارسی و اعداد فارسی
-*/
+/* مغز دوم من — design system
+   Type: Estedad for everything people read and operate (it has true tabular Persian digits),
+   Noto Kufi Arabic only for the wordmark and page/section titles.
+   Colour: neutral ink and a cool grey ground; Persian turquoise («فیروزه‌ای») is the signal
+   colour of the assistant, focus and the data that matters, and nothing else. */
 
-* {
-  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-variant-numeric: normal;
-  font-feature-settings: 'lnum' off;
+:root {
+  --font-sans: 'Estedad', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Noto Kufi Arabic', 'Estedad', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
 
-/* اعداد فارسی برای همه المان‌ها */
+/* One family across the app, including portalled widgets (toasts, charts) that set their own */
 body, body * {
-  font-family: 'Vazirmatn', sans-serif !important;
-  font-variant-numeric: normal !important;
-  font-feature-settings: 'lnum' off !important;
+  font-family: var(--font-sans) !important;
+}
+
+body :is(h1, h2, .font-display, .font-brand) {
+  font-family: var(--font-display) !important;
+}
+
+body :is(code, pre, samp) {
+  font-family: var(--font-mono) !important;
 }
 
 /* RTL Support */
@@ -74,27 +43,16 @@ body, body * {
 }
 
 .input-app-standard {
-  font-family: 'Vazir', sans-serif;
+  font-family: inherit;
 }
 
-/* Persian/Farsi Numbers Support */
+/* Persian digits come from the text itself (toPersianNumbers); the font stays the same */
 .font-persian-nums {
-  font-family: 'Vazirmatn', 'Vazir', sans-serif !important;
-  font-variant-numeric: normal !important;
-  font-feature-settings: 'lnum' off !important;
+  font-family: inherit;
 }
 
-.font-persian-nums * {
-  font-family: 'Vazirmatn', 'Vazir', sans-serif !important;
-}
-
-/* Force Persian digits for all numbers */
 body {
   direction: rtl;
-}
-
-body * {
-  font-family: 'Vazirmatn', 'Vazir', sans-serif;
 }
 
 .mora-gradient {
@@ -124,7 +82,7 @@ body * {
 }
 
 .transition-elegant {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .hover-scale:hover {
@@ -169,7 +127,7 @@ body * {
     0 2px 8px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     inset 0 -1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .dark .glass-card {
@@ -228,7 +186,7 @@ body * {
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .glass-button:hover {
@@ -250,7 +208,7 @@ body * {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .glass-input:focus {
@@ -289,7 +247,7 @@ body * {
 
 /* Hover Glow Animation */
 .hover-glow {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .hover-glow:hover {
@@ -406,46 +364,51 @@ body * {
 
 @layer base {
   :root {
-    /* Minimal palette: neutral zinc surfaces, one calm indigo accent */
-    --background: 240 5% 98.5%;
-    --foreground: 240 10% 9%;
+    /* Ink on a cool grey ground; turquoise is the signal colour */
+    --background: 180 6% 97%;
+    --foreground: 189 19% 7%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 9%;
+    --card-foreground: 189 19% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 9%;
+    --popover-foreground: 189 19% 7%;
 
-    --primary: 243 62% 56%;
+    --primary: 189 19% 9%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 243 62% 50%;
-    --primary-glow: 243 62% 66%;
+    --primary-hover: 189 12% 20%;
+    --primary-glow: 183 88% 27%;
 
-    --secondary: 240 5% 95%;
-    --secondary-foreground: 240 6% 20%;
+    --secondary: 180 6% 94%;
+    --secondary-foreground: 189 19% 9%;
 
-    --muted: 240 5% 95%;
-    --muted-foreground: 240 4% 44%;
+    --muted: 180 6% 94%;
+    --muted-foreground: 185 6% 38%;
 
     /* Accent is the neutral hover surface used by menus, selects and ghost buttons */
-    --accent: 240 5% 94%;
-    --accent-foreground: 240 10% 9%;
+    --accent: 180 6% 93%;
+    --accent-foreground: 189 19% 7%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 358 69% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --warning: 36 92% 46%;
+    --warning: 32 92% 40%;
+
+    /* Signal: the assistant, focus, selection and the data that matters */
+    --signal: 183 88% 27%;
+    --signal-foreground: 0 0% 100%;
+    --signal-soft: 183 50% 93%;
 
     /* Futuristic Theme Colors - Enhanced */
-    --medical-blue: 200 95% 52%;
+    --medical-blue: 183 88% 27%;
     --health-green: 155 75% 50%;
     --meeting-purple: 275 70% 60%;
     --knowledge-amber: 40 98% 58%;
-    --tech-cyan: 190 90% 55%;
-    --innovation-violet: 265 85% 62%;
+    --tech-cyan: 183 88% 27%;
+    --innovation-violet: 183 88% 27%;
     
     /* Progress Chart Colors */
-    --success: 152 58% 38%;
+    --success: 152 60% 30%;
     --meeting: 280 65% 45%;
     --innovation: 260 85% 55%;
     
@@ -464,27 +427,27 @@ body * {
     --mood-calm: 260 45% 65%;
     --mood-excited: 25 85% 65%;
 
-    --border: 240 6% 90%;
-    --input: 240 6% 88%;
-    --ring: 243 62% 56%;
+    --border: 180 6% 89.5%;
+    --input: 180 6% 82%;
+    --ring: 183 88% 27%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 100%;
+    --sidebar-background: 180 6% 97%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 185 6% 30%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 189 19% 9%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 100%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 180 6% 91%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 189 19% 7%;
 
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 180 6% 89.5%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 183 88% 27%;
   }
 
   /* Futuristic Gradients */
@@ -501,18 +464,19 @@ body * {
     --gradient-futuristic: linear-gradient(hsl(var(--background)), hsl(var(--background)));
 
     /* Soft neutral elevation */
-    --shadow-elegant: 0 1px 2px hsl(240 10% 10% / 0.04), 0 4px 12px -4px hsl(240 10% 10% / 0.08);
+    /* Surfaces at rest are separated by a border, never a shadow; only floating layers cast one */
+    --shadow-elegant: none;
     --shadow-medical: var(--shadow-elegant);
-    --shadow-card: 0 1px 2px hsl(240 10% 10% / 0.04);
+    --shadow-card: none;
     --shadow-glass: var(--shadow-card);
     --shadow-glow: none;
-    --shadow-floating: 0 12px 32px -12px hsl(240 10% 10% / 0.18);
+    --shadow-floating: 0 12px 32px -12px hsl(189 19% 7% / 0.22), 0 0 0 1px hsl(189 19% 7% / 0.06);
     
     /* Smooth Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-elegant: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-smooth: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: color 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), background-color 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), border-color 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-elegant: color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-spring: color 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   /* Luxury Theme Colors */
@@ -562,56 +526,60 @@ body * {
   }
 
   .dark {
-    --background: 240 6% 7%;
-    --foreground: 0 0% 95%;
+    --background: 180 8% 4.7%;
+    --foreground: 180 13% 94%;
 
-    --card: 240 5% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 180 8% 7.6%;
+    --card-foreground: 180 13% 94%;
 
-    --popover: 240 5% 11%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 180 8% 9%;
+    --popover-foreground: 180 13% 94%;
 
-    --primary: 243 85% 72%;
-    --primary-foreground: 240 10% 8%;
-    --primary-hover: 243 85% 66%;
+    --primary: 180 13% 94%;
+    --primary-foreground: 180 8% 5%;
+    --primary-hover: 180 8% 82%;
 
-    --secondary: 240 4% 15%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 180 9% 11%;
+    --secondary-foreground: 180 13% 94%;
 
-    --muted: 240 4% 14%;
-    --muted-foreground: 240 5% 63%;
+    --muted: 180 9% 11%;
+    --muted-foreground: 185 6% 62.5%;
 
-    --accent: 240 4% 16%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 180 7% 13%;
+    --accent-foreground: 180 13% 94%;
 
-    --destructive: 0 72% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 350 73% 62%;
+    --destructive-foreground: 180 8% 5%;
+
+    --signal: 180 59% 48%;
+    --signal-foreground: 180 8% 5%;
+    --signal-soft: 180 40% 11%;
 
     --success: 152 50% 52%;
     --warning: 38 92% 58%;
 
-    --shadow-elegant: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px -6px rgb(0 0 0 / 0.5);
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
-    --shadow-floating: 0 16px 40px -12px rgb(0 0 0 / 0.6);
+    --shadow-elegant: none;
+    --shadow-card: none;
+    --shadow-floating: 0 16px 40px -12px rgb(0 0 0 / 0.7), 0 0 0 1px hsl(180 7% 16%);
 
     /* Enhanced theme colors for dark mode */
-    --medical-blue: 200 90% 60%;
+    --medical-blue: 180 59% 48%;
     --health-green: 155 70% 55%;
     --knowledge-amber: 40 95% 65%;
-    --tech-cyan: 190 85% 60%;
-    --innovation-violet: 265 80% 68%;
+    --tech-cyan: 180 59% 48%;
+    --innovation-violet: 180 59% 48%;
 
-    --border: 240 4% 17%;
-    --input: 240 4% 20%;
-    --ring: 243 85% 72%;
-    --sidebar-background: 240 6% 8%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 243 85% 72%;
-    --sidebar-primary-foreground: 240 10% 8%;
-    --sidebar-accent: 240 4% 15%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 4% 17%;
-    --sidebar-ring: 243 85% 72%;
+    --border: 180 7% 14.7%;
+    --input: 180 7% 21%;
+    --ring: 180 59% 48%;
+    --sidebar-background: 180 8% 4.7%;
+    --sidebar-foreground: 185 6% 70%;
+    --sidebar-primary: 180 13% 94%;
+    --sidebar-primary-foreground: 180 8% 5%;
+    --sidebar-accent: 180 7% 12%;
+    --sidebar-accent-foreground: 180 13% 94%;
+    --sidebar-border: 180 7% 14.7%;
+    --sidebar-ring: 180 59% 48%;
 
     --gradient-primary-dark: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
     --gradient-medical-dark: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
@@ -625,7 +593,7 @@ body * {
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-sans);
     line-height: 1.6;
     font-weight: 400;
     letter-spacing: 0;
@@ -828,20 +796,20 @@ body * {
   
   /* فونت فارسی یکپارچه با سایز مناسب */
   .font-persian {
-    font-family: 'Vazirmatn', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 400;
     font-size: 0.875rem;
   }
   
   .font-poetry {
-    font-family: 'Vazirmatn', sans-serif;
+    font-family: var(--font-sans);
     line-height: 2;
     font-size: 1rem;
     font-weight: 400;
   }
   
   .font-prose {
-    font-family: 'Vazirmatn', sans-serif;
+    font-family: var(--font-sans);
     line-height: 1.7;
     font-size: 0.875rem;
     font-weight: 400;
@@ -1062,7 +1030,7 @@ body * {
 
   /* Typography Enhancement */
   .heading-primary {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: 2.5rem;
     line-height: 1.2;
@@ -1074,7 +1042,7 @@ body * {
   }
 
   .heading-secondary {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 1.5rem;
     line-height: 1.3;
@@ -1083,7 +1051,7 @@ body * {
   }
 
   .text-body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 400;
     font-size: 1rem;
     line-height: 1.6;
@@ -1225,7 +1193,7 @@ body * {
 
   /* Interactive Elements */
   .btn-magnetic {
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   }
 
   .btn-magnetic:hover {
@@ -1312,7 +1280,7 @@ body * {
     box-shadow: 
       0 8px 24px hsl(var(--primary) / 0.3),
       0 2px 8px hsl(var(--primary) / 0.2);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
     z-index: 100;
   }
 
@@ -1345,8 +1313,8 @@ body * {
   }
 
   /* Enhanced Typography */
-  .font-display { font-family: 'Poppins', 'Vazir', system-ui, sans-serif; }
-  .font-body { font-family: 'Inter', 'Vazir', system-ui, sans-serif; }
+  .font-display { font-family: var(--font-display); }
+  .font-body { font-family: var(--font-sans); }
   .letter-wide { letter-spacing: 0.025em; }
   .letter-wider { letter-spacing: 0.05em; }
   .letter-widest { letter-spacing: 0.1em; }
@@ -1459,7 +1427,7 @@ body * {
     font-size: 1rem !important;
     font-weight: 600 !important;
     border-radius: 12px !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.3s ease !important; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     letter-spacing: 0.5px !important;
   }
@@ -1608,7 +1576,7 @@ body * {
 
   /* Sidebar Responsive Classes */
   .sidebar-responsive-content {
-    transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   }
 
   .sidebar-open {
@@ -1738,7 +1706,7 @@ body * {
   font-size: 0.875rem;
   font-weight: 500;
   color: hsl(var(--muted-foreground));
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   text-decoration: none;
 }
 
@@ -1782,7 +1750,7 @@ body * {
   font-weight: 500;
   color: hsl(var(--muted-foreground));
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.18s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   border: none;
   background: transparent;
 }
@@ -1808,7 +1776,7 @@ body * {
     0 1px 3px hsl(var(--foreground) / 0.04),
     0 4px 16px hsl(var(--foreground) / 0.04),
     0 0 0 1px hsl(var(--border) / 0.3);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .card-premium:hover {
@@ -1844,7 +1812,7 @@ body * {
   border: 1px solid hsl(var(--border) / 0.5);
   position: relative;
   overflow: hidden;
-  transition: all 0.22s ease;
+  transition: all 0.22s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .stat-card:hover {
@@ -1880,7 +1848,7 @@ body * {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   box-shadow:
     0 1px 3px hsl(var(--primary) / 0.3),
     0 4px 12px hsl(var(--primary) / 0.2);
@@ -1925,7 +1893,7 @@ body * {
   font-weight: 500;
   color: hsl(var(--foreground));
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
@@ -1948,7 +1916,7 @@ body * {
   border-radius: 0.625rem;
   font-size: 0.875rem;
   color: hsl(var(--foreground));
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   outline: none;
 }
 
@@ -2197,8 +2165,9 @@ body * {
 }
 
 /* ── Focus ring improvement ──────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid hsl(var(--ring) / 0.7);
+/* Zero specificity, so components that draw their own focus (rings, focus-within frames) win */
+:where(:focus-visible) {
+  outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
 
@@ -2230,7 +2199,7 @@ body * {
   background: hsl(var(--background) / 0.6);
   border: 1.5px solid hsl(var(--border) / 0.5);
   border-radius: 0.625rem;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   padding-right: 2.5rem;
 }
 
@@ -2296,7 +2265,7 @@ body * {
   border: 1px solid hsl(var(--border) / 0.4);
   color: hsl(var(--muted-foreground));
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.18s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   flex-shrink: 0;
 }
 
@@ -2324,7 +2293,7 @@ body * {
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
   pointer-events: none;
-  transition: all 0.18s ease;
+  transition: all 0.18s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
 }
 
 .floating-input-wrap input:focus + label,
@@ -2342,7 +2311,7 @@ body * {
   border-radius: 0.75rem;
   padding: 0.875rem;
   cursor: grab;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
@@ -2432,7 +2401,7 @@ body * {
   font-weight: 500;
   color: hsl(var(--foreground));
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.18s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   white-space: nowrap;
 }
 
@@ -2453,7 +2422,7 @@ body * {
   font-weight: 600;
   color: hsl(var(--foreground) / 0.8);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.18s ease; transition-property: color, background-color, border-color, opacity, transform, box-shadow;
   width: 100%;
   text-align: right;
 }
@@ -2598,11 +2567,42 @@ h4 {
 }
 
 /* ============================================================
-   MORA MINIMAL
-   لایه نهایی طراحی: سطوح ساده، مرز نازک، سایه نرم، بدون درخشش.
-   کلاس‌های قدیمی glass/glow/premium را بازتعریف می‌کند تا کل
-   برنامه یک‌دست و آرام شود.
+   SIGNAL — final layer
+   Flat surfaces separated by 1px borders, one 8px radius family, no glass,
+   glow or resting shadows. Redefines the legacy glass/glow/premium classes
+   so every screen of the app follows the same system.
    ============================================================ */
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+body {
+  font-size: 14px;
+  line-height: 1.7;
+  font-variant-numeric: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3 { text-wrap: balance; letter-spacing: 0; }
+p { text-wrap: pretty; }
+
+/* Browser surfaces carry the palette too */
+::selection { background: hsl(var(--signal) / 0.22); color: inherit; }
+input, textarea, [contenteditable="true"] { caret-color: hsl(var(--signal)); }
+:where(a, button, [role="button"], [role="tab"], [role="menuitem"], summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+:where(button, a, [role="button"], [role="tab"], label, summary) { touch-action: manipulation; }
+* { scrollbar-width: thin; scrollbar-color: hsl(var(--foreground) / 0.16) transparent; }
+
+/* Tabular digits where numbers are compared in columns or tick over (times, counts in lists) */
+.num, time, td, th { font-variant-numeric: tabular-nums; }
+
+/* Kufi titles sit a touch tighter than body text */
+body :is(h1, h2) { line-height: 1.45; }
+.font-brand { font-weight: 700; letter-spacing: 0; }
 
 .gradient-mesh,
 .dark .gradient-mesh,
@@ -2628,17 +2628,17 @@ h4 {
 .card-premium:hover,
 .dark .card-premium:hover {
   background: hsl(var(--card));
-  border-color: hsl(var(--foreground) / 0.14);
-  box-shadow: var(--shadow-elegant);
+  border-color: hsl(var(--input));
+  box-shadow: none;
   transform: none;
 }
 
 .glass-header,
 .dark .glass-header,
 .glass-nav {
-  background: hsl(var(--background) / 0.85);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  background: hsl(var(--background));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 0;
   border-bottom: 1px solid hsl(var(--border));
   box-shadow: none;
@@ -2646,7 +2646,7 @@ h4 {
 
 .glass-sidebar,
 .sidebar-header-glass {
-  background: hsl(var(--card));
+  background: hsl(var(--sidebar-background));
   backdrop-filter: none;
   box-shadow: none;
 }
@@ -2706,8 +2706,8 @@ h4 {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid hsl(var(--border)) !important;
-  border-radius: 1.25rem;
-  box-shadow: var(--shadow-elegant);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: none;
 }
 
 /* No glow, shimmer or floating motion */
@@ -2728,16 +2728,16 @@ h4 {
 .btn-magnetic:active,
 .interactive-card:hover,
 .hover-rotate:hover,
-.hover-tilt:hover {
-  box-shadow: var(--shadow-elegant);
+.hover-tilt:hover,
+.hover-lift:hover {
+  border-color: hsl(var(--input));
+  box-shadow: none;
   transform: none;
   animation: none;
 }
 
-.hover-lift:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-elegant);
-}
+/* Resting surfaces never cast a shadow; floating layers keep theirs */
+.shadow-card, .shadow-elegant, .shadow-sm, .shadow-luxury-soft { box-shadow: none; }
 
 .hover-scale:hover {
   transform: none;
@@ -2782,17 +2782,17 @@ h4 {
 .nav-item[aria-current="page"],
 .dark .nav-item.active,
 .dark .nav-item[aria-current="page"] {
-  background: hsl(var(--accent));
+  background: hsl(var(--sidebar-accent));
   color: hsl(var(--foreground));
-  font-weight: 600;
+  font-weight: 500;
   box-shadow: none;
 }
 
 .domain-tab.active {
   background: hsl(var(--card));
   color: hsl(var(--foreground));
-  font-weight: 600;
-  box-shadow: 0 1px 2px hsl(240 10% 10% / 0.08), 0 0 0 1px hsl(var(--border));
+  font-weight: 500;
+  box-shadow: 0 0 0 1px hsl(var(--border));
 }
 
 .category-header::before {
@@ -2824,14 +2824,11 @@ h4 {
 .loading-logo {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
-  background: hsl(var(--foreground));
+  border-radius: 0;
+  background: none;
   box-shadow: none;
   animation: none;
-}
-
-.loading-logo svg {
-  color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 .loading-dots span {
@@ -2841,12 +2838,18 @@ h4 {
 }
 
 /* Quieter scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--foreground) / 0.12);
+  background: hsl(var(--foreground) / 0.14);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--foreground) / 0.22);
+  background: hsl(var(--foreground) / 0.26);
+  background-clip: padding-box;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2857,4 +2860,76 @@ h4 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* The assistant's node breathes while it works; nothing else on the screen moves on its own */
+@keyframes brand-node-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.brand-node-pulse { animation: brand-node-pulse 1.2s ease-in-out infinite; }
+
+/* Sidebar: labels at reading size, neutral states, no tracked capitals */
+.nav-item {
+  gap: 0.625rem;
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.45rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: hsl(var(--sidebar-foreground));
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.nav-item:hover { background: hsl(var(--sidebar-accent) / 0.7); color: hsl(var(--foreground)); }
+.nav-item svg { color: hsl(var(--muted-foreground)); }
+.nav-item.active svg, .nav-item[aria-current="page"] svg { color: hsl(var(--foreground)); }
+.domain-tab {
+  font-size: 0.75rem;
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.35rem 0.25rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.domain-tab svg { display: none; }
+.category-header {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.75rem;
+}
+.accordion-trigger-refined {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: hsl(var(--foreground) / 0.88);
+  border-radius: calc(var(--radius) - 2px);
+  transition: background-color 0.15s ease;
+}
+.accordion-trigger-refined:hover { background: hsl(var(--sidebar-accent) / 0.7); }
+.sidebar-toggle-btn {
+  border: 0;
+  border-radius: calc(var(--radius) - 2px);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.sidebar-toggle-btn:hover { background: hsl(var(--sidebar-accent)); color: hsl(var(--foreground)); }
+.badge-count {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background: hsl(var(--sidebar-accent));
+  color: hsl(var(--foreground));
+  border: 0;
+}
+
+/* Product screens load into the task: no entrance choreography on page mount */
+.page-enter, .stagger-children > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+
+.category-header::before { display: none; }
+kbd { font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
+
+/* Legacy markup puts white text on primary fills; primary is ink in light mode and near-white
+   in dark mode, so that text follows primary-foreground to stay readable in both */
+:is(.bg-primary, .bg-gradient-primary, .bg-gradient-medical, .bg-gradient-professional, .bg-gradient-hero,
+    .bg-gradient-luxury-gold, .bg-gradient-luxury-rose, .bg-gradient-luxury-ember, .mora-gradient, .hero-gradient):is(.text-white),
+:is(.bg-primary, .bg-gradient-primary, .bg-gradient-medical, .bg-gradient-professional, .bg-gradient-hero,
+    .bg-gradient-luxury-gold, .bg-gradient-luxury-rose, .bg-gradient-luxury-ember, .mora-gradient, .hero-gradient) .text-white {
+  color: hsl(var(--primary-foreground));
 }

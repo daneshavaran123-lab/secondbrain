@@ -105,7 +105,7 @@ export function OKRList({ items, onEdit, onDelete, onView }: OKRListProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.3 }}
           >
-            <Card className="relative overflow-hidden group hover:shadow-luxury-soft transition-all duration-300 cursor-pointer"
+            <Card className="relative overflow-hidden group hover:shadow-luxury-soft transition duration-300 cursor-pointer"
                   onClick={() => onView(item.id)}>
               {/* Gradient accent bar */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />

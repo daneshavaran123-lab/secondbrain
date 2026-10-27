@@ -3,13 +3,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/brand/BrandMark";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useNavigate, Link } from "react-router-dom";
-import { Brain, Loader2, Eye, EyeOff, AlertCircle, Users, User, Phone, ArrowLeft, CheckCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle, Users, User, Phone, ArrowLeft, CheckCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiLogin, apiSubUserLogin, BACKEND_URL } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
@@ -69,7 +70,7 @@ export default function AuthPage() {
     const result = await apiLogin(data.email, data.password);
 
     if (result.success) {
-      setSuccess('ورود موفقیت‌آمیز! در حال انتقال...');
+      setSuccess('ورود موفقیت‌آمیز! در حال انتقال…');
       await refreshAuth();
       toast({ title: 'خوش آمدید', description: 'با موفقیت وارد شدید' });
       setTimeout(() => navigate('/'), 500);
@@ -89,7 +90,7 @@ export default function AuthPage() {
     const result = await apiSubUserLogin(data.email, data.password);
 
     if (result.success) {
-      setSuccess('ورود موفقیت‌آمیز! در حال انتقال...');
+      setSuccess('ورود موفقیت‌آمیز! در حال انتقال…');
       await refreshAuth();
       toast({ title: 'خوش آمدید', description: `ورود موفق به عنوان ${result.user?.profile?.display_name || data.email}` });
       setTimeout(() => navigate('/'), 500);
@@ -160,14 +161,12 @@ export default function AuthPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-background">
-      <div className="w-full max-w-md space-y-6 animate-fade-in">
+      <div className="w-full max-w-md space-y-6">
         {/* لوگو و عنوان */}
         <div className="text-center space-y-3">
-          <div className="inline-flex rounded-2xl bg-foreground p-3.5 text-background">
-            <Brain className="h-8 w-8" />
-          </div>
+          <BrandMark size={48} className="mx-auto text-foreground" />
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold">
               مغز دوم من
             </h1>
             <p className="text-sm text-muted-foreground mt-1">دستیار هوشمند فارسی‌زبان شما</p>
@@ -187,16 +186,16 @@ export default function AuthPage() {
           <CardContent className="pt-4 pb-6">
             {/* Tabs برای انتخاب نوع کاربر */}
             <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as 'owner' | 'subuser' | 'phone'); setError(''); setSuccess(''); }} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/40 backdrop-blur-sm border border-border/30 rounded-xl p-1">
-                <TabsTrigger value="owner" className="flex items-center gap-1.5 rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
+              <TabsList className="grid w-full grid-cols-3 mb-6 rounded-lg bg-muted p-1">
+                <TabsTrigger value="owner" className="flex items-center gap-1.5 rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition">
                   <User className="h-3.5 w-3.5" />
                   مالک
                 </TabsTrigger>
-                <TabsTrigger value="phone" className="flex items-center gap-1.5 rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
+                <TabsTrigger value="phone" className="flex items-center gap-1.5 rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition">
                   <Phone className="h-3.5 w-3.5" />
                   موبایل
                 </TabsTrigger>
-                <TabsTrigger value="subuser" className="flex items-center gap-1.5 rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
+                <TabsTrigger value="subuser" className="flex items-center gap-1.5 rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm transition">
                   <Users className="h-3.5 w-3.5" />
                   فرعی
                 </TabsTrigger>
@@ -267,7 +266,7 @@ export default function AuthPage() {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors" 
+                    className="w-full h-11 rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary-hover" 
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
@@ -321,7 +320,7 @@ export default function AuthPage() {
 
                       <Button
                         type="button"
-                        className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors"
+                        className="w-full h-11 rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary-hover"
                         onClick={handleSendOtp}
                         disabled={isLoading}
                       >
@@ -363,7 +362,7 @@ export default function AuthPage() {
 
                       <Button
                         type="button"
-                        className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors"
+                        className="w-full h-11 rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary-hover"
                         onClick={handleVerifyOtp}
                         disabled={isLoading || otpCode.length < 4}
                       >
@@ -448,7 +447,7 @@ export default function AuthPage() {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-11 rounded-xl bg-gradient-to-br from-primary to-accent hover:opacity-90 text-primary-foreground transition-colors" 
+                    className="w-full h-11 rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary-hover" 
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}

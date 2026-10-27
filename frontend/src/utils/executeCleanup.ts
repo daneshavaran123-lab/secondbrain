@@ -19,7 +19,7 @@ export async function runCleanup() {
     // reload خودکار برای نمایش تغییرات
     if (typeof window !== 'undefined') {
       setTimeout(() => {
-        console.log('🔄 Reload خودکار صفحه...');
+        console.log('🔄 Reload خودکار صفحه…');
         window.location.reload();
       }, 2000);
     }

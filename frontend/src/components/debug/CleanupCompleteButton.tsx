@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 export default function CleanupCompleteButton() {
   const handleFinalCleanup = async () => {
     try {
-      toast.info('شروع پاکسازی فوری کامل...')
+      toast.info('شروع پاکسازی فوری کامل…')
       
       // پاکسازی فوری localStorage
       const cleanupResult = immediateFullCleanup()
@@ -21,7 +21,7 @@ export default function CleanupCompleteButton() {
       await executeCompleteDataCleanup()
       
       toast.success('🎉 پاکسازی کامل انجام شد - سیستم آماده کاربر جدید است!', {
-        description: 'صفحه در حال بارگیری مجدد...'
+        description: 'صفحه در حال بارگیری مجدد…'
       })
       
       // reload فوری صفحه

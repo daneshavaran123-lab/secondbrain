@@ -18,7 +18,7 @@ class CulturalContentService {
    * پاکسازی کامل تمام داده‌های محتوای فرهنگی
    */
   cleanupAllData(): void {
-    console.log('🎭 پاکسازی داده‌های محتوای فرهنگی...');
+    console.log('🎭 پاکسازی داده‌های محتوای فرهنگی…');
     
     let removedCount = 0;
     

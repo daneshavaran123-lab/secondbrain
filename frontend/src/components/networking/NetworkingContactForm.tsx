@@ -214,7 +214,7 @@ export function NetworkingContactForm({
         <Input
           value={formData.networking_goal}
           onChange={(e) => setFormData({ ...formData, networking_goal: e.target.value })}
-          placeholder="مثال: جذب سرمایه، مشاوره فنی..."
+          placeholder="مثال: جذب سرمایه، مشاوره فنی…"
         />
       </div>
 
@@ -224,7 +224,7 @@ export function NetworkingContactForm({
           <Input
             value={formData.how_met}
             onChange={(e) => setFormData({ ...formData, how_met: e.target.value })}
-            placeholder="مثال: معرفی دوست، کنفرانس..."
+            placeholder="مثال: معرفی دوست، کنفرانس…"
           />
         </div>
 
@@ -270,7 +270,7 @@ export function NetworkingContactForm({
         <Textarea
           value={formData.notes}
           onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          placeholder="یادداشت‌های مهم درباره این مخاطب..."
+          placeholder="یادداشت‌های مهم درباره این مخاطب…"
           rows={3}
         />
       </div>
@@ -280,7 +280,7 @@ export function NetworkingContactForm({
           انصراف
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? "در حال ذخیره..." : (contact ? "بروزرسانی" : "افزودن")}
+          {loading ? "در حال ذخیره…" : (contact ? "بروزرسانی" : "افزودن")}
         </Button>
       </div>
     </form>

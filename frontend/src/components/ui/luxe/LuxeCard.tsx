@@ -13,7 +13,7 @@ interface LuxeCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const LuxeCard = React.forwardRef<HTMLDivElement, LuxeCardProps>(
   ({ className, variant = 'default', interactive = false, children, ...props }, ref) => {
     const base =
-      'relative rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.15)] motion-safe:transition-all motion-safe:duration-300';
+      'relative rounded-3xl border border-border/40 bg-card/60 backdrop-blur-xl shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.15)] motion-safe:transition motion-safe:duration-300';
     const variants = {
       default: '',
       glow:

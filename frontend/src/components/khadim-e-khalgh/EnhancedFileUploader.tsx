@@ -450,7 +450,7 @@ export const EnhancedFileUploader: React.FC<EnhancedFileUploaderProps> = ({
                 }}
                 disabled={isUploading}
               >
-                {isUploading ? 'در حال آپلود...' : 'تایید و بستن'}
+                {isUploading ? 'در حال آپلود…' : 'تایید و بستن'}
               </Button>
             )}
           </div>

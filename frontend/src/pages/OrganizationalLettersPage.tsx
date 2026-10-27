@@ -37,8 +37,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'min-h-[34px] rounded-full px-3 text-xs transition-colors sm:min-h-0 sm:py-1.5',
-        active ? 'bg-foreground text-background' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+        'min-h-[34px] shrink-0 whitespace-nowrap rounded-md px-3 text-sm transition-colors sm:min-h-0 sm:py-1',
+        active ? 'bg-accent font-medium text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
       )}
     >
       {children}
@@ -58,11 +58,9 @@ function LetterRow({ letter, onOpen }: { letter: OrgLetter; onOpen: () => void }
   return (
     <button
       onClick={onOpen}
-      className="flex w-full flex-wrap items-start gap-3 rounded-xl border border-border bg-card p-4 text-right transition-colors hover:bg-muted/40 sm:flex-nowrap"
+      className="flex w-full flex-wrap items-start gap-3 rounded-lg border border-border bg-card p-4 text-right transition-colors hover:border-input sm:flex-nowrap"
     >
-      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-        <Icon className="h-4 w-4" />
-      </div>
+      <Icon className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-label={KIND_LABEL[letter.kind]} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium leading-6">{letter.subject || 'بدون موضوع'}</p>
@@ -73,7 +71,7 @@ function LetterRow({ letter, onOpen }: { letter: OrgLetter; onOpen: () => void }
         {meta && <p className="mt-0.5 truncate text-xs text-muted-foreground">{meta}</p>}
         {letter.summary && <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">{letter.summary}</p>}
       </div>
-      <div className="flex w-full items-center gap-3 ps-12 text-xs sm:w-auto sm:shrink-0 sm:flex-col sm:items-end sm:gap-1.5 sm:ps-0">
+      <div className="flex w-full items-center gap-3 ps-7 text-xs sm:w-auto sm:shrink-0 sm:flex-col sm:items-end sm:gap-1.5 sm:ps-0">
         <span className="flex items-center gap-1.5 text-muted-foreground">
           <span className={cn('h-1.5 w-1.5 rounded-full', STATUS_DOT[letter.status])} />
           {STATUS_LABEL[letter.status]}
@@ -99,7 +97,7 @@ const OrganizationalLettersPage = () => {
     setLoading(true);
     try {
       const { data } = await orgLettersService.list({ q: q.trim() || undefined });
-      setLetters(data);
+      setLetters(data ?? []);
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'بارگیری ممکن نشد');
@@ -152,11 +150,11 @@ const OrganizationalLettersPage = () => {
       />
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="-mx-3 flex items-center gap-1 overflow-x-auto px-3 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
           {KIND_FILTERS.map((f) => (
             <Chip key={f.id} active={kind === f.id} onClick={() => setKind(f.id)}>{f.label}</Chip>
           ))}
-          <span className="mx-1 h-4 w-px bg-border" aria-hidden />
+          <span className="mx-1 h-4 w-px shrink-0 bg-border" aria-hidden />
           {STATUS_FILTERS.map((f) => (
             <Chip key={f.id} active={status === f.id} onClick={() => setStatus(f.id)}>
               {f.label}
@@ -169,7 +167,7 @@ const OrganizationalLettersPage = () => {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جستجو در موضوع، فرستنده، شماره و متن"
+            placeholder="جستجو در نامه‌ها…"
             className="pr-9 text-sm"
             aria-label="جستجوی نامه‌ها"
           />

@@ -85,7 +85,7 @@ export function PullToRefresh({
             "absolute top-0 left-0 right-0 z-10",
             "flex items-center justify-center",
             "bg-background/80 backdrop-blur-sm border-b border-border/50",
-            "transition-all duration-200 ease-out"
+            "transition duration-200 ease-out"
           )}
           style={{
             height: `${Math.max(pullDistance * 0.8, isRefreshing ? 60 : 0)}px`,
@@ -105,7 +105,7 @@ export function PullToRefresh({
             />
             <span className="text-sm font-medium">
               {isRefreshing 
-                ? 'در حال به‌روزرسانی...' 
+                ? 'در حال به‌روزرسانی…' 
                 : refreshProgress >= 1 
                   ? 'رها کنید تا به‌روزرسانی شود'
                   : 'برای به‌روزرسانی بکشید'
@@ -118,7 +118,7 @@ export function PullToRefresh({
       {/* Content */}
       <div 
         className={cn(
-          "transition-all duration-200 ease-out",
+          "transition duration-200 ease-out",
           showRefreshIndicator && "pt-2"
         )}
       >

@@ -23,7 +23,7 @@ export const MeetingTemplateSelector: React.FC<MeetingTemplateSelectorProps> = (
         {meetingMinutesTemplates.map((template) => (
           <Card
             key={template.id}
-            className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 hover:border-primary"
+            className="cursor-pointer transition hover:shadow-lg hover:scale-105 border-2 hover:border-primary"
             onClick={() => onSelectTemplate(template)}
           >
             <CardHeader className="text-center pb-3">
@@ -37,7 +37,7 @@ export const MeetingTemplateSelector: React.FC<MeetingTemplateSelectorProps> = (
         ))}
 
         <Card
-          className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 hover:border-primary"
+          className="cursor-pointer transition hover:shadow-lg hover:scale-105 border-2 hover:border-primary"
           onClick={() => onSelectTemplate(null)}
         >
           <CardHeader className="text-center pb-3">

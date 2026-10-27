@@ -180,7 +180,7 @@ ${task.progress > 0 ? `پیشرفت: ${task.progress}%` : ''}
       <div className="min-h-screen bg-app-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-          <p className="text-muted-foreground">در حال بارگذاری وظایف سازمانی...</p>
+          <p className="text-muted-foreground">در حال بارگذاری وظایف سازمانی…</p>
         </div>
       </div>
     );

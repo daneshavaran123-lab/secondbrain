@@ -173,7 +173,7 @@ export const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="عنوان کتاب یا مقاله..."
+              placeholder="عنوان کتاب یا مقاله…"
               className="text-right"
             />
           </div>
@@ -270,7 +270,7 @@ export const PDFUploadModal: React.FC<PDFUploadModalProps> = ({
               disabled={isUploading || !title.trim()}
               className="flex-1"
             >
-              {isUploading ? "در حال آپلود..." : "افزودن"}
+              {isUploading ? "در حال آپلود…" : "افزودن"}
             </Button>
           </div>
         </div>

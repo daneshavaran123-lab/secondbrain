@@ -304,7 +304,7 @@ export function CompanyQuickManager() {
               انصراف
             </Button>
             <Button onClick={handleSubmit} disabled={loading}>
-              {loading ? 'در حال ذخیره...' : editingCompany ? 'ذخیره تغییرات' : 'افزودن شرکت'}
+              {loading ? 'در حال ذخیره…' : editingCompany ? 'ذخیره تغییرات' : 'افزودن شرکت'}
             </Button>
           </DialogFooter>
         </DialogContent>

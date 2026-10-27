@@ -127,7 +127,7 @@ export const KnowledgeSearch: React.FC<KnowledgeSearchProps> = ({ onResultsChang
           <div className="relative flex-1">
             <Search className="absolute right-6 top-1/2 transform -translate-y-1/2 h-8 w-8 text-muted-foreground" />
             <Input
-              placeholder="جستجو در دانش شخصی..."
+              placeholder="جستجو در دانش شخصی…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="h-20 text-2xl pl-6 pr-20 border-4 border-border rounded-2xl font-medium focus:border-primary focus:shadow-2xl bg-background"
@@ -301,7 +301,7 @@ export const KnowledgeSearch: React.FC<KnowledgeSearchProps> = ({ onResultsChang
 
         {isLoading ? (
           <div className="card-spacious border-2 border-border/50 shadow-medical text-center">
-            <div className="animate-pulse text-large-readable text-primary">در حال جستجو...</div>
+            <div className="animate-pulse text-large-readable text-primary">در حال جستجو…</div>
           </div>
         ) : results.length > 0 ? (
           <div className="space-y-4">
@@ -365,7 +365,7 @@ export const KnowledgeSearch: React.FC<KnowledgeSearchProps> = ({ onResultsChang
             <p className="text-large-readable text-muted-foreground">برای شروع جستجو یک کلیدواژه وارد کنید</p>
             <div className="mt-4">
               <Button onClick={handleSeedClick} disabled={isSeeding} variant="secondary">
-                {isSeeding ? 'در حال افزودن نمونه‌ها...' : 'افزودن نمونه‌های دانش'}
+                {isSeeding ? 'در حال افزودن نمونه‌ها…' : 'افزودن نمونه‌های دانش'}
               </Button>
             </div>
           </div>

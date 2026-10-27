@@ -293,7 +293,7 @@ export function DelegationDashboard({ domain = 'personal' }: DelegationDashboard
   };
 
   const renderTaskCard = (task: DelegationTask) => (
-    <Card key={task.id} className="card-glass hover:card-glow transition-all duration-300">
+    <Card key={task.id} className="card-glass hover:card-glow transition duration-300">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">

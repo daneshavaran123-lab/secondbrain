@@ -48,7 +48,7 @@ export function StakeholdersStep({ form }: StakeholdersStepProps) {
               <TagInput
                 value={field.value || []}
                 onChange={field.onChange}
-                placeholder="نام شریک را وارد کنید..."
+                placeholder="نام شریک را وارد کنید…"
                 suggestions={PARTNER_SUGGESTIONS}
               />
             </FormControl>
@@ -70,7 +70,7 @@ export function StakeholdersStep({ form }: StakeholdersStepProps) {
               <TagInput
                 value={field.value || []}
                 onChange={field.onChange}
-                placeholder="گروه‌های بهره‌بردار را اضافه کنید..."
+                placeholder="گروه‌های بهره‌بردار را اضافه کنید…"
                 suggestions={BENEFICIARY_SUGGESTIONS}
               />
             </FormControl>

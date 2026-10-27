@@ -206,7 +206,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="عنوان تصمیم..."
+            placeholder="عنوان تصمیم…"
           />
         </div>
 
@@ -215,7 +215,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
           <TextInputWithVoice
             value={context}
             onChange={setContext}
-            placeholder="شرایط و زمینه‌ای که تصمیم در آن گرفته می‌شود..."
+            placeholder="شرایط و زمینه‌ای که تصمیم در آن گرفته می‌شود…"
             type="textarea"
             rows={3}
           />
@@ -279,7 +279,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
               <Input
                 value={option.title}
                 onChange={(e) => updateOption(option.id, 'title', e.target.value)}
-                placeholder="عنوان گزینه..."
+                placeholder="عنوان گزینه…"
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -303,7 +303,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
                       <Input
                         value={pro}
                         onChange={(e) => updatePro(option.id, i, e.target.value)}
-                        placeholder="مزیت..."
+                        placeholder="مزیت…"
                         className="text-sm"
                       />
                       <Button
@@ -338,7 +338,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
                       <Input
                         value={con}
                         onChange={(e) => updateCon(option.id, i, e.target.value)}
-                        placeholder="معایب..."
+                        placeholder="معایب…"
                         className="text-sm"
                       />
                       <Button
@@ -360,7 +360,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
                   <Input
                     value={option.cost}
                     onChange={(e) => updateOption(option.id, 'cost', e.target.value)}
-                    placeholder="هزینه تقریبی..."
+                    placeholder="هزینه تقریبی…"
                   />
                 </div>
                 <div>
@@ -397,7 +397,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
             <Label>گزینه انتخاب شده</Label>
             <Select value={chosenOption} onValueChange={setChosenOption}>
               <SelectTrigger>
-                <SelectValue placeholder="گزینه نهایی را انتخاب کنید..." />
+                <SelectValue placeholder="گزینه نهایی را انتخاب کنید…" />
               </SelectTrigger>
               <SelectContent>
                 {options.map((opt) => (
@@ -414,7 +414,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
             <TextInputWithVoice
               value={rationale}
               onChange={setRationale}
-              placeholder="چرا این گزینه انتخاب شد؟ دلایل و توجیهات..."
+              placeholder="چرا این گزینه انتخاب شد؟ دلایل و توجیهات…"
               type="textarea"
               rows={4}
             />
@@ -429,7 +429,7 @@ export function DecisionLogForm({ organizationId, onSuccess, onCancel, existingD
           </Button>
         )}
         <Button type="submit" disabled={isSubmitting} className="flex-1">
-          {isSubmitting ? 'در حال ذخیره...' : existingData ? 'به‌روزرسانی لاگ تصمیم' : 'ذخیره لاگ تصمیم'}
+          {isSubmitting ? 'در حال ذخیره…' : existingData ? 'به‌روزرسانی لاگ تصمیم' : 'ذخیره لاگ تصمیم'}
         </Button>
       </div>
     </form>

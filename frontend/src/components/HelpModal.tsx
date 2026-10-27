@@ -447,7 +447,7 @@ const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="جستجو در سوالات..."
+                      placeholder="جستجو در سوالات…"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -658,7 +658,7 @@ const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                         <textarea
                           id="message"
                           className="w-full px-3 py-2 border rounded-md h-24"
-                          placeholder="لطفاً مشکل یا سوال خود را با جزئیات بیان کنید..."
+                          placeholder="لطفاً مشکل یا سوال خود را با جزئیات بیان کنید…"
                         />
                       </div>
                       <Button className="w-full">ارسال درخواست</Button>

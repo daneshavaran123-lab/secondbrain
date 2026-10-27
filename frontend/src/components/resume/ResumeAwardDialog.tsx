@@ -203,7 +203,7 @@ export function ResumeAwardDialog({ open, onClose, award }: ResumeAwardDialogPro
               انصراف
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'در حال ذخیره...' : 'ذخیره'}
+              {loading ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </form>

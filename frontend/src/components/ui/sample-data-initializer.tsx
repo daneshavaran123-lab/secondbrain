@@ -186,7 +186,7 @@ export function SampleDataInitializer() {
       const knowledgeItems = [
         {
           title: 'راهنمای مدیریت پروژه‌های فناوری اطلاعات',
-          content: 'این راهنما شامل بهترین روش‌های مدیریت پروژه‌های IT است...',
+          content: 'این راهنما شامل بهترین روش‌های مدیریت پروژه‌های IT است…',
           category: 'مدیریت پروژه',
           tags: ['IT', 'مدیریت', 'پروژه'],
           status: 'published',
@@ -195,7 +195,7 @@ export function SampleDataInitializer() {
         },
         {
           title: 'استانداردهای کیفیت خدمات',
-          content: 'معیارها و استانداردهای کیفی ارائه خدمات به مشتریان...',
+          content: 'معیارها و استانداردهای کیفی ارائه خدمات به مشتریان…',
           category: 'کیفیت',
           tags: ['کیفیت', 'خدمات', 'استاندارد'],
           status: 'published',
@@ -252,7 +252,7 @@ export function SampleDataInitializer() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
-              در حال ایجاد داده‌های نمونه...
+              در حال ایجاد داده‌های نمونه…
             </div>
             <div className="flex flex-wrap gap-2">
               {steps.map(step => (
@@ -279,7 +279,7 @@ export function SampleDataInitializer() {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              در حال ایجاد...
+              در حال ایجاد…
             </>
           ) : (
             <>

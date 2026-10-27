@@ -71,7 +71,7 @@ export function BasicInfoStep({ form }: BasicInfoStepProps) {
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="توضیحات کامل پروژه و اهداف آن را بنویسید..."
+                placeholder="توضیحات کامل پروژه و اهداف آن را بنویسید…"
                 rows={4}
                 className="resize-none"
               />

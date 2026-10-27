@@ -178,7 +178,7 @@ export function SubUserForm({ onSubmit, isPending }: SubUserFormProps) {
 
       <div className="flex justify-end gap-2">
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'در حال ایجاد...' : 'ایجاد کاربر فرعی'}
+          {isPending ? 'در حال ایجاد…' : 'ایجاد کاربر فرعی'}
         </Button>
       </div>
     </form>

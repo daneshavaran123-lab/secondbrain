@@ -194,7 +194,7 @@ export const HabitCalendarGrid: React.FC<HabitCalendarGridProps> = ({
                         checked={completed}
                         onCheckedChange={() => handleToggle(habit.id, day)}
                         className={cn(
-                          'transition-all duration-200',
+                          'transition duration-200',
                           completed && 'data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600',
                           isToday && 'ring-2 ring-primary ring-offset-2',
                           hoveredCell === cellKey && 'scale-110'

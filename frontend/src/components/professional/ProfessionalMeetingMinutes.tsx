@@ -83,7 +83,7 @@ export const ProfessionalMeetingMinutes: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center p-8">در حال بارگذاری...</div>;
+    return <div className="flex justify-center p-8">در حال بارگذاری…</div>;
   }
 
   return (

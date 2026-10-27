@@ -191,7 +191,7 @@ export function DataCleanupTool() {
           {isStatsLoading ? (
             <div className="flex items-center gap-2 p-4">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>در حال بارگذاری آمار...</span>
+              <span>در حال بارگذاری آمار…</span>
             </div>
           ) : (
             <>
@@ -252,7 +252,7 @@ export function DataCleanupTool() {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      در حال پاکسازی...
+                      در حال پاکسازی…
                     </>
                   ) : (
                     <>

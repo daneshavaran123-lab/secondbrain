@@ -196,7 +196,7 @@ export function performCompleteLocalCleanup(): { localStorage: number; sessionSt
 
 // پاکسازی فوری تمام داده‌های تستی موجود
 export function immediateFullCleanup(): { localStorage: number; sessionStorage: number; message: string } {
-  console.log('🧹 شروع پاکسازی فوری تمام داده‌های تستی...');
+  console.log('🧹 شروع پاکسازی فوری تمام داده‌های تستی…');
   
   const result = performCompleteLocalCleanup();
   

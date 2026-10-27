@@ -183,7 +183,7 @@ export function AnalysisProgressIndicator({
               <div
                 key={stage.id}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-3 rounded-lg transition-all",
+                  "flex flex-col items-center gap-2 p-3 rounded-lg transition",
                   isActive && "bg-primary/10 border border-primary/30",
                   isCompleted && "bg-muted/50",
                   !isActive && !isCompleted && "opacity-40"

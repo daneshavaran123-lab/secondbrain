@@ -212,7 +212,7 @@ export function ClaimsTracking({ organizationName }: ClaimsTrackingProps) {
                   <div className="relative">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="جستجو در مطالبات..."
+                      placeholder="جستجو در مطالبات…"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -250,7 +250,7 @@ export function ClaimsTracking({ organizationName }: ClaimsTrackingProps) {
                 <CardContent className="pt-6">
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">در حال بارگذاری مطالبات...</p>
+                    <p className="text-muted-foreground">در حال بارگذاری مطالبات…</p>
                   </div>
                 </CardContent>
               </Card>

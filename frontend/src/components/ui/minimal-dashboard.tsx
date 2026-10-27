@@ -1,8 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { MinimalGreeting } from './minimal-greeting';
-import { CompactControlCenter } from './compact-control-center';
-import { AdaptiveQuickActions } from './adaptive-quick-actions';
+import { OverviewStrip, RecentActivityList } from './compact-control-center';
+import { QuickLinks, TodayFocus } from './adaptive-quick-actions';
 import { AskMoraCard } from '@/components/assistant/AskMoraCard';
 import { Building2 } from 'lucide-react';
 
@@ -13,17 +13,20 @@ interface MinimalDashboardProps {
 
 export function MinimalDashboard({ className }: MinimalDashboardProps) {
   return (
-    <div className={cn('page-enter mx-auto w-full max-w-5xl space-y-6 md:space-y-8 md:py-2', className)}>
-      <MinimalGreeting />
-      <AskMoraCard />
+    <div className={cn('mx-auto w-full max-w-5xl space-y-7 md:py-2', className)}>
+      <div className="space-y-5">
+        <MinimalGreeting />
+        <AskMoraCard />
+      </div>
       <QuickAccessSection />
+      <OverviewStrip />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="min-w-0 lg:col-span-2">
-          <CompactControlCenter />
-        </div>
-        <div className="min-w-0">
-          <AdaptiveQuickActions />
+      {/* Today leads; what happened and where to go sit beside it */}
+      <div className="grid items-start gap-7 lg:grid-cols-3 lg:gap-6">
+        <TodayFocus className="min-w-0 lg:col-span-2" />
+        <div className="min-w-0 space-y-7 lg:space-y-6">
+          <RecentActivityList />
+          <QuickLinks />
         </div>
       </div>
     </div>
@@ -57,11 +60,9 @@ function QuickAccessSection() {
         <a
           key={link.href}
           href={link.href}
-          className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-muted/50"
+          className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:border-input"
         >
-          <div className="rounded-lg bg-muted p-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </div>
+          <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{link.title}</p>
             <p className="text-xs text-muted-foreground">{link.subtitle}</p>

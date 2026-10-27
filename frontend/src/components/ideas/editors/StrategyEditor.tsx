@@ -78,7 +78,7 @@ export function StrategyEditor({
             <Textarea
               {...register("target_audience")}
               rows={3}
-              placeholder="مخاطبان هدف خود را توصیف کنید..."
+              placeholder="مخاطبان هدف خود را توصیف کنید…"
             />
           </div>
 
@@ -87,7 +87,7 @@ export function StrategyEditor({
             <Textarea
               {...register("positioning_statement")}
               rows={3}
-              placeholder="موقعیت رقابتی خود را تعریف کنید..."
+              placeholder="موقعیت رقابتی خود را تعریف کنید…"
             />
           </div>
         </TabsContent>
@@ -98,7 +98,7 @@ export function StrategyEditor({
             <Textarea
               {...register("growth_strategy")}
               rows={4}
-              placeholder="برنامه رشد و توسعه خود را شرح دهید..."
+              placeholder="برنامه رشد و توسعه خود را شرح دهید…"
             />
           </div>
 
@@ -127,7 +127,7 @@ export function StrategyEditor({
             <Textarea
               {...register("innovation_approach")}
               rows={4}
-              placeholder="رویکرد خود به نوآوری را توصیف کنید..."
+              placeholder="رویکرد خود به نوآوری را توصیف کنید…"
             />
           </div>
         </TabsContent>

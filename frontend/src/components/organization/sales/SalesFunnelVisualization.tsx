@@ -116,7 +116,7 @@ export function SalesFunnelVisualization({ organizationId }: SalesFunnelVisualiz
                     </div>
                     <div className="w-full bg-secondary rounded-full h-2">
                       <div
-                        className="bg-primary rounded-full h-2 transition-all"
+                        className="bg-primary rounded-full h-2 transition"
                         style={{ width: `${(leadsCount / Math.max(...stages.map(s => getLeadsInStage(s.id).length))) * 100}%` }}
                       />
                     </div>

@@ -429,7 +429,7 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               </Button>
               <Button onClick={handleSave} disabled={isSaving} className="w-full">
                 {isSaving ? (
-                  <><RefreshCw className="h-4 w-4 animate-spin ml-2" />در حال ذخیره...</>
+                  <><RefreshCw className="h-4 w-4 animate-spin ml-2" />در حال ذخیره…</>
                 ) : (
                   <><Save className="h-4 w-4 ml-2" />ذخیره تنظیمات</>
                 )}
@@ -510,7 +510,7 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                   {isLoadingUser ? (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      در حال بارگذاری اطلاعات کاربر...
+                      در حال بارگذاری اطلاعات کاربر…
                     </div>
                   ) : (
                     <div className="flex items-center gap-6">
@@ -564,7 +564,7 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                         id="name"
                         value={settings.profile.name}
                         onChange={(e) => updateSettings('profile', 'name', e.target.value)}
-                        placeholder={isLoadingUser ? "در حال بارگذاری..." : "نام و نام خانوادگی خود را وارد کنید"}
+                        placeholder={isLoadingUser ? "در حال بارگذاری…" : "نام و نام خانوادگی خود را وارد کنید"}
                         disabled={isLoadingUser}
                       />
                     </div>
@@ -624,7 +624,7 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                     {isLoadingOrgs ? (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        در حال بارگذاری سازمان‌ها...
+                        در حال بارگذاری سازمان‌ها…
                       </div>
                     ) : organizations.length > 0 ? (
                       organizations.map((org) => (

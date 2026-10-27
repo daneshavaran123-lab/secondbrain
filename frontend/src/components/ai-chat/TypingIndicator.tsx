@@ -17,7 +17,7 @@ const TypingIndicator: React.FC = () => {
           style={{ animationDelay: '400ms', animationDuration: '1s' }} 
         />
       </div>
-      <span className="text-sm text-muted-foreground">آماده‌سازی پاسخ...</span>
+      <span className="text-sm text-muted-foreground">آماده‌سازی پاسخ…</span>
     </div>
   );
 };

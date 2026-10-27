@@ -153,7 +153,7 @@ export function FormBuilder({ organizationId }: FormBuilderProps) {
           <Input
             value={formTitle}
             onChange={(e) => setFormTitle(e.target.value)}
-            placeholder="عنوان فرم..."
+            placeholder="عنوان فرم…"
             className="text-lg font-semibold"
           />
         </div>
@@ -213,7 +213,7 @@ export function FormBuilder({ organizationId }: FormBuilderProps) {
         <TabsContent value="settings">
           <Card>
             <CardContent className="py-6">
-              <p className="text-muted-foreground">تنظیمات فرم به زودی...</p>
+              <p className="text-muted-foreground">تنظیمات فرم به زودی…</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -221,7 +221,7 @@ export function FormBuilder({ organizationId }: FormBuilderProps) {
         <TabsContent value="workflow">
           <Card>
             <CardContent className="py-6">
-              <p className="text-muted-foreground">تعریف گردش کار تایید به زودی...</p>
+              <p className="text-muted-foreground">تعریف گردش کار تایید به زودی…</p>
             </CardContent>
           </Card>
         </TabsContent>

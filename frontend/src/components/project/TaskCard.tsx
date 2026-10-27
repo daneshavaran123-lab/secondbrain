@@ -27,7 +27,7 @@ export function TaskCard({ task, onClick, isLoading = false }: TaskCardProps) {
   return (
     <Card 
       className={cn(
-        "cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-1",
+        "cursor-pointer transition duration-200 hover:shadow-md hover:-translate-y-1",
         "glass-card border border-border/50 hover:border-primary/30",
         isLoading && "opacity-50 pointer-events-none",
         isOverdue && "border-red-500/50 bg-red-500/5"
@@ -130,7 +130,7 @@ export function TaskCard({ task, onClick, isLoading = false }: TaskCardProps) {
             </div>
             <div className="w-full bg-muted rounded-full h-1.5 mt-1">
               <div 
-                className="bg-primary h-1.5 rounded-full transition-all" 
+                className="bg-primary h-1.5 rounded-full transition" 
                 style={{ 
                   width: `${Math.min(((task.actualHours || 0) / task.estimatedHours) * 100, 100)}%` 
                 }}

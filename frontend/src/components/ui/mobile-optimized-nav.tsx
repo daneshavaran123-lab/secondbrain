@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, CheckSquare, Briefcase, Calendar } from 'lucide-react';
 import { askAssistant } from '@/lib/assistant';
-import { MoraRobotIcon } from '@/components/assistant/MoraRobotIcon';
+import { BrandMark } from '@/components/brand/BrandMark';
 
 interface MobileOptimizedNavProps {
   className?: string;
@@ -41,7 +41,7 @@ export function MobileOptimizedNav({ className }: MobileOptimizedNavProps) {
   return (
     <nav
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur',
+        'fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background',
         className
       )}
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
@@ -55,9 +55,9 @@ export function MobileOptimizedNav({ className }: MobileOptimizedNavProps) {
               askAssistant();
             }}
             aria-label="گفتگو با دستیار"
-            className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background shadow-lg shadow-foreground/15 transition-transform active:scale-95"
+            className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-[0_8px_20px_-8px_hsl(var(--foreground)/0.35)] transition-transform active:scale-95"
           >
-            <MoraRobotIcon size="sm" animate={false} />
+            <BrandMark size={26} />
           </button>
         </div>
         {NAV_ITEMS.slice(2).map(renderItem)}

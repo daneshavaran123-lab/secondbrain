@@ -110,7 +110,7 @@ export default function RiskMatrix({ risks }: RiskMatrixProps) {
                                 <TooltipTrigger asChild>
                                   <div
                                     className={`
-                                      relative h-12 w-12 border-2 rounded cursor-pointer transition-all
+                                      relative h-12 w-12 border-2 rounded cursor-pointer transition
                                       ${cellColor}
                                       ${cellRisks.length > 0 ? 'shadow-md hover:shadow-lg' : ''}
                                     `}
@@ -221,7 +221,7 @@ export default function RiskMatrix({ risks }: RiskMatrixProps) {
                   </div>
                   <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
                     <div 
-                      className={`h-full transition-all ${getRiskLevelColor(level).replace('hover:', '')}`}
+                      className={`h-full transition ${getRiskLevelColor(level).replace('hover:', '')}`}
                       style={{ width: `${percentage}%` }}
                     />
                   </div>

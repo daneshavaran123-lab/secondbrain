@@ -188,7 +188,7 @@ export function TaskForm({ open, onOpenChange, projectId, task, initialStatus, o
               id="title"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="عنوان وظیفه را وارد کنید..."
+              placeholder="عنوان وظیفه را وارد کنید…"
               required
             />
           </div>
@@ -200,7 +200,7 @@ export function TaskForm({ open, onOpenChange, projectId, task, initialStatus, o
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="توضیحات تکمیلی وظیفه..."
+              placeholder="توضیحات تکمیلی وظیفه…"
               rows={3}
             />
           </div>
@@ -213,7 +213,7 @@ export function TaskForm({ open, onOpenChange, projectId, task, initialStatus, o
               onValueChange={(value) => setFormData(prev => ({ ...prev, assignedToId: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="انتخاب کنید..." />
+                <SelectValue placeholder="انتخاب کنید…" />
               </SelectTrigger>
               <SelectContent>
                 {members.map((member) => (
@@ -383,7 +383,7 @@ export function TaskForm({ open, onOpenChange, projectId, task, initialStatus, o
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="برچسب جدید..."
+                placeholder="برچسب جدید…"
                 className="flex-1"
               />
               <Button type="button" onClick={addTag} variant="outline" size="sm">
@@ -397,7 +397,7 @@ export function TaskForm({ open, onOpenChange, projectId, task, initialStatus, o
               انصراف
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'در حال ذخیره...' : task ? 'به‌روزرسانی' : 'ایجاد وظیفه'}
+              {isLoading ? 'در حال ذخیره…' : task ? 'به‌روزرسانی' : 'ایجاد وظیفه'}
             </Button>
           </DialogFooter>
         </form>

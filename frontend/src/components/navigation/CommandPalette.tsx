@@ -42,7 +42,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
-      <CommandInput placeholder="جستجو در دستورات..." />
+      <CommandInput placeholder="جستجو در دستورات…" />
       <CommandList>
         <CommandEmpty>هیچ نتیجه‌ای یافت نشد.</CommandEmpty>
         

@@ -283,7 +283,7 @@ export default function OrganizationSettingsPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">در حال بارگذاری...</p>
+          <p className="text-muted-foreground">در حال بارگذاری…</p>
         </div>
       </div>
     );
@@ -511,7 +511,7 @@ export default function OrganizationSettingsPage() {
 
                 <Button type="submit" disabled={isSubmitting} className="w-full">
                   <Save className="w-4 h-4 ml-2" />
-                  {isSubmitting ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
+                  {isSubmitting ? 'در حال ذخیره…' : 'ذخیره تغییرات'}
                 </Button>
               </form>
             </Form>

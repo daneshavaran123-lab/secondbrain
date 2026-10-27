@@ -123,7 +123,7 @@ const AIChatAnalytics: React.FC = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <div className="text-center py-12">در حال بارگذاری...</div>
+        <div className="text-center py-12">در حال بارگذاری…</div>
       </div>
     );
   }

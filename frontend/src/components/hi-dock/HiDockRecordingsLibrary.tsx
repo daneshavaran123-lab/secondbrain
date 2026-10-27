@@ -92,7 +92,7 @@ export const HiDockRecordingsLibrary = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">در حال بارگیری...</div>
+        <div className="text-center py-12">در حال بارگیری…</div>
       ) : recordings.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">

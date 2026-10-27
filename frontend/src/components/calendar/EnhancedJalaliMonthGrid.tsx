@@ -124,7 +124,7 @@ export const EnhancedJalaliMonthGrid: React.FC<EnhancedJalaliMonthGridProps> = (
                 className={cn(
                   "p-3 border rounded-lg min-h-[120px] cursor-pointer transition-colors",
                   "hover:bg-accent/50",
-                  isToday && "bg-primary/10 border-primary",
+                  isToday && "bg-signal-soft border-signal",
                   isFriday && highlightFridays && "bg-accent/30"
                 )}
                 onClick={() => onSelectDate(day)}
@@ -135,7 +135,7 @@ export const EnhancedJalaliMonthGrid: React.FC<EnhancedJalaliMonthGridProps> = (
                   </div>
                   <div className={cn(
                     "text-lg font-semibold",
-                    isToday && "text-primary"
+                    isToday && "text-signal"
                   )}>
                     {toPersianNumbers(formatJalali(day, 'DD'))}
                   </div>

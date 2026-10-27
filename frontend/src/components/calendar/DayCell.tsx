@@ -40,11 +40,11 @@ export const DayCell: React.FC<DayCellProps> = ({
         "relative flex h-20 w-full flex-col justify-between rounded-md border p-2 text-right transition-colors",
         "bg-background/50 hover:bg-accent/30",
         inMonth ? "opacity-100" : "opacity-40 pointer-events-none",
-        today && "ring-2 ring-primary/40",
+        today && "border-signal bg-signal-soft [&_.jnum]:text-signal",
         highlightFridays && friday && "[&_.jnum]:text-destructive"
       )}
     >
-      <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
         {showGregorian ? <span className="gnum">{nums.g}</span> : <span />}
         {showHijri ? <span className="hnum">{nums.h}</span> : <span />}
       </div>
@@ -59,7 +59,7 @@ export const DayCell: React.FC<DayCellProps> = ({
             />
           ))}
           {events?.length > 2 && (
-            <span className="ml-auto text-[10px] text-muted-foreground">+{toPersianDigits(events.length - 2)}</span>
+            <span className="ml-auto text-[11px] text-muted-foreground">+{toPersianDigits(events.length - 2)}</span>
           )}
         </div>
       )}

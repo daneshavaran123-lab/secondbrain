@@ -40,7 +40,7 @@ export function ResumeTemplateList() {
     return (
       <Card className="p-6">
         <div className="flex items-center justify-center h-32">
-          <p className="text-muted-foreground">در حال بارگذاری...</p>
+          <p className="text-muted-foreground">در حال بارگذاری…</p>
         </div>
       </Card>
     );

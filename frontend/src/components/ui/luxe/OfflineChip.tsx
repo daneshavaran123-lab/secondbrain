@@ -27,7 +27,7 @@ export const OfflineChip: React.FC<OfflineChipProps> = ({ className, compact = f
   const label = !isOnline
     ? 'آفلاین'
     : isSyncing
-    ? 'همگام‌سازی...'
+    ? 'همگام‌سازی…'
     : `${pendingActions} در صف`;
 
   return (

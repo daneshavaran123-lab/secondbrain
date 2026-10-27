@@ -145,7 +145,7 @@ export function CreateTemplateDialog({
               <Label htmlFor="job_description">شرح موقعیت شغلی (Job Description)</Label>
               <Textarea
                 id="job_description"
-                placeholder="شرح موقعیت شغلی را اینجا وارد کنید تا AI بهترین رزومه را برای شما بسازد..."
+                placeholder="شرح موقعیت شغلی را اینجا وارد کنید تا AI بهترین رزومه را برای شما بسازد…"
                 value={formData.job_description}
                 onChange={(e) =>
                   setFormData({ ...formData, job_description: e.target.value })
@@ -176,7 +176,7 @@ export function CreateTemplateDialog({
               انصراف
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'در حال ساخت...' : 'ساخت قالب'}
+              {loading ? 'در حال ساخت…' : 'ساخت قالب'}
             </Button>
           </DialogFooter>
         </form>

@@ -160,7 +160,7 @@ export const MeetingTextEditor: React.FC<MeetingTextEditorProps> = ({
                 value={minutesText}
                 onChange={setMinutesText}
                 type="textarea"
-                placeholder="متن کامل صورت‌جلسه را وارد کنید..."
+                placeholder="متن کامل صورت‌جلسه را وارد کنید…"
                 rows={16}
                 enableVoice={true}
                 label="متن صورت‌جلسه"
@@ -190,7 +190,7 @@ export const MeetingTextEditor: React.FC<MeetingTextEditorProps> = ({
               className="flex items-center gap-2"
             >
               <Save className="h-4 w-4" />
-              {isLoading ? 'در حال ذخیره...' : 'ذخیره'}
+              {isLoading ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </div>

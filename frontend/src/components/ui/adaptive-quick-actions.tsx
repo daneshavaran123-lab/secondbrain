@@ -1,138 +1,124 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
-import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
+import { Link } from 'react-router-dom';
 import { getTodaysFocus, type TodaysFocusItem } from '@/services/activityService';
-import { 
-  Calendar, 
-  CheckSquare, 
-  Lightbulb, 
-  UserCheck, 
-  Scale, 
+import { askAssistant } from '@/lib/assistant';
+import {
+  Calendar,
+  CheckSquare,
+  Lightbulb,
+  UserCheck,
+  Scale,
   BookOpen,
-  MessageCircle,
+  Mail,
   FolderKanban
 } from 'lucide-react';
 
-export function AdaptiveQuickActions() {
-  const { isMobile } = useResponsiveBreakpoints();
-  const navigate = useNavigate();
-  const [todaysFocus, setTodaysFocus] = useState<TodaysFocusItem[]>([]);
+const STATUS_WORD: Record<TodaysFocusItem['status'], string> = {
+  pending: 'در انتظار',
+  in_progress: 'در حال انجام',
+  completed: 'انجام شد',
+};
+
+/** Today's meetings and tasks: the first thing the home screen answers. */
+export function TodayFocus({ className }: { className?: string }) {
+  const [items, setItems] = useState<TodaysFocusItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTodaysFocus = async () => {
-      try {
-        const focus = await getTodaysFocus();
-        setTodaysFocus(focus);
-      } catch (error) {
-        console.error('Error fetching today\'s focus:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTodaysFocus();
+    getTodaysFocus()
+      .then(setItems)
+      .catch((error) => console.error("Error fetching today's focus:", error))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const quickActions = [
-    {
-      title: 'برنامه‌ریزی شخصی',
-      icon: CheckSquare,
-      route: '/personal-planning',
-    },
-    {
-      title: 'برنامه‌ریزی سازمانی',
-      icon: UserCheck,
-      route: '/organizational-planning',
-    },
-    {
-      title: 'مدیریت پروژه‌ها',
-      icon: FolderKanban,
-      route: '/projects',
-    },
-    {
-      title: 'ایده‌ها',
-      icon: Lightbulb,
-      route: '/ideas',
-    },
-    {
-      title: 'مسائل حقوقی',
-      icon: Scale,
-      route: '/legal',
-    },
-    {
-      title: 'دانش‌بنیان',
-      icon: BookOpen,
-      route: '/knowledge',
-    },
-    {
-      title: 'گفتگوی هوشمند',
-      icon: MessageCircle,
-      route: '/ai-chat',
-    },
-    {
-      title: 'تقویم',
-      icon: Calendar,
-      route: '/calendar',
-    }
-  ];
+  return (
+    <section aria-labelledby="today-title" className={cn('space-y-2', className)}>
+      <div className="flex items-center justify-between">
+        <h2 id="today-title" className="text-base font-semibold">امروز</h2>
+        <Link to="/calendar" className="rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          تقویم
+        </Link>
+      </div>
+      <div className="rounded-lg border border-border bg-card">
+        {items.length > 0 ? (
+          <ul className="divide-y divide-border">
+            {items.map((item) => (
+              <li key={item.id} className="grid grid-cols-[3.5rem_1fr_auto] items-start gap-3 px-4 py-3">
+                <time className="pt-px text-sm text-muted-foreground">{item.time || '—'}</time>
+                <div className="min-w-0">
+                  <p className={cn('text-sm leading-6', item.status === 'completed' && 'text-muted-foreground line-through decoration-muted-foreground/50')}>
+                    {item.title}
+                  </p>
+                  {item.description && <p className="truncate text-xs text-muted-foreground">{item.description}</p>}
+                </div>
+                {item.status !== 'pending' ? (
+                  <span className="flex items-center gap-1.5 pt-1 text-xs text-muted-foreground">
+                    <span className={cn('h-1.5 w-1.5 rounded-full', item.status === 'completed' ? 'bg-success' : 'bg-signal')} aria-hidden />
+                    {STATUS_WORD[item.status]}
+                  </span>
+                ) : <span />}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-5">
+            <p className="text-sm text-muted-foreground">
+              {isLoading ? 'در حال بارگذاری…' : 'برای امروز جلسه یا کاری ثبت نشده.'}
+            </p>
+            {!isLoading && (
+              <button
+                onClick={() => askAssistant('برای امروزم یک برنامه پیشنهاد بده', true)}
+                className="text-sm font-medium text-signal underline-offset-4 hover:underline"
+              >
+                از دستیار برنامه بخواه
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
-  const [showAll, setShowAll] = useState(false);
-  const visibleActions = isMobile && !showAll ? quickActions.slice(0, 4) : quickActions;
+const QUICK_LINKS = [
+  { title: 'برنامه‌ریزی شخصی', icon: CheckSquare, route: '/personal-planning' },
+  { title: 'برنامه‌ریزی سازمانی', icon: UserCheck, route: '/organizational-planning' },
+  { title: 'نامه‌ها', icon: Mail, route: '/organizational-letters' },
+  { title: 'پروژه‌ها', icon: FolderKanban, route: '/projects' },
+  { title: 'ایده‌ها', icon: Lightbulb, route: '/ideas' },
+  { title: 'دانش', icon: BookOpen, route: '/knowledge' },
+  { title: 'امور حقوقی', icon: Scale, route: '/legal' },
+  { title: 'تقویم', icon: Calendar, route: '/calendar' },
+];
 
+/** A short list of the places people go most; everything else is in the menu and Ctrl K. */
+export function QuickLinks({ className }: { className?: string }) {
+  return (
+    <section aria-labelledby="quick-title" className={cn('space-y-2', className)}>
+      <h2 id="quick-title" className="text-base font-semibold">دسترسی سریع</h2>
+      <ul className="grid grid-cols-2 gap-x-2 rounded-lg border border-border bg-card p-1.5">
+        {QUICK_LINKS.map((link) => (
+          <li key={link.route}>
+            <Link
+              to={link.route}
+              className="flex min-h-[40px] items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted"
+            >
+              <link.icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="min-w-0 truncate">{link.title}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export function AdaptiveQuickActions() {
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-border bg-card p-4 shadow-card md:p-5">
-        <h2 className="mb-3 text-sm font-semibold">دسترسی سریع</h2>
-        <div className="grid grid-cols-2 gap-2">
-          {visibleActions.map((action) => (
-            <button
-              key={action.route}
-              onClick={() => navigate(action.route)}
-              className="flex min-h-[44px] items-center gap-2.5 rounded-xl border border-border px-3 py-2.5 text-right transition-colors hover:bg-muted/60 active:scale-[0.98]"
-            >
-              <action.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span className="min-w-0 text-[13px] font-medium leading-5">{action.title}</span>
-            </button>
-          ))}
-        </div>
-        {isMobile && quickActions.length > 4 && (
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="mt-2 w-full rounded-lg py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
-          >
-            {showAll ? 'کمتر' : 'نمایش همه'}
-          </button>
-        )}
-      </section>
-
-      {!isMobile && (
-        <section className="rounded-2xl border border-border bg-card p-4 shadow-card md:p-5">
-          <h2 className="mb-3 text-sm font-semibold">تمرکز امروز</h2>
-          {todaysFocus.length > 0 ? (
-            <ul className="space-y-1">
-              {todaysFocus.map((item) => (
-                <li key={item.id} className="flex items-start gap-3 rounded-lg px-2 py-2">
-                  <span className={cn(
-                    'mt-2 h-1.5 w-1.5 shrink-0 rounded-full',
-                    item.status === 'completed' ? 'bg-success' : item.status === 'in_progress' ? 'bg-warning' : 'bg-muted-foreground/50'
-                  )} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm leading-6">{item.title}</p>
-                    {item.description && <p className="truncate text-xs text-muted-foreground">{item.description}</p>}
-                  </div>
-                  {item.time && <span className="shrink-0 text-xs text-muted-foreground">{item.time}</span>}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              {isLoading ? 'در حال بارگذاری…' : 'برای امروز کاری ثبت نشده'}
-            </p>
-          )}
-        </section>
-      )}
+      <QuickLinks />
+      <TodayFocus />
     </div>
   );
 }

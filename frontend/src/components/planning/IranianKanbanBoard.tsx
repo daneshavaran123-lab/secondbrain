@@ -141,7 +141,7 @@ export const IranianKanbanBoard: React.FC<IranianKanbanBoardProps> = ({
                       flex-1 min-h-[500px] p-4 rounded-t-none border-t-0
                       ${col.color}
                       ${snapshot.isDraggingOver ? 'ring-2 ring-primary ring-opacity-50' : ''}
-                      transition-all duration-200
+                      transition duration-200
                     `}
                   >
                     <div className="space-y-4">
@@ -154,7 +154,7 @@ export const IranianKanbanBoard: React.FC<IranianKanbanBoardProps> = ({
                               {...provided.dragHandleProps}
                               className={`
                                 ${snapshot.isDragging ? 'rotate-3 scale-105' : ''}
-                                transition-all duration-200
+                                transition duration-200
                               `}
                             >
                               <IranianTaskCard task={task} />

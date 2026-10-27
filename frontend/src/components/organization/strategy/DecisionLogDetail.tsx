@@ -253,7 +253,7 @@ export function DecisionLogDetail({ strategyId, organizationId, onBack, onEdit, 
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.1 }}
                       className={cn(
-                        "p-4 rounded-lg border transition-all",
+                        "p-4 rounded-lg border transition",
                         isChosen ? "border-green-500 bg-green-500/5" : "border-border hover:shadow-md"
                       )}
                     >

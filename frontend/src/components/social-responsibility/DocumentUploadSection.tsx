@@ -80,7 +80,7 @@ export function DocumentUploadSection({
         <input {...getInputProps()} />
         <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
         {isDragActive ? (
-          <p className="text-primary font-medium">فایل‌ها را اینجا رها کنید...</p>
+          <p className="text-primary font-medium">فایل‌ها را اینجا رها کنید…</p>
         ) : (
           <div>
             <p className="font-medium mb-1">
@@ -99,7 +99,7 @@ export function DocumentUploadSection({
       {uploading && (
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>در حال آپلود...</span>
+            <span>در حال آپلود…</span>
             <span>{Math.round(uploadProgress)}%</span>
           </div>
           <Progress value={uploadProgress} />

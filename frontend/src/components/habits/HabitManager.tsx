@@ -123,7 +123,7 @@ export const HabitManager: React.FC<HabitManagerProps> = ({ open, onClose, onSav
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="توضیح مختصری درباره این عادت..."
+              placeholder="توضیح مختصری درباره این عادت…"
               rows={3}
             />
           </div>

@@ -54,7 +54,7 @@ export function OfflineBanner({ className }: OfflineBannerProps) {
             ) : isSyncing ? (
               <div className="flex items-center gap-2 text-primary">
                 <RefreshCw className="h-4 w-4 animate-spin" />
-                <span className="text-sm font-medium">در حال همگام‌سازی... {syncProgress}%</span>
+                <span className="text-sm font-medium">در حال همگام‌سازی… {syncProgress}%</span>
                 <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-primary rounded-full"

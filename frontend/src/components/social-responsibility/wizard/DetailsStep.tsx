@@ -48,7 +48,7 @@ export function DetailsStep({ form }: DetailsStepProps) {
               <TagInput
                 value={field.value || []}
                 onChange={field.onChange}
-                placeholder="برچسب اضافه کنید..."
+                placeholder="برچسب اضافه کنید…"
                 suggestions={TAG_SUGGESTIONS}
               />
             </FormControl>

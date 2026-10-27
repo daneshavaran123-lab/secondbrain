@@ -27,7 +27,7 @@ export function CSRDashboard() {
   };
 
   if (loading || !stats) {
-    return <div className="text-center py-8">در حال بارگذاری...</div>;
+    return <div className="text-center py-8">در حال بارگذاری…</div>;
   }
 
   const typeData = [

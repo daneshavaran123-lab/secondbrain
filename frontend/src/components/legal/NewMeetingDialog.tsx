@@ -203,7 +203,7 @@ export const NewMeetingDialog: React.FC<NewMeetingDialogProps> = ({
               id="summary"
               value={formData.summary}
               onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
-              placeholder="خلاصه‌ای از مباحث جلسه..."
+              placeholder="خلاصه‌ای از مباحث جلسه…"
               rows={3}
             />
           </div>

@@ -65,7 +65,7 @@ export const ResolutionComments = ({ comments, onAddComment }: ResolutionComment
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="نظر خود را بنویسید..."
+            placeholder="نظر خود را بنویسید…"
             className="min-h-[100px] resize-none"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && e.ctrlKey) {

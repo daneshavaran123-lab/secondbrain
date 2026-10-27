@@ -1,118 +1,113 @@
 import React, { useState, useEffect } from 'react';
-import { useResponsiveBreakpoints } from '@/hooks/useResponsiveBreakpoints';
-import { Button } from './button';
 import { getDashboardStats, type DashboardStats } from '@/services/dashboardService';
 import { getRecentActivities, type RecentActivity } from '@/services/activityService';
-import {
-  CheckCircle,
-  Clock,
-  Lightbulb,
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  BookOpen,
-  FolderKanban,
-  Target,
-  ScrollText
-} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export function CompactControlCenter() {
-  const { isMobile } = useResponsiveBreakpoints();
-  const [expandedStats, setExpandedStats] = useState(false);
-  const [stats, setStats] = useState<DashboardStats>({
-    todayActivities: 0,
-    activeProjects: 0,
-    newIdeas: 0,
-    weeklyMeetings: 0,
-    activeMissions: 0,
-    activePolicies: 0,
-    totalClaims: 0,
-    totalKnowledgeItems: 0
-  });
-  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
+const fa = (n: number) => n.toLocaleString('fa-IR');
+
+const EMPTY_STATS: DashboardStats = {
+  todayActivities: 0,
+  activeProjects: 0,
+  newIdeas: 0,
+  weeklyMeetings: 0,
+  activeMissions: 0,
+  activePolicies: 0,
+  totalClaims: 0,
+  totalKnowledgeItems: 0,
+};
+
+/** Headline counts in one divided strip: label over value, no icon tiles. */
+export function OverviewStrip({ className }: { className?: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [stats, setStats] = useState<DashboardStats>(EMPTY_STATS);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [dashboardStats, activities] = await Promise.all([
-          getDashboardStats(),
-          getRecentActivities()
-        ]);
-        setStats(dashboardStats);
-        setRecentActivities(activities);
-      } catch (error) {
-        console.error('خطا در دریافت آمار:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
+    getDashboardStats()
+      .then(setStats)
+      .catch((error) => console.error('خطا در دریافت آمار:', error))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  // Second-brain stats first; organisational ones sit behind «بیشتر».
-  const allStats = [
-    { label: 'فعالیت‌های امروز', value: stats.todayActivities, icon: CheckCircle },
-    { label: 'جلسات این هفته', value: stats.weeklyMeetings, icon: Calendar },
-    { label: 'ایده‌های جدید', value: stats.newIdeas, icon: Lightbulb },
-    { label: 'آیتم‌های دانش', value: stats.totalKnowledgeItems, icon: BookOpen },
-    { label: 'پروژه‌های فعال', value: stats.activeProjects, icon: FolderKanban },
-    { label: 'ماموریت‌های فعال', value: stats.activeMissions, icon: Target },
-    { label: 'سیاست‌های فعال', value: stats.activePolicies, icon: ScrollText },
-    { label: 'کل ادعاها', value: stats.totalClaims, icon: Clock },
+  // Second-brain counts first; organisational ones sit behind «بیشتر».
+  const all = [
+    { label: 'فعالیت‌های امروز', value: stats.todayActivities },
+    { label: 'جلسه‌های این هفته', value: stats.weeklyMeetings },
+    { label: 'ایده‌های تازه', value: stats.newIdeas },
+    { label: 'آیتم‌های دانش', value: stats.totalKnowledgeItems },
+    { label: 'پروژه‌های فعال', value: stats.activeProjects },
+    { label: 'مأموریت‌های فعال', value: stats.activeMissions },
+    { label: 'سیاست‌های فعال', value: stats.activePolicies },
+    { label: 'ادعاها', value: stats.totalClaims },
   ];
-  const visibleStats = expandedStats ? allStats : allStats.slice(0, 4);
-  const fa = (n: number) => n.toLocaleString('fa-IR');
+  const visible = expanded ? all : all.slice(0, 4);
 
   return (
+    <section aria-labelledby="overview-title" className={cn('space-y-2', className)}>
+      <div className="flex items-center justify-between">
+        <h2 id="overview-title" className="text-base font-semibold">نمای کلی</h2>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          className="rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          {expanded ? 'کمتر' : 'همه آمار'}
+        </button>
+      </div>
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-4">
+        {visible.map((stat) => (
+          <div key={stat.label} className="bg-card px-4 py-3.5">
+            <dt className="text-sm text-muted-foreground">{stat.label}</dt>
+            <dd className="mt-1 text-2xl font-medium leading-8">
+              {isLoading ? <span className="inline-block h-6 w-8 rounded bg-muted align-middle" aria-label="در حال بارگذاری" /> : fa(stat.value)}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+/** The last things that happened, newest first. */
+export function RecentActivityList({ className }: { className?: string }) {
+  const [items, setItems] = useState<RecentActivity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getRecentActivities()
+      .then(setItems)
+      .catch((error) => console.error('خطا در دریافت فعالیت‌ها:', error))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  return (
+    <section aria-labelledby="recent-title" className={cn('space-y-2', className)}>
+      <h2 id="recent-title" className="text-base font-semibold">فعالیت‌های اخیر</h2>
+      <div className="rounded-lg border border-border bg-card">
+        {items.length > 0 ? (
+          <ul className="divide-y divide-border">
+            {items.map((activity) => (
+              <li key={activity.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
+                <span className="min-w-0 truncate text-sm">{activity.title}</span>
+                {activity.time && <time className="shrink-0 text-xs text-muted-foreground">{activity.time}</time>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="px-4 py-5 text-sm text-muted-foreground">
+            {isLoading ? 'در حال بارگذاری…' : 'هنوز فعالیتی ثبت نشده؛ هر چه ثبت کنید اینجا می‌آید.'}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+export function CompactControlCenter() {
+  return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-border bg-card p-4 shadow-card md:p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">نمای کلی</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setExpandedStats(!expandedStats)}
-            className="h-8 gap-1 rounded-lg px-2 text-xs text-muted-foreground"
-          >
-            {expandedStats ? 'کمتر' : 'بیشتر'}
-            {expandedStats ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {visibleStats.map((stat) => (
-            <div key={stat.label} className="rounded-xl border border-border p-3.5">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-xs leading-5 text-muted-foreground">{stat.label}</p>
-                <stat.icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
-              </div>
-              <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight">
-                {isLoading ? <span className="inline-block h-7 w-8 animate-pulse rounded bg-muted align-middle" /> : fa(stat.value)}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {!isMobile && (
-        <section className="rounded-2xl border border-border bg-card p-4 shadow-card md:p-5">
-          <h2 className="mb-3 text-sm font-semibold">فعالیت‌های اخیر</h2>
-          {recentActivities.length > 0 ? (
-            <ul className="divide-y divide-border">
-              {recentActivities.map((activity) => (
-                <li key={activity.id} className="flex items-center justify-between gap-3 py-2.5">
-                  <span className="min-w-0 truncate text-sm">{activity.title}</span>
-                  {activity.time && <span className="shrink-0 text-xs text-muted-foreground">{activity.time}</span>}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">هنوز فعالیتی ثبت نشده</p>
-          )}
-        </section>
-      )}
+      <OverviewStrip />
+      <RecentActivityList />
     </div>
   );
 }

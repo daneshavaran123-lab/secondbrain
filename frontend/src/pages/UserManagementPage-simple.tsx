@@ -365,7 +365,7 @@ export default function UserManagementPage() {
             <div className="relative flex-1">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="جستجو بر اساس نام، ایمیل یا شماره تماس..."
+                placeholder="جستجو بر اساس نام، ایمیل یا شماره تماس…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pr-10"
@@ -410,7 +410,7 @@ export default function UserManagementPage() {
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-                <p className="text-gray-600">در حال بارگذاری کاربران...</p>
+                <p className="text-gray-600">در حال بارگذاری کاربران…</p>
               </div>
             </div>
           ) : error ? (

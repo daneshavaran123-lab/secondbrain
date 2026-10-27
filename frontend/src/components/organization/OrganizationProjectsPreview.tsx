@@ -69,7 +69,7 @@ export function OrganizationProjectsPreview({ projects }: OrganizationProjectsPr
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ scale: 1.02 }}
-              className="p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer group"
+              className="p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-accent/30 transition cursor-pointer group"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">

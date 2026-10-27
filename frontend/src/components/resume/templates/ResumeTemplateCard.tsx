@@ -74,7 +74,7 @@ export function ResumeTemplateCard({ template, onUpdate }: ResumeTemplateCardPro
 
   const handleDownload = () => {
     toast({
-      title: 'در حال آماده‌سازی...',
+      title: 'در حال آماده‌سازی…',
       description: 'دانلود PDF به زودی فعال می‌شود',
     });
   };

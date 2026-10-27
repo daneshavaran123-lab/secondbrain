@@ -405,7 +405,7 @@ ${description ? `زمینه: ${description}\n` : ''}
   const renderNewsCard = (item: NewsItem, idx: number, sectionTitle: string) => (
     <div
       key={idx}
-      className="p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer active:scale-[0.98]"
+      className="p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-accent/30 transition cursor-pointer active:scale-[0.98]"
       onClick={() => setDetailItem({ kind: 'news', item, sectionTitle })}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
@@ -436,7 +436,7 @@ ${description ? `زمینه: ${description}\n` : ''}
   const renderArticleCard = (item: ArticleItem, idx: number, sectionTitle: string) => (
     <div
       key={idx}
-      className="p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer active:scale-[0.98]"
+      className="p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-accent/30 transition cursor-pointer active:scale-[0.98]"
       onClick={() => setDetailItem({ kind: 'article', item, sectionTitle })}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
@@ -688,7 +688,7 @@ ${description ? `زمینه: ${description}\n` : ''}
               value={customDescription}
               onChange={setCustomDescription}
               type="textarea"
-              placeholder="جزئیات بیشتر درباره موضوع جلسه، اهداف یا نکات مهم..."
+              placeholder="جزئیات بیشتر درباره موضوع جلسه، اهداف یا نکات مهم…"
               rows={3}
               enableVoice={true}
               label="توضیحات اضافی (اختیاری)"
@@ -706,7 +706,7 @@ ${description ? `زمینه: ${description}\n` : ''}
             {isAnalyzing ? (
               <>
                 <Loader2 className="h-5 w-5 ml-2 animate-spin" />
-                در حال جستجو در اینترنت...
+                در حال جستجو در اینترنت…
               </>
             ) : (
               <>
@@ -787,7 +787,7 @@ ${description ? `زمینه: ${description}\n` : ''}
                       size="sm"
                     >
                       {isGenerating ? (
-                        <><Loader2 className="h-4 w-4 ml-2 animate-spin" />در حال جستجو...</>
+                        <><Loader2 className="h-4 w-4 ml-2 animate-spin" />در حال جستجو…</>
                       ) : prep ? (
                         <><RefreshCw className="h-4 w-4 ml-2" />بروزرسانی</>
                       ) : (

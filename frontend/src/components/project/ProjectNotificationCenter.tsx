@@ -118,7 +118,7 @@ export function ProjectNotificationCenter({ userId, projectId }: ProjectNotifica
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-3 rounded-lg border transition-all duration-200 ${
+                  className={`p-3 rounded-lg border transition duration-200 ${
                     notification.isRead 
                       ? 'bg-background border-border' 
                       : 'bg-primary/5 border-primary/20'

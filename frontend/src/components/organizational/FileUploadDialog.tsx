@@ -206,7 +206,7 @@ export function FileUploadDialog({
             {uploading ? (
               <div className="flex flex-col items-center space-y-2">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">در حال آپلود...</p>
+                <p className="text-sm text-muted-foreground">در حال آپلود…</p>
               </div>
             ) : (
               <div className="flex flex-col items-center space-y-4">

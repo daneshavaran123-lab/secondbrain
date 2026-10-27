@@ -12,7 +12,7 @@ class TestDataService {
   }
 
   async initializeAllTestData(): Promise<void> {
-    // console.log removed for production: شروع ایجاد داده‌های تستی...
+    // console.log removed for production: شروع ایجاد داده‌های تستی…
 
     try {
       // Initialize Legal test data

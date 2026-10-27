@@ -122,7 +122,7 @@ export const ProfessionalMeetingAnalytics: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center p-8">در حال بارگذاری...</div>;
+    return <div className="flex justify-center p-8">در حال بارگذاری…</div>;
   }
 
   if (!analytics) {

@@ -32,7 +32,7 @@ export function LuxuryTabs({
     <Tabs value={value} onValueChange={onValueChange} className={className} dir="rtl">
       {isMobile ? (
         <TabsListScrollable 
-          className="gap-2 h-auto p-2 bg-gradient-lux rounded-xl shadow-luxury-soft"
+          className="gap-1 h-auto p-1 bg-muted rounded-lg"
           dir="rtl"
         >
           {items.map((item) => (
@@ -40,9 +40,9 @@ export function LuxuryTabs({
               key={item.value}
               value={item.value}
               className={cn(
-                "flex items-center gap-2 px-4 py-3 rounded-lg transition-elegant text-right whitespace-nowrap",
-                "data-[state=active]:bg-gradient-luxury-gold data-[state=active]:text-white data-[state=active]:shadow-luxury-glow",
-                "hover:bg-white/50 font-medium min-w-max"
+                "flex items-center gap-2 px-3.5 py-2 rounded-md transition-colors text-right whitespace-nowrap text-muted-foreground",
+                "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[0_0_0_1px_hsl(var(--border))]",
+                "hover:text-foreground font-medium min-w-max"
               )}
               dir="rtl"
             >
@@ -53,7 +53,7 @@ export function LuxuryTabs({
               {item.count !== undefined && (
                 <span className={cn(
                   "px-2 py-1 rounded-full text-xs font-semibold order-3",
-                  "bg-white/20 text-current"
+                  "bg-foreground/[0.07] text-current"
                 )}>
                   {item.count}
                 </span>
@@ -63,7 +63,7 @@ export function LuxuryTabs({
         </TabsListScrollable>
       ) : (
         <TabsList 
-          className="grid w-full gap-2 h-auto p-2 bg-gradient-lux rounded-xl shadow-luxury-soft"
+          className="grid w-full gap-1 h-auto p-1 bg-muted rounded-lg"
           style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
           dir="rtl"
         >
@@ -72,9 +72,9 @@ export function LuxuryTabs({
               key={item.value}
               value={item.value}
               className={cn(
-                "flex items-center gap-3 px-6 py-4 rounded-lg transition-elegant text-right",
-                "data-[state=active]:bg-gradient-luxury-gold data-[state=active]:text-white data-[state=active]:shadow-luxury-glow",
-                "hover:bg-white/50 font-medium"
+                "flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-colors text-right text-muted-foreground",
+                "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[0_0_0_1px_hsl(var(--border))]",
+                "hover:text-foreground font-medium"
               )}
               dir="rtl"
             >
@@ -85,7 +85,7 @@ export function LuxuryTabs({
               {item.count !== undefined && (
                 <span className={cn(
                   "px-2 py-1 rounded-full text-xs font-semibold order-3",
-                  "bg-white/20 text-current"
+                  "bg-foreground/[0.07] text-current"
                 )}>
                   {item.count}
                 </span>

@@ -36,7 +36,7 @@ export function FuturisticHero({
       )}
 
       <div className={cn(
-        "relative z-10 max-w-2xl mx-auto px-4 text-center transition-all duration-300",
+        "relative z-10 max-w-2xl mx-auto px-4 text-center transition duration-300",
         sidebarOpen ? "mr-72 md:mr-80 lg:mr-88 xl:mr-96" : "mr-16 md:mr-20"
       )}>
         {/* Title */}

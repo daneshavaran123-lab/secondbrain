@@ -294,7 +294,7 @@ export const MeetingTrackingDashboard: React.FC<MeetingTrackingDashboardProps> =
                 <Textarea
                   value={updateForm.implementationNotes}
                   onChange={(e) => setUpdateForm({...updateForm, implementationNotes: e.target.value})}
-                  placeholder="توضیحات درباره پیشرفت یا مشکلات..."
+                  placeholder="توضیحات درباره پیشرفت یا مشکلات…"
                   rows={3}
                 />
               </div>

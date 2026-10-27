@@ -15,7 +15,7 @@ export function SubUsersList({ onEdit }: SubUsersListProps) {
   const { subUsers, isLoading, toggleStatus, deleteSubUser } = useSubUsers();
 
   if (isLoading) {
-    return <div className="text-center p-8">در حال بارگذاری...</div>;
+    return <div className="text-center p-8">در حال بارگذاری…</div>;
   }
 
   if (!subUsers || subUsers.length === 0) {

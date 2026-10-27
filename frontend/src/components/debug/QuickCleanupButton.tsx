@@ -17,11 +17,11 @@ export function QuickCleanupButton() {
     setResult(null);
     
     try {
-      toast.info('شروع پاکسازی داده‌های تستی...', {
+      toast.info('شروع پاکسازی داده‌های تستی…', {
         description: 'لطفاً صبر کنید، این عمل ممکن است چند ثانیه طول بکشد'
       });
 
-      console.log('🚀 شروع فرآیند پاکسازی خودکار...');
+      console.log('🚀 شروع فرآیند پاکسازی خودکار…');
       
       const cleanupResult = await executeAdminCleanup();
       setResult(cleanupResult);
@@ -30,7 +30,7 @@ export function QuickCleanupButton() {
       
       if (cleanupResult.success) {
         toast.success('پاکسازی با موفقیت انجام شد!', {
-          description: 'تمام داده‌های تستی پاک شدند. صفحه در حال بازسازی...'
+          description: 'تمام داده‌های تستی پاک شدند. صفحه در حال بازسازی…'
         });
         
         // Reload page after 2 seconds to show clean dashboard
@@ -87,7 +87,7 @@ export function QuickCleanupButton() {
           {isRunning ? (
             <>
               <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              در حال پاکسازی...
+              در حال پاکسازی…
             </>
           ) : (
             <>

@@ -222,7 +222,7 @@ export function UserOrganizationsManager() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>سازمان‌ها و سمت‌های شما</CardTitle>
-              <CardDescription>در حال بارگذاری اطلاعات...</CardDescription>
+              <CardDescription>در حال بارگذاری اطلاعات…</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -378,7 +378,7 @@ export function UserOrganizationsManager() {
                   onClick={handleAddOrganization} 
                   disabled={isSubmitting || (addMode === "existing" && !selectedOrgId) || (addMode === "new" && !newOrgName.trim())}
                 >
-                  {isSubmitting ? "در حال افزودن..." : "افزودن"}
+                  {isSubmitting ? "در حال افزودن…" : "افزودن"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -402,7 +402,7 @@ export function UserOrganizationsManager() {
             <div className="relative">
               <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="جستجو در سازمان‌ها یا سمت‌ها..."
+                placeholder="جستجو در سازمان‌ها یا سمت‌ها…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pr-10"
@@ -529,7 +529,7 @@ export function UserOrganizationsManager() {
                 انصراف
               </Button>
               <Button onClick={handleUpdatePosition} disabled={isSubmitting}>
-                {isSubmitting ? 'در حال ذخیره...' : 'ذخیره'}
+                {isSubmitting ? 'در حال ذخیره…' : 'ذخیره'}
               </Button>
             </DialogFooter>
           </DialogContent>

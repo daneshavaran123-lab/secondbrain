@@ -53,7 +53,7 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
         <div className="relative">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="جستجو در وظایف..."
+            placeholder="جستجو در وظایف…"
             value={filter.search || ''}
             onChange={(e) => handleFilterChange('search', e.target.value)}
             className="pr-10"
@@ -67,7 +67,7 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({
           <div className="lg:col-span-2 relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="جستجو در عنوان، توضیحات و برچسب‌ها..."
+              placeholder="جستجو در عنوان، توضیحات و برچسب‌ها…"
               value={filter.search || ''}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               className="pr-10"

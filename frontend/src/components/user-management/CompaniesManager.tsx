@@ -135,7 +135,7 @@ export function CompaniesManager() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center p-8">در حال بارگذاری...</div>;
+    return <div className="flex items-center justify-center p-8">در حال بارگذاری…</div>;
   }
 
   return (
@@ -143,7 +143,7 @@ export function CompaniesManager() {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="جستجوی شرکت..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pr-9" />
+          <Input placeholder="جستجوی شرکت…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pr-9" />
         </div>
 
         <Dialog open={isAddDialogOpen} onOpenChange={(open) => { setIsAddDialogOpen(open); if (!open) resetForm(); }}>

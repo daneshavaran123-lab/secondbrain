@@ -172,7 +172,7 @@ export function RoadmapForm({ organizationId, onSuccess, onCancel, existingData 
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="عنوان نقشه راه..."
+            placeholder="عنوان نقشه راه…"
           />
         </div>
 
@@ -181,7 +181,7 @@ export function RoadmapForm({ organizationId, onSuccess, onCancel, existingData 
           <TextInputWithVoice
             value={description}
             onChange={setDescription}
-            placeholder="توضیحات کلی نقشه راه..."
+            placeholder="توضیحات کلی نقشه راه…"
             type="textarea"
             rows={3}
           />
@@ -245,7 +245,7 @@ export function RoadmapForm({ organizationId, onSuccess, onCancel, existingData 
                       onChange={(e) =>
                         updateMilestone(milestone.id, 'title', e.target.value)
                       }
-                      placeholder="عنوان نقطه عطف..."
+                      placeholder="عنوان نقطه عطف…"
                     />
                   </div>
 
@@ -254,7 +254,7 @@ export function RoadmapForm({ organizationId, onSuccess, onCancel, existingData 
                     <TextInputWithVoice
                       value={milestone.description}
                       onChange={(v) => updateMilestone(milestone.id, 'description', v)}
-                      placeholder="توضیحات..."
+                      placeholder="توضیحات…"
                       type="textarea"
                       rows={2}
                     />
@@ -316,7 +316,7 @@ export function RoadmapForm({ organizationId, onSuccess, onCancel, existingData 
           </Button>
         )}
         <Button type="submit" disabled={isSubmitting} className="flex-1">
-          {isSubmitting ? 'در حال ذخیره...' : existingData ? 'به‌روزرسانی نقشه راه' : 'ذخیره نقشه راه'}
+          {isSubmitting ? 'در حال ذخیره…' : existingData ? 'به‌روزرسانی نقشه راه' : 'ذخیره نقشه راه'}
         </Button>
       </div>
     </form>

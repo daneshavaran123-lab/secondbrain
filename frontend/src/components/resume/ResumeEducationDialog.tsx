@@ -137,7 +137,7 @@ export function ResumeEducationDialog({ open, onClose, editItem }: ResumeEducati
               id="description"
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="توضیحات اضافی..."
+              placeholder="توضیحات اضافی…"
               rows={3}
             />
           </div>
@@ -160,7 +160,7 @@ export function ResumeEducationDialog({ open, onClose, editItem }: ResumeEducati
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  در حال ذخیره...
+                  در حال ذخیره…
                 </>
               ) : (
                 'ذخیره'

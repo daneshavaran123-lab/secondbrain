@@ -52,7 +52,7 @@ export const ResolutionFilterPanel = ({ filters, onFiltersChange, onReset }: Res
       <div className="space-y-2">
         <Label>جستجو</Label>
         <Input
-          placeholder="جستجو در عنوان، شرح یا مسئول..."
+          placeholder="جستجو در عنوان، شرح یا مسئول…"
           value={filters.search || ''}
           onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
         />
@@ -65,7 +65,7 @@ export const ResolutionFilterPanel = ({ filters, onFiltersChange, onReset }: Res
           options={statusOptions}
           value={filters.status || []}
           onChange={(status) => onFiltersChange({ ...filters, status })}
-          placeholder="انتخاب وضعیت..."
+          placeholder="انتخاب وضعیت…"
         />
       </div>
 
@@ -76,7 +76,7 @@ export const ResolutionFilterPanel = ({ filters, onFiltersChange, onReset }: Res
           options={priorityOptions}
           value={filters.priority || []}
           onChange={(priority) => onFiltersChange({ ...filters, priority })}
-          placeholder="انتخاب اولویت..."
+          placeholder="انتخاب اولویت…"
         />
       </div>
 

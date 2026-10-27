@@ -246,7 +246,7 @@ export function PerformanceForm({ organizationId, employees, evaluation, onClose
               <Input
                 value={strengthInput}
                 onChange={(e) => setStrengthInput(e.target.value)}
-                placeholder="نقطه قوت را وارد کنید..."
+                placeholder="نقطه قوت را وارد کنید…"
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addStrength())}
               />
               <Button type="button" onClick={addStrength}>افزودن</Button>
@@ -275,7 +275,7 @@ export function PerformanceForm({ organizationId, employees, evaluation, onClose
               <Input
                 value={improvementInput}
                 onChange={(e) => setImprovementInput(e.target.value)}
-                placeholder="نقطه ضعف را وارد کنید..."
+                placeholder="نقطه ضعف را وارد کنید…"
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImprovement())}
               />
               <Button type="button" onClick={addImprovement}>افزودن</Button>
@@ -304,7 +304,7 @@ export function PerformanceForm({ organizationId, employees, evaluation, onClose
               <Input
                 value={goalInput}
                 onChange={(e) => setGoalInput(e.target.value)}
-                placeholder="هدف را وارد کنید..."
+                placeholder="هدف را وارد کنید…"
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addGoal())}
               />
               <Button type="button" onClick={addGoal}>افزودن</Button>
@@ -334,7 +334,7 @@ export function PerformanceForm({ organizationId, employees, evaluation, onClose
               value={formData.feedback}
               onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
               rows={4}
-              placeholder="توضیحات کامل در مورد عملکرد کارمند..."
+              placeholder="توضیحات کامل در مورد عملکرد کارمند…"
             />
           </div>
 
@@ -345,7 +345,7 @@ export function PerformanceForm({ organizationId, employees, evaluation, onClose
               value={formData.employee_comments}
               onChange={(e) => setFormData({ ...formData, employee_comments: e.target.value })}
               rows={3}
-              placeholder="نظرات کارمند در مورد ارزیابی..."
+              placeholder="نظرات کارمند در مورد ارزیابی…"
             />
           </div>
 
@@ -368,7 +368,7 @@ export function PerformanceForm({ organizationId, employees, evaluation, onClose
               انصراف
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'در حال ذخیره...' : 'ذخیره'}
+              {isSubmitting ? 'در حال ذخیره…' : 'ذخیره'}
             </Button>
           </div>
         </form>

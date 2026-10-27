@@ -192,7 +192,7 @@ export function AnalysisHistoryCard({
               disabled
             >
               <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-              در حال پردازش...
+              در حال پردازش…
             </Button>
           )}
 

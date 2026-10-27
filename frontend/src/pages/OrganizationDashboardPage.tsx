@@ -67,7 +67,7 @@ export default function OrganizationDashboardPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">در حال بارگذاری...</p>
+          <p className="text-muted-foreground">در حال بارگذاری…</p>
         </div>
       </div>
     );

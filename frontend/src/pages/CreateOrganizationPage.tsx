@@ -270,7 +270,7 @@ export default function CreateOrganizationPage() {
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="انتخاب کنید..." />
+                            <SelectValue placeholder="انتخاب کنید…" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -295,7 +295,7 @@ export default function CreateOrganizationPage() {
                       <FormLabel>توضیحات</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="توضیحات کوتاهی درباره سازمان..."
+                          placeholder="توضیحات کوتاهی درباره سازمان…"
                           className="resize-none"
                           rows={4}
                           {...field}
@@ -365,7 +365,7 @@ export default function CreateOrganizationPage() {
                       <FormLabel>آدرس</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="آدرس کامل سازمان..."
+                          placeholder="آدرس کامل سازمان…"
                           className="resize-none"
                           rows={2}
                           {...field}
@@ -383,7 +383,7 @@ export default function CreateOrganizationPage() {
                     disabled={isSubmitting}
                     className="flex-1"
                   >
-                    {isSubmitting ? 'در حال ایجاد...' : 'ایجاد سازمان'}
+                    {isSubmitting ? 'در حال ایجاد…' : 'ایجاد سازمان'}
                   </Button>
                   <Button
                     type="button"
