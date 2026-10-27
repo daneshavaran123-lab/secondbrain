@@ -45,24 +45,26 @@ export const MessageInput: React.FC<MessageInputProps> = ({ channelId, onTyping,
   const send = async () => {
     if (!text.trim() && files.length === 0) return;
     setSending(true);
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) {
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) return;
+      const attachments = await uploadAttachments();
+      const { error } = await sb.from('messages' as any).insert({
+        channel_id: channelId,
+        sender_id: user.id,
+        body: text.trim() || null,
+        attachments,
+        rich: {},
+      } as any);
+      if (!error) {
+        setText('');
+        setFiles([]);
+        if (onSent) onSent();
+      }
+    } catch (error) {
+      console.error('send message error', error);
+    } finally {
       setSending(false);
-      return;
-    }
-    const attachments = await uploadAttachments();
-    const { error } = await sb.from('messages' as any).insert({
-      channel_id: channelId,
-      sender_id: user.id,
-      body: text.trim() || null,
-      attachments,
-      rich: {},
-    } as any);
-    setSending(false);
-    if (!error) {
-      setText('');
-      setFiles([]);
-      if (onSent) onSent();
     }
   };
 
@@ -78,7 +80,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ channelId, onTyping,
       />
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Input type="file" multiple onChange={onFileChange} />
+          <Input type="file" multiple onChange={onFileChange} aria-label="پیوست فایل" />
         </div>
         <Button onClick={send} disabled={sending}>
           ارسال

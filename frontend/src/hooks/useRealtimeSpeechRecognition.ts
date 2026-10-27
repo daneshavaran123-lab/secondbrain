@@ -37,13 +37,17 @@ export const useRealtimeSpeechRecognition = (options: RealtimeSpeechOptions = {}
   });
 
   const recognitionRef = useRef<any>(null);
+  // Callers pass inline callbacks; keep the latest ones in a ref so the recognizer
+  // is not rebuilt (and state not reset) on every render.
+  const callbacksRef = useRef({ onResult, onError, onEnd });
+  callbacksRef.current = { onResult, onError, onEnd };
 
   useEffect(() => {
     // Check browser support
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (SpeechRecognition) {
-      setState(prev => ({ ...prev, isSupported: true }));
+      setState(prev => (prev.isSupported ? prev : { ...prev, isSupported: true }));
       
       const recognition = new SpeechRecognition();
       recognition.continuous = continuous;
@@ -70,13 +74,13 @@ export const useRealtimeSpeechRecognition = (options: RealtimeSpeechOptions = {}
             transcript: prev.transcript + finalText,
             interimTranscript: '',
           }));
-          onResult?.(finalText.trim(), true);
+          callbacksRef.current.onResult?.(finalText.trim(), true);
         } else if (interimText) {
           setState(prev => ({
             ...prev,
             interimTranscript: interimText,
           }));
-          onResult?.(interimText.trim(), false);
+          callbacksRef.current.onResult?.(interimText.trim(), false);
         }
       };
 
@@ -106,7 +110,7 @@ export const useRealtimeSpeechRecognition = (options: RealtimeSpeechOptions = {}
           isListening: false,
         }));
         
-        onError?.(errorMsg);
+        callbacksRef.current.onError?.(errorMsg);
         
         toast({
           title: 'خطا در تشخیص گفتار',
@@ -117,16 +121,15 @@ export const useRealtimeSpeechRecognition = (options: RealtimeSpeechOptions = {}
 
       recognition.onend = () => {
         setState(prev => ({ ...prev, isListening: false }));
-        onEnd?.();
+        callbacksRef.current.onEnd?.();
       };
 
       recognitionRef.current = recognition;
     } else {
-      setState(prev => ({ 
-        ...prev, 
-        isSupported: false,
-        error: 'مرورگر شما از تشخیص گفتار پشتیبانی نمی‌کند.'
-      }));
+      const unsupported = 'مرورگر شما از تشخیص گفتار پشتیبانی نمی‌کند.';
+      setState(prev => (!prev.isSupported && prev.error === unsupported
+        ? prev
+        : { ...prev, isSupported: false, error: unsupported }));
     }
 
     return () => {
@@ -138,7 +141,7 @@ export const useRealtimeSpeechRecognition = (options: RealtimeSpeechOptions = {}
         }
       }
     };
-  }, [language, continuous, interimResults, onResult, onError, onEnd]);
+  }, [language, continuous, interimResults]);
 
   const startListening = useCallback(() => {
     if (!recognitionRef.current) {
