@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGr
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, Zap } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PersianDatePicker } from '@/components/ui/persian-date-picker';
 import { convertGregorianToJalali, convertJalaliToGregorian } from '@/lib/date-utils';
 
@@ -116,17 +117,14 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-background rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-app-title">
+    <Dialog open onOpenChange={(open) => { if (!open) onCancel(); }}>
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto p-6" dir="rtl">
+          <DialogHeader className="mb-2 pe-8">
+            <DialogTitle className="text-2xl font-bold text-app-title">
               {task ? 'ویرایش وظیفه' : 'وظیفه جدید'}
-            </h2>
-            <Button variant="ghost" size="sm" onClick={onCancel}>
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
+            </DialogTitle>
+            <DialogDescription className="sr-only">فرم ثبت وظیفه</DialogDescription>
+          </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
@@ -355,9 +353,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
               </Button>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -146,13 +146,23 @@ function ManualEntryDialog({ open, onOpenChange, onSaved }: { open: boolean; onO
   const [day, setDay] = useState(today());
   const [values, setValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  // Persian or Latin digits, «٫» or «.» for decimals
+  const parse = (raw: string) => Number(raw.trim().replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[٫,،]/, '.'));
+  const invalid = new Set(FIELDS.filter((f) => values[f.metric]?.trim() && !Number.isFinite(parse(values[f.metric]))).map((f) => f.metric));
 
   const save = async () => {
+    if (invalid.size) {
+      setChecked(true);
+      document.getElementById(`health-${[...invalid][0]}`)?.focus();
+      return;
+    }
     const samples: SampleInput[] = FIELDS.flatMap((f) => {
       const raw = values[f.metric]?.trim();
       if (!raw) return [];
-      const n = Number(raw.replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace('٫', '.'));
-      return Number.isFinite(n) ? [{ metric: f.metric, day, value: f.toStored ? f.toStored(n) : n }] : [];
+      const n = parse(raw);
+      return [{ metric: f.metric, day, value: f.toStored ? f.toStored(n) : n }];
     });
     if (!samples.length) return;
     setSaving(true);
@@ -160,6 +170,7 @@ function ManualEntryDialog({ open, onOpenChange, onSaved }: { open: boolean; onO
       const stored = await healthDataService.saveSamples('manual', samples);
       toast({ title: 'ثبت شد', description: `${fa(stored)} مقدار برای ${dayLabel(day, 'd MMMM')} ذخیره شد.` });
       setValues({});
+      setChecked(false);
       onOpenChange(false);
       onSaved();
     } catch (error) {
@@ -189,8 +200,14 @@ function ManualEntryDialog({ open, onOpenChange, onSaved }: { open: boolean; onO
                   id={`health-${f.metric}`}
                   inputMode="decimal"
                   value={values[f.metric] ?? ''}
+                  aria-invalid={checked && invalid.has(f.metric) ? true : undefined}
+                  aria-describedby={checked && invalid.has(f.metric) ? `health-${f.metric}-error` : undefined}
+                  className={cn(checked && invalid.has(f.metric) && 'border-destructive')}
                   onChange={(e) => setValues((v) => ({ ...v, [f.metric]: e.target.value }))}
                 />
+                {checked && invalid.has(f.metric) && (
+                  <p id={`health-${f.metric}-error`} className="text-xs text-destructive">یک عدد بنویسید، مثلاً ۷۲٫۵</p>
+                )}
               </div>
             ))}
           </div>

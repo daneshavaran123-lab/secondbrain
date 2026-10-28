@@ -73,10 +73,11 @@ export const NewMeetingDialog: React.FC<NewMeetingDialogProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.caseId || !formData.lawyer || !formData.date || !formData.summary) {
+    const missing = [!formData.caseId && 'پرونده', !formData.lawyer && 'نام وکیل', !formData.date && 'تاریخ جلسه', !formData.summary && 'خلاصه جلسه'].filter(Boolean);
+    if (missing.length) {
       toast({
-        title: "خطا",
-        description: "لطفاً فیلدهای الزامی را پر کنید",
+        title: "چند فیلد ضروری خالی است",
+        description: `${missing.join('، ')} را وارد کنید.`,
         variant: "destructive",
       });
       return;

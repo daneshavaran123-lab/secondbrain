@@ -472,7 +472,7 @@ const EnhancedMeetingManager = () => {
                           {meeting.title}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline">{meeting.organization}</Badge>
+                          {meeting.meeting_type && <Badge variant="outline">{meeting.meeting_type}</Badge>}
                           {getMinutesStatusBadge(meeting.minutes_status)}
                         </div>
                       </div>

@@ -17,6 +17,9 @@ interface AuditLog {
 
 const ACTION_LABELS: Record<string, string> = {
   login: 'ورود',
+  login_success: 'ورود',
+  login_failed: 'ورود ناموفق',
+  create_sub_user: 'ایجاد کاربر فرعی',
   logout: 'خروج',
   password_changed: 'تغییر رمز عبور',
   profile_updated: 'به‌روزرسانی پروفایل',
@@ -27,6 +30,8 @@ const ACTION_LABELS: Record<string, string> = {
 
 const ACTION_COLORS: Record<string, string> = {
   login: 'bg-green-500/10 text-green-500 border-green-500/20',
+  login_success: 'bg-green-500/10 text-green-500 border-green-500/20',
+  login_failed: 'bg-red-500/10 text-red-500 border-red-500/20',
   logout: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
   password_changed: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
   profile_updated: 'bg-blue-500/10 text-blue-500 border-blue-500/20',

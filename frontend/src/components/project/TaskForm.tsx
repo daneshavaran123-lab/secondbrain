@@ -66,10 +66,11 @@ export function TaskForm({ open, onOpenChange, projectId, task, initialStatus, o
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title.trim() || !formData.assignedToId || !formData.deadline) {
+    const missing = [!formData.title.trim() && 'عنوان', !formData.assignedToId && 'مسئول', !formData.deadline && 'مهلت'].filter(Boolean);
+    if (missing.length) {
       toast({
-        title: "خطا",
-        description: "لطفاً تمام فیلدهای ضروری را پر کنید",
+        title: "چند فیلد ضروری خالی است",
+        description: `${missing.join('، ')} را وارد کنید.`,
         variant: "destructive"
       });
       return;

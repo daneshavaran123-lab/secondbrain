@@ -44,8 +44,9 @@ export function ResumeEducationDialog({ open, onClose, editItem }: ResumeEducati
   }, [editItem, open]);
 
   const handleSave = async () => {
-    if (!formData.degree || !formData.university) {
-      toast.error('لطفاً فیلدهای الزامی را پر کنید');
+    const missing = [!formData.degree && 'مدرک', !formData.university && 'دانشگاه'].filter(Boolean);
+    if (missing.length) {
+      toast.error(`${missing.join(' و ')} را وارد کنید.`);
       return;
     }
 

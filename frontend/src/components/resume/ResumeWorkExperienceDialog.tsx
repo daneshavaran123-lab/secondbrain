@@ -48,8 +48,9 @@ export function ResumeWorkExperienceDialog({ open, onClose, editItem }: ResumeWo
   }, [editItem, open]);
 
   const handleSave = async () => {
-    if (!formData.job_title || !formData.company_name || !formData.start_date) {
-      toast.error('لطفاً فیلدهای الزامی را پر کنید');
+    const missing = [!formData.job_title && 'عنوان شغل', !formData.company_name && 'نام شرکت', !formData.start_date && 'تاریخ شروع'].filter(Boolean);
+    if (missing.length) {
+      toast.error(`${missing.join('، ')} را وارد کنید.`);
       return;
     }
 

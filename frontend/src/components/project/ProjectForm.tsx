@@ -61,7 +61,7 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
     managerId: project?.managerId || getStoredUser()?.id || '',
     memberIds: project?.teamMembers || [],
     status: project?.status || 'planning',
-    startDate: project?.startDate ? format(new Date(project.startDate), 'yyyy-MM-dd') : '',
+    startDate: project?.startDate ? format(new Date(project.startDate), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
     endDate: project?.endDate ? format(new Date(project.endDate), 'yyyy-MM-dd') : '',
     budget: project?.budget || undefined,
     color: project?.color || '#3B82F6',
@@ -71,10 +71,17 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.goal.trim() || !formData.managerId || !formData.startDate || !formData.endDate) {
+    const missing = [
+      !formData.name.trim() && 'نام پروژه',
+      !formData.goal.trim() && 'هدف پروژه',
+      !formData.managerId && 'مدیر پروژه',
+      !formData.startDate && 'تاریخ شروع',
+      !formData.endDate && 'تاریخ پایان',
+    ].filter(Boolean);
+    if (missing.length) {
       toast({
-        title: "خطا",
-        description: "لطفاً تمام فیلدهای ضروری را پر کنید",
+        title: "چند فیلد ضروری خالی است",
+        description: `${missing.join('، ')} را وارد کنید.`,
         variant: "destructive"
       });
       return;

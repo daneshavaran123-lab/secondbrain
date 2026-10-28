@@ -49,10 +49,11 @@ export function LegalDocumentUploadDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.caseId || !formData.file) {
+    const missing = [!formData.name && 'نام سند', !formData.caseId && 'پرونده', !formData.file && 'فایل'].filter(Boolean);
+    if (missing.length) {
       toast({
-        title: "خطا",
-        description: "لطفاً تمام فیلدهای ضروری را پر کنید",
+        title: "چند فیلد ضروری خالی است",
+        description: `${missing.join('، ')} را وارد کنید.`,
         variant: "destructive",
       });
       return;
