@@ -19,11 +19,11 @@ interface DelegationTask {
 }
 
 const columns = [
-  { id: 'pending', title: 'Backlog' },
-  { id: 'in_progress', title: 'In Progress' },
-  { id: 'accepted', title: 'Accepted' },
-  { id: 'completed', title: 'Done' },
-  { id: 'declined', title: 'Declined' },
+  { id: 'pending', title: 'صف کارها' },
+  { id: 'in_progress', title: 'در حال انجام' },
+  { id: 'accepted', title: 'پذیرفته‌شده' },
+  { id: 'completed', title: 'انجام‌شده' },
+  { id: 'declined', title: 'ردشده' },
 ] as const;
 
 export const OrgKanbanBoard: React.FC<OrgKanbanBoardProps> = ({ domain }) => {

@@ -120,9 +120,11 @@ const TaskManager: React.FC<TaskManagerProps> = ({
   };
 
   const getCategoryDisplay = (task: PersonalTask) => {
-    // For professional and organizational domains, use custom category if available
-    if (domain !== 'personal' && task.customCategory) {
-      return task.customCategory;
+    // Professional and organizational tasks carry their own category; the personal-life
+    // structure below doesn't apply to them
+    if (domain !== 'personal') {
+      const own = task.customCategory || (task.subCategory && task.subCategory !== 'personal' ? categoryLabels[task.subCategory as keyof typeof categoryLabels] || task.subCategory : '');
+      return own || (domain === 'professional' ? 'کار' : 'سازمانی');
     }
     
     // For personal domain or tasks without custom category, use the structured categories
@@ -133,7 +135,8 @@ const TaskManager: React.FC<TaskManagerProps> = ({
     );
     const subCat = task.subCategory || task.category!;
     
-    return `${mainCategoryLabels[mainCat]} / ${categoryLabels[subCat]}`;
+    const sub = categoryLabels[subCat as keyof typeof categoryLabels];
+    return sub ? `${mainCategoryLabels[mainCat] ?? 'زندگی شخصی'} / ${sub}` : (mainCategoryLabels[mainCat] ?? 'زندگی شخصی');
   };
 
   const handleEdit = (task: PersonalTask) => {

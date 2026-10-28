@@ -48,7 +48,6 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { addMonths } from "date-fns-jalali";
 
 type DomainType = 'personal' | 'professional' | 'organizational';
 
@@ -436,10 +435,6 @@ const [selectedPacks, setSelectedPacks] = useState<{ IR: boolean; UN: boolean; T
     return domainInfo[eventDomain].eventColor;
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(addMonths(currentDate, direction === 'prev' ? -1 : 1));
-  };
-
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('fa-IR-u-ca-persian', { 
       year: 'numeric', 
@@ -598,40 +593,6 @@ const [selectedPacks, setSelectedPacks] = useState<{ IR: boolean; UN: boolean; T
           </div>
         </Card>
       )}
-
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 md:gap-4 w-full sm:w-auto">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={() => navigateMonth('prev')}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <h2 className={`text-base md:text-lg font-medium ${isMobile ? 'min-w-[160px]' : 'min-w-[200px]'} text-center`}>
-              {formatDate(currentDate)}
-            </h2>
-            <Button variant="outline" size="icon" onClick={() => navigateMonth('next')}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-          <Button variant="outline" size={isMobile ? "sm" : "default"} onClick={() => setCurrentDate(new Date())}>
-            امروز
-          </Button>
-        </div>
-        
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Select value={viewMode} onValueChange={(value: any) => setViewMode(value)}>
-            <SelectTrigger className={`${isMobile ? 'w-full' : 'w-[120px]'}`}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="day">روزانه</SelectItem>
-              <SelectItem value="week">هفتگی</SelectItem>
-              <SelectItem value="month">ماهانه</SelectItem>
-              <SelectItem value="year">سالانه</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
       {/* New Event Form */}
       {showNewEvent && (

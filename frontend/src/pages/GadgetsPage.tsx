@@ -1,372 +1,125 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ChevronLeft, Mic, Usb, Watch } from "lucide-react";
+import { formatDistanceToNow } from "date-fns-jalali";
 import { SectionHeader } from "@/components/ui/section-header";
-import { ResponsiveCard } from "@/components/ui/responsive-card";
-import { ResponsiveContainer, ResponsiveSection } from "@/components/ui/responsive-container";
-import { ResponsiveLayout, ResponsiveStack } from "@/components/ui/responsive-layout";
-import { ResponsiveHeading, ResponsiveText } from "@/components/ui/responsive-typography";
-import { ModernButton } from "@/components/ui/modern-button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
-import { 
-  Watch,
-  Glasses,
-  BookOpen,
-  Smartphone,
-  Circle,
-  Mic,
-  Usb,
-  Bluetooth,
-  BatteryMedium,
-  Wifi,
-  Settings,
-  Shield,
-  Activity,
-  Heart,
-  Brain,
-  Calendar,
-  FileText,
-  Users,
-  CheckCircle,
-  AlertCircle,
-  Zap
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { healthDataService, SOURCE_LABEL } from "@/services/healthDataService";
+import { plaudService } from "@/services/plaudService";
+import { hiDockService } from "@/services/hiDockService";
+import { cn } from "@/lib/utils";
 
-const gadgets = [
+// The devices the app can really talk to, each with what it brings and whether it is connected.
+// (This page used to list sample devices as if they were connected.)
+
+type Status = { connected: boolean; detail: string } | null;
+
+const faDigits = (s: string) => s.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[+d]);
+const ago = (iso: string) => faDigits(formatDistanceToNow(new Date(iso), { addSuffix: true }));
+
+const DEVICES = [
   {
-    id: "smartwatch",
-    name: "ساعت هوشمند",
+    id: "health",
+    name: "ساعت هوشمند و برنامه سلامت",
+    examples: "اپل واچ و آیفون، ساعت‌ها و گوشی‌های اندرویدی (Health Connect)",
+    brings: ["قدم‌ها", "خواب", "ضربان قلب", "وزن", "فعالیت"],
     icon: Watch,
-    model: "Apple Watch Series 9",
-    connected: true,
-    battery: 78,
-    lastSync: "1 دقیقه پیش",
-    status: "active",
-    capabilities: ["heart_rate", "activity", "sleep"],
-    activeSettings: {
-      health: true,
-      meetings: false,
-      tasks: true,
-      notifications: true
-    }
+    to: "/health?tab=devices",
   },
   {
-    id: "smartglasses",
-    name: "عینک هوشمند",
-    icon: Glasses,
-    model: "Google Glass Enterprise",
-    connected: false,
-    battery: 0,
-    lastSync: "3 ساعت پیش",
-    status: "disconnected",
-    capabilities: ["camera", "display", "voice"],
-    activeSettings: {
-      meetings: true,
-      knowledge: false,
-      tasks: false,
-      notifications: false
-    }
-  },
-  {
-    id: "smartnotebook",
-    name: "دفترچه هوشمند",
-    icon: BookOpen,
-    model: "Rocketbook Core",
-    connected: true,
-    battery: 85,
-    lastSync: "30 دقیقه پیش",
-    status: "active",
-    capabilities: ["handwriting", "scan", "sync"],
-    activeSettings: {
-      knowledge: true,
-      tasks: true,
-      meetings: true,
-      notes: true
-    }
-  },
-  {
-    id: "oura_ring",
-    name: "انگشتر هوشمند Oura",
-    icon: Circle,
-    model: "Oura Ring Gen 3",
-    connected: false,
-    battery: 0,
-    lastSync: "هرگز",
-    status: "disconnected",
-    capabilities: ["sleep", "heart_rate", "hrv", "temperature", "activity", "readiness"],
-    activeSettings: {
-      health: true,
-      meetings: false,
-      tasks: false,
-      notifications: false
-    }
-  },
-  {
-    id: "plaud_ai",
-    name: "Plaud AI",
+    id: "plaud",
+    name: "ضبط‌کننده Plaud",
+    examples: "Plaud Note و NotePin",
+    brings: ["ضبط جلسه", "متن گفتگو", "خلاصه", "اقدام‌ها"],
     icon: Mic,
-    model: "Plaud Note",
-    connected: false,
-    battery: 85,
-    lastSync: "هرگز",
-    status: "disconnected",
-    capabilities: ["audio_recording", "speech_to_text", "summary", "minutes", "action_items"],
-    activeSettings: {
-      meetings: true,
-      tasks: true,
-      knowledge: true,
-      notes: true,
-      notifications: false
-    }
+    to: "/plaud",
   },
   {
-    id: "hi_dock_h1",
-    name: "Hi Dock H1",
+    id: "hidock",
+    name: "داک HiDock",
+    examples: "HiDock H1",
+    brings: ["ضبط تماس و جلسه", "متن گفتگو", "خلاصه"],
     icon: Usb,
-    model: "Hi Dock H1",
-    connected: false,
-    battery: 100,
-    lastSync: "هرگز",
-    status: "disconnected",
-    capabilities: ["audio_recording", "usb_hub", "charging", "speech_to_text", "summary"],
-    activeSettings: {
-      meetings: true,
-      tasks: true,
-      knowledge: true,
-      notes: true,
-      notifications: false
-    }
-  }
-];
-
-const integrationSections = [
-  { id: "health", name: "سلامت", icon: Heart, color: "text-medical-green" },
-  { id: "meetings", name: "جلسات", icon: Calendar, color: "text-medical-purple" },
-  { id: "tasks", name: "وظایف", icon: FileText, color: "text-medical-amber" },
-  { id: "knowledge", name: "دانش", icon: Brain, color: "text-medical-blue" },
-  { id: "notes", name: "یادداشت‌ها", icon: BookOpen, color: "text-accent" },
-  { id: "notifications", name: "اعلانات", icon: Smartphone, color: "text-foreground" }
-];
-
-const privacyData = [
-  { compartment: "Health Data", isolation: 95, encrypted: true },
-  { compartment: "Vision Data", isolation: 88, encrypted: true },
-  { compartment: "Notes Data", isolation: 92, encrypted: true },
-  { compartment: "Activity Data", isolation: 90, encrypted: true },
-  { compartment: "Oura Ring Data", isolation: 96, encrypted: true },
-  { compartment: "Plaud AI Data", isolation: 97, encrypted: true },
-  { compartment: "Hi Dock H1 Data", isolation: 96, encrypted: true }
-];
+    to: "/hi-dock",
+  },
+] as const;
 
 const GadgetsPage = () => {
-  const [gadgetSettings, setGadgetSettings] = useState(
-    gadgets.reduce((acc, gadget) => ({
-      ...acc,
-      [gadget.id]: gadget.activeSettings
-    }), {})
-  );
+  const [status, setStatus] = useState<Record<string, Status>>({});
 
-  const toggleSetting = (gadgetId: string, section: string) => {
-    setGadgetSettings(prev => ({
-      ...prev,
-      [gadgetId]: {
-        ...prev[gadgetId],
-        [section]: !prev[gadgetId][section]
-      }
+  useEffect(() => {
+    const settle = (id: string, p: Promise<Status>) =>
+      p.catch(() => ({ connected: false, detail: "وضعیت خوانده نشد" }))
+        .then((s) => setStatus((prev) => ({ ...prev, [id]: s })));
+
+    settle("health", healthDataService.summary(30).then((s) => {
+      const latest = [...s.sources].sort((a, b) => b.last_sync.localeCompare(a.last_sync))[0];
+      return latest
+        ? { connected: true, detail: `${SOURCE_LABEL[latest.source]}، آخرین داده ${ago(latest.last_sync)}` }
+        : { connected: false, detail: "هنوز داده‌ای نرسیده" };
     }));
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'active': return <CheckCircle className="h-4 w-4 text-medical-green" />;
-      case 'disconnected': return <AlertCircle className="h-4 w-4 text-destructive" />;
-      case 'syncing': return <Activity className="h-4 w-4 text-medical-amber animate-pulse" />;
-      default: return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'فعال';
-      case 'disconnected': return 'قطع شده';
-      case 'syncing': return 'در حال همگام‌سازی';
-      default: return 'نامشخص';
-    }
-  };
+    settle("plaud", plaudService.getConnection().then((c) =>
+      c ? { connected: true, detail: c.last_sync_at ? `آخرین همگام‌سازی ${ago(c.last_sync_at)}` : "متصل" } : { connected: false, detail: "متصل نیست" }));
+    settle("hidock", hiDockService.getConnection().then((c) =>
+      c ? { connected: true, detail: c.last_import_at ? `${c.device_name}، آخرین انتقال ${ago(c.last_import_at)}` : c.device_name } : { connected: false, detail: "متصل نیست" }));
+  }, []);
 
   return (
-    <ResponsiveContainer variant="page" className="bg-gradient-subtle">
-      <ResponsiveSection spacing="lg">
-        <SectionHeader
-          title="مدیریت گجت‌ها"
-          subtitle="ادغام و تنظیم دستگاه‌های هوشمند"
-          icon={<Watch className="h-6 w-6" />}
-          action={
-            <div className="flex items-center gap-3">
-              <ModernButton variant="outline" size="icon">
-                <Settings className="h-4 w-4" />
-              </ModernButton>
-              <ModernButton variant="outline" size="icon">
-                <Shield className="h-4 w-4" />
-              </ModernButton>
-            </div>
-          }
-          gradient
-        />
+    <div className="space-y-6 p-3 md:p-6">
+      <SectionHeader
+        title="دستگاه‌های هوشمند"
+        subtitle="دستگاه‌هایی که می‌توانند داده‌هایشان را به مغز دوم شما بفرستند"
+        icon={<Watch className="h-6 w-6" />}
+      />
 
-        <ResponsiveLayout 
-          cols={{ mobile: 1, tablet: 2, desktop: 3 }}
-          gap="md"
-        >
-          {gadgets.map((gadget) => (
-            <ResponsiveCard 
-              key={gadget.id}
-              title={gadget.name}
-              icon={<gadget.icon className="h-5 w-5" />}
-              hover
-              glow
-            >
-              <ResponsiveStack spacing="md">
-                <ResponsiveText size="sm" variant="muted">{gadget.model}</ResponsiveText>
-                
-                <div className="flex items-center justify-between">
-                  <ResponsiveText size="sm">وضعیت:</ResponsiveText>
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(gadget.status)}
-                    <Badge variant={gadget.connected ? "default" : "destructive"}>
-                      {getStatusText(gadget.status)}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {DEVICES.map((d) => {
+          const s = status[d.id];
+          return (
+            <Card key={d.id} className="flex flex-col">
+              <CardContent className="flex flex-1 flex-col gap-4 p-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <d.icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="font-semibold">{d.name}</h2>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{d.examples}</p>
+                  </div>
+                  {s === undefined ? (
+                    <Skeleton className="h-5 w-14" />
+                  ) : (
+                    <Badge variant="outline" className={cn("shrink-0", s?.connected ? "border-green-300 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300" : "text-muted-foreground")}>
+                      {s?.connected ? "متصل" : "وصل نشده"}
                     </Badge>
-                  </div>
+                  )}
                 </div>
 
-                {gadget.connected && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm flex items-center gap-1">
-                        <BatteryMedium className="h-3 w-3" />
-                        باتری
-                      </span>
-                      <span className="text-sm font-medium">{gadget.battery}%</span>
-                    </div>
-                    <Progress value={gadget.battery} className="h-2" />
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between text-sm">
-                  <ResponsiveText size="sm">آخرین همگام‌سازی:</ResponsiveText>
-                  <ResponsiveText size="sm" variant="muted">{gadget.lastSync}</ResponsiveText>
+                <div className="flex flex-wrap gap-1.5">
+                  {d.brings.map((b) => <Badge key={b} variant="secondary" className="font-normal">{b}</Badge>)}
                 </div>
 
-                <div className="space-y-2">
-                  <ResponsiveText size="sm" className="font-medium">قابلیت‌ها:</ResponsiveText>
-                  <div className="flex flex-wrap gap-1">
-                    {gadget.capabilities.map((capability) => (
-                      <Badge key={capability} variant="outline" className="text-xs">
-                        {capability}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </ResponsiveStack>
-            </ResponsiveCard>
-          ))}
-        </ResponsiveLayout>
+                <p className="min-h-5 text-sm text-muted-foreground">{s?.detail ?? ""}</p>
 
-        <ResponsiveCard
-          title="تنظیمات ادغام"
-          icon={<Zap className="h-5 w-5" />}
-          hover
-          glow
-        >
-          <ResponsiveText size="sm" variant="muted" className="mb-6">
-            تعیین کنید هر گجت در کدام بخش‌های اپلیکیشن استفاده شود
-          </ResponsiveText>
-          <div className="space-y-6">
-            {gadgets.map((gadget) => (
-              <div key={gadget.id} className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-                  <gadget.icon className="h-4 w-4" />
-                  <ResponsiveText className="font-medium">{gadget.name}</ResponsiveText>
-                  <Badge variant={gadget.connected ? "default" : "secondary"}>
-                    {gadget.connected ? "متصل" : "قطع"}
-                  </Badge>
-                </div>
-                <ResponsiveLayout 
-                  cols={{ mobile: 1, tablet: 2, desktop: 3 }}
-                  gap="sm"
-                >
-                  {integrationSections.map((section) => (
-                    <div key={section.id} className="flex items-center justify-between p-3 rounded-lg bg-gradient-lux">
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <section.icon className={`h-4 w-4 ${section.color} flex-shrink-0`} />
-                        <ResponsiveText size="sm" className="truncate">{section.name}</ResponsiveText>
-                      </div>
-                      <Switch
-                        checked={gadgetSettings[gadget.id]?.[section.id] || false}
-                        onCheckedChange={() => toggleSetting(gadget.id, section.id)}
-                        disabled={!gadget.connected}
-                      />
-                    </div>
-                  ))}
-                </ResponsiveLayout>
-              </div>
-            ))}
-          </div>
-        </ResponsiveCard>
+                <Button asChild variant={s?.connected ? "outline" : "default"} className="mt-auto justify-between">
+                  <Link to={d.to}>
+                    {s?.connected ? "مدیریت و داده‌ها" : "راه‌اندازی اتصال"}
+                    <ChevronLeft className="h-4 w-4" aria-hidden />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-        <ResponsiveCard
-          title="حفظ حریم خصوصی و جدا‌سازی داده‌ها"
-          icon={<Shield className="h-5 w-5" />}
-          hover
-          glow
-        >
-          <ResponsiveText size="sm" variant="muted" className="mb-4">
-            داده‌های هر گجت در بخش‌های جداگانه ذخیره و رمزگذاری می‌شوند
-          </ResponsiveText>
-          <ResponsiveLayout 
-            cols={{ mobile: 1, tablet: 2, desktop: 2 }}
-            gap="sm"
-          >
-            {privacyData.map((data, index) => (
-              <div key={index} className="p-3 md:p-4 rounded-lg border border-border/50">
-                <div className="flex items-center justify-between mb-2">
-                  <ResponsiveText className="font-medium">{data.compartment}</ResponsiveText>
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-3 w-3 text-lux-emerald" />
-                    <ResponsiveText size="xs" className="text-lux-emerald">رمزگذاری شده</ResponsiveText>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <ResponsiveText size="sm">سطح ایزولاسیون:</ResponsiveText>
-                    <ResponsiveText size="sm" className="font-medium">{data.isolation}%</ResponsiveText>
-                  </div>
-                  <Progress value={data.isolation} className="h-2" />
-                </div>
-              </div>
-            ))}
-          </ResponsiveLayout>
-        </ResponsiveCard>
-
-        <ResponsiveCard className="border-lux-sapphire bg-lux-sapphire/10" hover={false}>
-          <div className="flex items-start gap-3">
-            <Activity className="h-5 w-5 text-lux-sapphire mt-0.5 flex-shrink-0" />
-            <div className="min-w-0 flex-1">
-              <ResponsiveHeading level={3} weight="medium" className="text-lux-midnight mb-2">
-                خلاصه جریان داده
-              </ResponsiveHeading>
-              <ResponsiveText size="sm" variant="muted" className="mb-2">
-                داده‌های ساعت هوشمند → بخش سلامت | داده‌های عینک → جلسات و دانش | 
-                داده‌های دفترچه → یادداشت‌ها و وظایف
-              </ResponsiveText>
-              <ResponsiveText size="xs" className="text-lux-sapphire">
-                تمام انتقالات داده با پروتکل‌های امنیتی محافظت می‌شوند
-              </ResponsiveText>
-            </div>
-          </div>
-        </ResponsiveCard>
-      </ResponsiveSection>
-    </ResponsiveContainer>
+      <p className="text-sm text-muted-foreground">
+        داده هر دستگاه فقط در حساب خودتان نگه داشته می‌شود و دستیار وقتی از او بپرسید از آن استفاده می‌کند؛ مثلاً «خوابم این هفته چطور بود؟».
+      </p>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Heart, BookOpen, Calendar, Settings, Users, Building2, Briefcase, TrendingUp, Brain, UserCheck, Scale, Zap, Globe, User, Phone, MessageSquare, FileText, Target, BarChart3, Activity, Home, ChevronLeft, Lightbulb, UserPlus, ClipboardList, Bot, Shield, Leaf, GraduationCap, CheckSquare, Mail } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -76,44 +76,52 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
 
   const domains = buildNavigation({ stats, companyItems: companyMenuItems, organizationItems: organizationMenuItems });
   const isActivePath = (path: string) => location.pathname === path;
-  const getCurrentDomain = (): DomainType => {
-    const currentPath = location.pathname;
-    const searchParams = new URLSearchParams(location.search);
-    const domainParam = searchParams.get('domain');
+  // A menu item is active when its path matches and so do the query values it names
+  // (/calendar?domain=professional is not the personal calendar; no domain means personal)
+  const isItemActive = (itemPath: string) => {
+    const [path, query] = itemPath.split('?');
+    if (path !== location.pathname) return false;
+    const want = new URLSearchParams(query || '');
+    const have = new URLSearchParams(location.search);
+    const value = (k: string) => have.get(k) ?? (k === 'domain' ? 'personal' : null);
+    if (![...want.keys()].length) return (value('domain') === 'personal') && !have.get('tab');
+    return [...want.entries()].every(([k, v]) => value(k) === v);
+  };
 
-    // If we're on ideas page and have domain param, use it
-    if (currentPath === '/ideas' && domainParam) {
-      return domainParam as DomainType;
-    }
-    for (const domain of domains) {
-      const allItems = domain.categories.flatMap(cat => cat.items);
-      if (allItems.some(item => {
-        const itemPath = item.path.split('?')[0]; // Remove query params for comparison
-        return itemPath === currentPath;
-      })) {
-        return domain.id;
-      }
-    }
-    return 'personal';
+  // The domain the current page belongs to, or null when it belongs to none (profile, settings…)
+  const getCurrentDomain = (): DomainType | null => {
+    const currentPath = location.pathname;
+    const domainParam = new URLSearchParams(location.search).get('domain');
+    if (domainParam && domains.some((d) => d.id === domainParam)) return domainParam as DomainType;
+    const items = (d: typeof domains[number]) => d.categories.flatMap((cat) => cat.items);
+    const exact = domains.find((d) => items(d).some((item) => isItemActive(item.path)));
+    if (exact) return exact.id;
+    const byPath = domains.find((d) => items(d).some((item) => item.path.split('?')[0] === currentPath));
+    if (byPath) return byPath.id;
+    if (/^\/(organizational\/khadim-e-khalgh|csr-project)/.test(currentPath)) return 'social';
+    if (/^\/(organization|organizations)(\/|$)|^\/my-organizations/.test(currentPath)) return 'organizational';
+    if (/^\/compan(y|ies)(\/|$)/.test(currentPath)) return 'professional';
+    return null;
   };
 
   const getActiveCategoryForDomain = (domainId: DomainType): string | null => {
     const domain = domains.find(d => d.id === domainId);
     if (!domain) return null;
-
-    const currentPath = location.pathname;
     for (const category of domain.categories) {
-      if (category.items.some(item => {
-        const itemPath = item.path.split('?')[0];
-        return itemPath === currentPath;
-      })) {
-        return category.id;
-      }
+      if (category.items.some((item) => isItemActive(item.path))) return category.id;
+    }
+    for (const category of domain.categories) {
+      if (category.items.some((item) => item.path.split('?')[0] === location.pathname)) return category.id;
     }
     return null;
   };
 
   const currentDomain = getCurrentDomain();
+
+  // Follow the page: opening a professional page shows the professional menu
+  useEffect(() => {
+    if (currentDomain) setSelectedDomain(currentDomain);
+  }, [currentDomain]);
 
   // Load stats and user data
   useEffect(() => {
@@ -308,13 +316,11 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
                     <AccordionContent className="pb-1 pt-0.5">
                       <div className="space-y-0.5 pr-2 border-r border-sidebar-border mr-3">
                         {category.items.map(item => (
-                          <NavLink
+                          <Link
                             key={item.id}
                             to={item.path}
-                            className={({ isActive }) => cn(
-                              "nav-item text-[13px] py-1.5",
-                              isActive && "active"
-                            )}
+                            className={cn("nav-item text-[13px] py-1.5", isItemActive(item.path) && "active")}
+                            aria-current={isItemActive(item.path) ? 'page' : undefined}
                           >
                             <item.icon className="h-3.5 w-3.5 flex-shrink-0" />
                             <span className="flex-1 text-right">{item.label}</span>
@@ -323,7 +329,7 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
                                 <PersianNumber>{item.count}</PersianNumber>
                               </span>
                             )}
-                          </NavLink>
+                          </Link>
                         ))}
                       </div>
                     </AccordionContent>

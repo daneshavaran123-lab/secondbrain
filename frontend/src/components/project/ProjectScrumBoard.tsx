@@ -15,10 +15,10 @@ interface ProjectScrumBoardProps {
 }
 
 const columns = [
-  { id: 'pending', title: 'Backlog' },
-  { id: 'in_progress', title: 'In Progress' },
-  { id: 'blocked', title: 'Review' },
-  { id: 'completed', title: 'Done' },
+  { id: 'pending', title: 'صف کارها' },
+  { id: 'in_progress', title: 'در حال انجام' },
+  { id: 'blocked', title: 'بازبینی' },
+  { id: 'completed', title: 'انجام‌شده' },
 ] as const;
 
 export const ProjectScrumBoard: React.FC<ProjectScrumBoardProps> = ({ project, onTaskClick, onAddTask, onRefresh }) => {

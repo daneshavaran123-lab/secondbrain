@@ -10,9 +10,9 @@ interface PersonalKanbanBoardProps {
 }
 
 const columns = [
-  { id: 'todo', title: 'To Do' },
-  { id: 'in_progress', title: 'In Progress' },
-  { id: 'completed', title: 'Done' },
+  { id: 'todo', title: 'برای انجام' },
+  { id: 'in_progress', title: 'در حال انجام' },
+  { id: 'completed', title: 'انجام‌شده' },
 ] as const;
 
 export const PersonalKanbanBoard: React.FC<PersonalKanbanBoardProps> = ({ tasks, onStatusChange }) => {

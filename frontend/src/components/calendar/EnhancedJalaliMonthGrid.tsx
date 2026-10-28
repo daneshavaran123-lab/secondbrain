@@ -8,6 +8,7 @@ import { HourlyDayView } from "./HourlyDayView";
 import { ChevronLeft, ChevronRight, Calendar, Grid, List, Plus, Clock } from "lucide-react";
 import { toPersianNumbers } from "@/utils/persian-numbers";
 import { formatJalali } from "@/lib/date-utils";
+import { addDays, addMonths } from "date-fns-jalali";
 
 export interface CalendarEvent {
   id: string;
@@ -59,35 +60,11 @@ export const EnhancedJalaliMonthGrid: React.FC<EnhancedJalaliMonthGridProps> = (
 
   const days = React.useMemo(() => getJalaliMonthGrid(currentDate), [currentDate]);
 
+  // Arrows step by the unit on screen: a month, a week or a day
   const navigateMonth = (direction: 'prev' | 'next') => {
-    const year = parseInt(formatJalali(currentDate, 'YYYY'));
-    const month = parseInt(formatJalali(currentDate, 'MM'));
-    
-    let newYear = year;
-    let newMonth = month;
-    
-    if (direction === 'next') {
-      newMonth += 1;
-      if (newMonth > 12) {
-        newMonth = 1;
-        newYear += 1;
-      }
-    } else {
-      newMonth -= 1;
-      if (newMonth < 1) {
-        newMonth = 12;
-        newYear -= 1;
-      }
-    }
-    
-    try {
-      const newDate = new Date(currentDate);
-      newDate.setFullYear(newYear);
-      newDate.setMonth(newMonth - 1);
-      onDateChange?.(newDate);
-    } catch (error) {
-      console.error('Error navigating month:', error);
-    }
+    const step = direction === 'next' ? 1 : -1;
+    if (viewMode === 'month') onDateChange?.(addMonths(currentDate, step));
+    else onDateChange?.(addDays(currentDate, viewMode === 'week' ? 7 * step : step));
   };
 
   const goToToday = () => {
@@ -256,26 +233,28 @@ export const EnhancedJalaliMonthGrid: React.FC<EnhancedJalaliMonthGridProps> = (
   return (
     <div className={cn("w-full select-none space-y-4", className)}>
       {/* Header with navigation and view controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigateMonth('prev')}
             className="p-2"
+            aria-label={viewMode === 'month' ? 'ماه قبل' : viewMode === 'week' ? 'هفته قبل' : 'روز قبل'}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
           
-          <div className="text-lg font-semibold">
-            {formatJalali(currentDate, 'YYYY/MM')}
-          </div>
+          <h2 className="min-w-[8.5rem] text-center text-lg font-semibold" aria-live="polite">
+            {new Intl.DateTimeFormat('fa-IR-u-ca-persian', viewMode === 'month' ? { year: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' }).format(currentDate)}
+          </h2>
           
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigateMonth('next')}
             className="p-2"
+            aria-label={viewMode === 'month' ? 'ماه بعد' : viewMode === 'week' ? 'هفته بعد' : 'روز بعد'}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
