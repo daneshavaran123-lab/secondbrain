@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Project, ProjectTask, TaskStatus } from '@/types';
-import { supabaseProjectService } from '@/services/supabaseProjectService';
+import { supabaseProjectService, PROJECTS_CHANGED_EVENT } from '@/services/supabaseProjectService';
 import { ProjectEmptyState } from '@/components/project/ProjectEmptyState';
 import { ProjectBoard } from '@/components/project/ProjectBoard';
 import { ProjectDashboard } from '@/components/project/ProjectDashboard';
@@ -68,6 +68,10 @@ export default function ProjectManagementPage() {
   useEffect(() => {
     loadProjects();
     loadStats();
+    // Created, edited or removed anywhere: list and counts follow
+    const reload = () => { loadProjects(); loadStats(); };
+    window.addEventListener(PROJECTS_CHANGED_EVENT, reload);
+    return () => window.removeEventListener(PROJECTS_CHANGED_EVENT, reload);
   }, []);
 
   const loadProjects = async () => {

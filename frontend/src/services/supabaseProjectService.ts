@@ -2,6 +2,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { Project, ProjectTask, TaskStatus } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
+/** Fired after a project is created, changed or removed, so every list can reload. */
+export const PROJECTS_CHANGED_EVENT = 'projects:changed';
+const announce = () => window.dispatchEvent(new CustomEvent(PROJECTS_CHANGED_EVENT));
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Fields the projects table has no column for (goal, colour, tags, team) */
+const detailsOf = (p: Partial<Project>) => {
+  const details: Record<string, unknown> = {};
+  if (p.goal !== undefined) details.goal = p.goal;
+  if (p.color !== undefined) details.color = p.color;
+  if (p.tags !== undefined) details.tags = p.tags;
+  if (p.teamMembers !== undefined) details.teamMembers = p.teamMembers;
+  if (p.managerId !== undefined) details.managerId = p.managerId;
+  return details;
+};
+
 class SupabaseProjectService {
 
   private getCurrentUserId(): string {
@@ -61,7 +78,10 @@ class SupabaseProjectService {
         status: projectData.status,
         start_date: projectData.startDate,
         end_date: projectData.endDate,
-        organization_id: this.getCurrentOrganizationId()
+        budget: projectData.budget ?? null,
+        manager_id: UUID.test(projectData.managerId || '') ? projectData.managerId : null,
+        organization_id: this.getCurrentOrganizationId(),
+        details: detailsOf(projectData),
       };
 
       const { data, error } = await supabase
@@ -71,6 +91,7 @@ class SupabaseProjectService {
         .single();
 
       if (error) throw error;
+      announce();
 
       toast({
         title: "پروژه جدید ایجاد شد",
@@ -98,7 +119,10 @@ class SupabaseProjectService {
       if (updates.status) supabaseUpdates.status = updates.status;
       if (updates.startDate) supabaseUpdates.start_date = updates.startDate;
       if (updates.endDate) supabaseUpdates.end_date = updates.endDate;
-      if (updates.budget) supabaseUpdates.budget = updates.budget;
+      if (updates.budget !== undefined) supabaseUpdates.budget = updates.budget ?? null;
+      if (updates.managerId !== undefined) supabaseUpdates.manager_id = UUID.test(updates.managerId || '') ? updates.managerId : null;
+      const details = detailsOf(updates);
+      if (Object.keys(details).length) supabaseUpdates.details = details;
 
       const { data, error } = await supabase
         .from('projects')
@@ -108,6 +132,7 @@ class SupabaseProjectService {
         .single();
 
       if (error) throw error;
+      announce();
 
       return this.mapSupabaseToProject(data);
     } catch (error) {
@@ -129,6 +154,7 @@ class SupabaseProjectService {
         .eq('id', id);
 
       if (error) throw error;
+      announce();
 
       toast({
         title: "پروژه حذف شد",
@@ -197,22 +223,23 @@ class SupabaseProjectService {
 
   // Helper method to map Supabase data to Project interface
   private mapSupabaseToProject(data: any): Project {
+    const details = data.details || {};
     return {
       id: data.id,
       name: data.name,
       description: data.description || '',
-      goal: data.description || '', // Using description as goal for now
+      goal: details.goal || data.description || '',
       status: data.status,
       startDate: data.start_date,
       endDate: data.end_date,
-      budget: data.budget,
-      managerId: data.manager_id,
-      progress: 0, // Calculate this based on tasks
-      teamMembers: [], // Will be populated separately
+      budget: data.budget != null ? Number(data.budget) : undefined,
+      managerId: data.manager_id || details.managerId || '',
+      progress: data.progress ?? 0,
+      teamMembers: details.teamMembers || [],
       createdAt: data.created_at,
       updatedAt: data.updated_at,
-      tags: [],
-      color: '#3B82F6' // Default color
+      tags: details.tags || [],
+      color: details.color || '#3B82F6'
     };
   }
 

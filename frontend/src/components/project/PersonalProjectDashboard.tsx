@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, CheckCircle2, AlertCircle, TrendingUp, User, Briefcase, Target, Plus } from 'lucide-react';
 import { projectManagementService } from '@/services/projectManagementService';
+import { supabaseProjectService, PROJECTS_CHANGED_EVENT } from '@/services/supabaseProjectService';
 import { Project, ProjectTask, ProjectMember, ProjectNotification } from '@/types';
 import { format, isToday, isTomorrow, isThisWeek, isPast, startOfWeek, endOfWeek } from 'date-fns';
 import { format as formatJalali } from 'date-fns-jalali';
@@ -35,17 +36,21 @@ export function PersonalProjectDashboard({ userId: propUserId }: PersonalProject
 
   useEffect(() => {
     loadData();
+    const reload = () => loadData();
+    window.addEventListener(PROJECTS_CHANGED_EVENT, reload);
+    return () => window.removeEventListener(PROJECTS_CHANGED_EVENT, reload);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const loadData = async () => {
     try {
-      const allProjects = projectManagementService.getProjects();
+      // Projects come from the server (already only this person's); tasks are still kept locally
+      const allProjects = await supabaseProjectService.getProjects();
       const allTasks = projectManagementService.getTasks();
       const allMembers = projectManagementService.getMembers();
       const userNotifications = projectManagementService.getNotifications(userId);
       
-      // Filter projects managed by this user
-      const userProjects = allProjects.filter(p => p.managerId === userId);
+      const userProjects = allProjects;
       
       // Filter tasks assigned to this user
       const userTasks = allTasks.filter(t => t.assigneeId === userId);
@@ -70,8 +75,8 @@ export function PersonalProjectDashboard({ userId: propUserId }: PersonalProject
     toast.success('داده‌ها به‌روزرسانی شد');
   };
 
-  // Check if user has any data
-  const hasData = projectManagementService.hasData();
+  // Server projects count too, not only what this browser keeps locally
+  const hasData = projects.length > 0 || myTasks.length > 0 || projectManagementService.hasData();
 
   const getTaskStats = useMemo(() => {
     const total = myTasks.length;

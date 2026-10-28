@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Project, ProjectMember } from '@/types';
 import { projectManagementService } from '@/services/projectManagementService';
+import { supabaseProjectService } from '@/services/supabaseProjectService';
+import { getStoredUser } from '@/lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,14 +44,21 @@ const colorOptions = [
 export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [availableMembers] = useState<ProjectMember[]>(projectManagementService.getMembers());
+  // The signed-in person can always lead their own project, even before any team exists
+  const [availableMembers] = useState<ProjectMember[]>(() => {
+    const me = getStoredUser();
+    const self: ProjectMember[] = me?.id
+      ? [{ id: me.id, name: `${me.profile?.display_name || [me.profile?.first_name, me.profile?.last_name].filter(Boolean).join(' ') || me.email} (من)`, email: me.email, role: 'manager', skills: [], availability: 100 }]
+      : [];
+    return [...self, ...projectManagementService.getMembers().filter((m) => m.id !== me?.id)];
+  });
   const [newTag, setNewTag] = useState('');
   
   const [formData, setFormData] = useState({
     name: project?.name || '',
     description: project?.description || '',
     goal: project?.goal || '',
-    managerId: project?.managerId || '',
+    managerId: project?.managerId || getStoredUser()?.id || '',
     memberIds: project?.teamMembers || [],
     status: project?.status || 'planning',
     startDate: project?.startDate ? format(new Date(project.startDate), 'yyyy-MM-dd') : '',
@@ -102,24 +111,17 @@ export function ProjectForm({ open, onOpenChange, project, onSuccess }: ProjectF
         tags: formData.tags
       };
 
+      // Projects are kept on the server, so the page, the dashboard and other devices agree
       if (project) {
-        // Update existing project
-        const updatedProject = projectManagementService.updateProject(project.id, projectData);
-        if (updatedProject) {
-          toast({
-            title: "موفقیت",
-            description: "پروژه با موفقیت به‌روزرسانی شد"
-          });
-        }
+        const updatedProject = await supabaseProjectService.updateProject(project.id, projectData);
+        if (!updatedProject) return;
+        toast({
+          title: "موفقیت",
+          description: "پروژه با موفقیت به‌روزرسانی شد"
+        });
       } else {
-        // Create new project
-        const newProject = projectManagementService.createProject(projectData);
-        if (newProject) {
-          toast({
-            title: "موفقیت", 
-            description: "پروژه جدید با موفقیت ایجاد شد"
-          });
-        }
+        const newProject = await supabaseProjectService.createProject(projectData);
+        if (!newProject) return;
       }
       
       onSuccess();
