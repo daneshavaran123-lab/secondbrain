@@ -1,4 +1,5 @@
 import { PersonalTask, TaskFilter, TaskStats } from '@/types';
+import { createPlanningSync } from './planningSync';
 
 // Professional planning task type - extends PersonalTask with professional-specific fields
 interface ProfessionalTask extends PersonalTask {
@@ -12,6 +13,12 @@ interface ProfessionalTask extends PersonalTask {
 
 class ProfessionalPlanningService {
   private storageKey = 'professional_planning_tasks';
+  private sync = createPlanningSync('professional', this.storageKey);
+
+  /** Bring in tasks from the server (the assistant's, other devices') and upload local-only ones. */
+  pull(): Promise<boolean> {
+    return this.sync.pull();
+  }
 
   // Get all tasks
   getTasks(): ProfessionalTask[] {
@@ -320,7 +327,9 @@ class ProfessionalPlanningService {
   // Private helper methods
   private saveTasks(tasks: ProfessionalTask[]): void {
     try {
+      const previous = this.getTasks();
       localStorage.setItem(this.storageKey, JSON.stringify(tasks));
+      this.sync.persist(previous as never[], tasks as never[]);
     } catch (error) {
       console.error('Error saving professional tasks:', error);
     }

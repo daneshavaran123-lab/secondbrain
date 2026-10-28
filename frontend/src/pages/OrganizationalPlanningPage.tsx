@@ -8,6 +8,7 @@ import PriorityMatrix from '@/components/planning/PriorityMatrix';
 import OrganizationalTaskForm from '@/components/planning/OrganizationalTaskForm';
 import ChatInterface from '@/components/ai-chat/ChatInterface';
 import { organizationalPlanningService } from '@/services/organizationalPlanningService';
+import { PLANNING_CHANGED_EVENT } from '@/services/planningSync';
 import { PersonalTask, TaskFilter } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -68,6 +69,16 @@ const OrganizationalPlanningPage: React.FC = () => {
 
   useEffect(() => {
     loadTasks();
+  }, [loadTasks]);
+
+  // Bring in tasks from the server (the assistant's, other devices') and show them when they arrive
+  useEffect(() => {
+    void organizationalPlanningService.pull();
+  }, []);
+  useEffect(() => {
+    const refresh = () => loadTasks();
+    window.addEventListener(PLANNING_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(PLANNING_CHANGED_EVENT, refresh);
   }, [loadTasks]);
 
   const handleTaskCreate = (taskData: Omit<PersonalTask, 'id' | 'created_at' | 'updated_at' | 'progress'>) => {
@@ -179,7 +190,7 @@ ${task.progress > 0 ? `پیشرفت: ${task.progress}%` : ''}
     return (
       <div className="min-h-screen bg-app-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
           <p className="text-muted-foreground">در حال بارگذاری وظایف سازمانی…</p>
         </div>
       </div>
@@ -247,7 +258,7 @@ ${task.progress > 0 ? `پیشرفت: ${task.progress}%` : ''}
         {tasks.length === 0 && !isLoading ? (
           <div className="text-center py-16">
             <div className="text-muted-foreground mb-6">
-              <Grid className="h-20 w-20 mx-auto mb-6 text-purple-200" />
+              <Grid className="mx-auto mb-6 h-12 w-12 text-muted-foreground" />
               <h3 className="text-xl font-semibold text-foreground mb-3">شروع برنامه‌ریزی سازمانی</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
                 برای مدیریت موثر وظایف سازمانی، اولین وظیفه خود را اضافه کنید
@@ -342,7 +353,7 @@ ${task.progress > 0 ? `پیشرفت: ${task.progress}%` : ''}
               <DialogTitle className="flex items-center gap-2">
                 {chatModal.type === 'mentor' ? (
                   <>
-                    <Brain className="h-5 w-5 text-purple-600" />
+                    <Brain className="h-5 w-5 text-muted-foreground" />
                     منتور سازمانی AI - راهنمای برنامه‌ریزی سازمانی
                   </>
                 ) : (

@@ -1,4 +1,5 @@
 import { PersonalTask, TaskFilter, TaskStats } from '@/types';
+import { createPlanningSync } from './planningSync';
 
 // Organizational planning task type - extends PersonalTask with organizational-specific fields
 interface OrganizationalTask extends PersonalTask {
@@ -13,6 +14,12 @@ interface OrganizationalTask extends PersonalTask {
 
 class OrganizationalPlanningService {
   private storageKey = 'organizational_planning_tasks';
+  private sync = createPlanningSync('organizational', this.storageKey);
+
+  /** Bring in tasks from the server (the assistant's, other devices') and upload local-only ones. */
+  pull(): Promise<boolean> {
+    return this.sync.pull();
+  }
 
   // Get all tasks
   getTasks(): OrganizationalTask[] {
@@ -322,7 +329,9 @@ class OrganizationalPlanningService {
   // Private helper methods
   private saveTasks(tasks: OrganizationalTask[]): void {
     try {
+      const previous = this.getTasks();
       localStorage.setItem(this.storageKey, JSON.stringify(tasks));
+      this.sync.persist(previous as never[], tasks as never[]);
     } catch (error) {
       console.error('Error saving organizational tasks:', error);
     }

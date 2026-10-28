@@ -15,6 +15,7 @@ import TaskCalendar from '@/components/planning/TaskCalendar';
 import PriorityMatrix from '@/components/planning/PriorityMatrix';
 import ChatInterface from '@/components/ai-chat/ChatInterface';
 import { professionalPlanningService } from '@/services/professionalPlanningService';
+import { PLANNING_CHANGED_EVENT } from '@/services/planningSync';
 import { PersonalTask, TaskFilter } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { PersonalKanbanBoard } from '@/components/planning/PersonalKanbanBoard';
@@ -48,6 +49,17 @@ const ProfessionalPlanningPage: React.FC = () => {
 
   useEffect(() => {
     loadTasks();
+  }, [filter]);
+
+  // Bring in tasks from the server (the assistant's, other devices') and show them when they arrive
+  useEffect(() => {
+    void professionalPlanningService.pull();
+  }, []);
+  useEffect(() => {
+    const refresh = () => loadTasks();
+    window.addEventListener(PLANNING_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(PLANNING_CHANGED_EVENT, refresh);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const loadTasks = () => {
@@ -271,7 +283,7 @@ ${task.progress > 0 ? `پیشرفت: ${task.progress}%` : ''}
               {chatModal.type === 'mentor' ? (
                 <>
                   <AppIcon size="sm">
-                    <Brain className="text-blue-600" />
+                    <Brain className="text-muted-foreground" />
                   </AppIcon>
                   منتور حرفه‌ای AI
                 </>

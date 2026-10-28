@@ -14,6 +14,7 @@ import TaskCalendar from '@/components/planning/TaskCalendar';
 import PriorityMatrix from '@/components/planning/PriorityMatrix';
 import ChatInterface from '@/components/ai-chat/ChatInterface';
 import { personalPlanningService } from '@/services/personalPlanningService';
+import { PLANNING_CHANGED_EVENT } from '@/services/planningSync';
 import { PersonalTask, TaskFilter } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -49,6 +50,17 @@ const PersonalPlanningPage: React.FC = () => {
 
   useEffect(() => {
     loadTasks();
+  }, [filter]);
+
+  // Bring in tasks from the server (the assistant's, other devices') and show them when they arrive
+  useEffect(() => {
+    void personalPlanningService.pull();
+  }, []);
+  useEffect(() => {
+    const refresh = () => loadTasks();
+    window.addEventListener(PLANNING_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(PLANNING_CHANGED_EVENT, refresh);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const loadTasks = () => {
