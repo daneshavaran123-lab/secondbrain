@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { useUserCollection } from '@/services/userCollections';
 import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
+import { format } from 'date-fns-jalali';
 
 // Types
 interface SocialNeed {
@@ -86,6 +87,12 @@ const convertOldStatus = (oldStatus: string): 'planned' | 'in-progress' | 'compl
   }
 };
 
+// Dates are picked on the Persian calendar and kept as yyyy-MM-dd; older entries were typed by hand
+const showDate = (value?: string) =>
+  value && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? format(new Date(`${value}T12:00:00`), 'd MMMM yyyy').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d])
+    : value || '';
+
 // Older entries used Persian status names and numeric ids
 const normalizeNeeds = (list: SocialNeed[]): SocialNeed[] => list.map((need) => ({
   ...need,
@@ -129,7 +136,7 @@ const Needs = () => {
       area: '',
       priority: 'متوسط',
       status: 'planned',
-      requestDate: '',
+      requestDate: new Date().toLocaleDateString('en-CA'), // today, as yyyy-MM-dd
       beneficiaries: 0,
       estimatedCost: 0,
       notes: '',
@@ -500,7 +507,7 @@ const Needs = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4" />
-                        <span>{need.requestDate}</span>
+                        <span>{showDate(need.requestDate)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />
@@ -698,11 +705,7 @@ const Needs = () => {
                   <FormItem>
                     <FormLabel>تاریخ درخواست</FormLabel>
                     <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="۱۴۰۳/۰۸/۱۵"
-                        {...field}
-                      />
+                      <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -868,7 +871,7 @@ const Needs = () => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium">تاریخ درخواست:</span>
-                  <span className="mr-2">{selectedNeed.requestDate}</span>
+                  <span className="mr-2">{showDate(selectedNeed.requestDate)}</span>
                 </div>
                 <div>
                   <span className="font-medium">تعداد بهره‌مندان:</span>

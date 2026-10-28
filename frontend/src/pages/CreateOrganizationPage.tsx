@@ -30,7 +30,7 @@ type FormData = z.infer<typeof formSchema>;
 const organizationTypes = [
   { value: 'company', label: 'شرکت' },
   { value: 'government', label: 'نهاد دولتی' },
-  { value: 'ngo', label: 'NGO / خیریه' },
+  { value: 'ngo', label: 'سازمان مردم‌نهاد / خیریه' },
   { value: 'educational', label: 'آموزشی' },
   { value: 'chamber', label: 'اتاق بازرگانی' },
   { value: 'association', label: 'انجمن / اتحادیه' },

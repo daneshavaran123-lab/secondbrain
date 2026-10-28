@@ -48,6 +48,12 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [newCategory, setNewCategory] = useState('');
 
+  // The type follows the tab the form was opened from (the modal stays mounted across tabs)
+  useEffect(() => {
+    if (!isOpen) return;
+    setFormData(prev => (contentTypes.includes(prev.type as ContentItem['type']) ? prev : { ...prev, type: contentTypes[0] || 'book' }));
+  }, [isOpen, contentTypes]);
+
   // Initialize categories on mount
   useEffect(() => {
     categoryService.initializeDefaultCategories('cultural');

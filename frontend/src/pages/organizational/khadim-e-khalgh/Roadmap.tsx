@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { PersianDatePicker } from '@/components/ui/persian-date-picker';
 import { formatJalali, getDaysUntilDue } from '@/lib/date-utils';
 import { useUserCollection } from '@/services/userCollections';
+import { format } from 'date-fns-jalali';
 
 interface Campaign {
   id: number;
@@ -62,6 +63,12 @@ const programSchema = z.object({
 });
 
 type ProgramFormData = z.infer<typeof programSchema>;
+
+// Dates are picked on the Persian calendar and kept as yyyy-MM-dd; older programs had them typed by hand
+const showDate = (value?: string) =>
+  value && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? format(new Date(`${value}T12:00:00`), 'd MMMM yyyy').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d])
+    : value || '';
 
 // Older programs used other status names
 const migrateCampaigns = (list: Campaign[]): Campaign[] => list.map((campaign) => {
@@ -295,7 +302,7 @@ const Roadmap = () => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>{campaign.startDate} - {campaign.endDate}</span>
+              <span>{showDate(campaign.startDate)} تا {showDate(campaign.endDate)}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
@@ -335,7 +342,7 @@ const Roadmap = () => {
                     </span>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {milestone.date}
+                    {showDate(milestone.date)}
                   </span>
                 </div>
               ))}
@@ -512,7 +519,7 @@ const Roadmap = () => {
                         <FormItem>
                           <FormLabel>تاریخ شروع</FormLabel>
                           <FormControl>
-                            <Input placeholder="۱۴۰۳/۱۰/۰۱" {...field} />
+                            <Input type="date" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -527,7 +534,7 @@ const Roadmap = () => {
                         <FormItem>
                           <FormLabel>تاریخ پایان</FormLabel>
                           <FormControl>
-                            <Input placeholder="۱۴۰۳/۱۲/۳۰" {...field} />
+                            <Input type="date" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -638,7 +645,7 @@ const Roadmap = () => {
                             <FormItem className="flex-1">
                               <FormLabel>تاریخ</FormLabel>
                               <FormControl>
-                                <Input placeholder="۱۴۰۳/۱۰/۰۱" {...field} />
+                                <Input type="date" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -786,11 +793,11 @@ const Roadmap = () => {
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">تاریخ شروع</h4>
-                    <p className="text-sm text-muted-foreground">{selectedCampaign.startDate}</p>
+                    <p className="text-sm text-muted-foreground">{showDate(selectedCampaign.startDate)}</p>
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">تاریخ پایان</h4>
-                    <p className="text-sm text-muted-foreground">{selectedCampaign.endDate}</p>
+                    <p className="text-sm text-muted-foreground">{showDate(selectedCampaign.endDate)}</p>
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">بودجه</h4>
@@ -841,7 +848,7 @@ const Roadmap = () => {
                           </span>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {milestone.date}
+                          {showDate(milestone.date)}
                         </span>
                       </div>
                     ))}
@@ -969,7 +976,7 @@ const Roadmap = () => {
                       <FormItem>
                         <FormLabel>تاریخ شروع</FormLabel>
                         <FormControl>
-                          <Input placeholder="۱۴۰۳/۱۰/۰۱" {...field} />
+                          <Input type="date" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -984,7 +991,7 @@ const Roadmap = () => {
                       <FormItem>
                         <FormLabel>تاریخ پایان</FormLabel>
                         <FormControl>
-                          <Input placeholder="۱۴۰۳/۱۲/۳۰" {...field} />
+                          <Input type="date" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1095,7 +1102,7 @@ const Roadmap = () => {
                           <FormItem className="flex-1">
                             <FormLabel>تاریخ</FormLabel>
                             <FormControl>
-                              <Input placeholder="۱۴۰۳/۱۰/۰۱" {...field} />
+                              <Input type="date" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

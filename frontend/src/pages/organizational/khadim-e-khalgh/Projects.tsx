@@ -20,6 +20,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useUserCollection } from '@/services/userCollections';
 import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
+import { format } from 'date-fns-jalali';
 
 // Service Project Type
 interface ServiceProject {
@@ -63,6 +64,12 @@ const projectSchema = z.object({
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
+
+// Dates are picked on the Persian calendar and kept as yyyy-MM-dd; older entries were typed by hand
+const showDate = (value?: string) =>
+  value && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? format(new Date(`${value}T12:00:00`), 'd MMMM yyyy').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d])
+    : value || '';
 
 const Projects = () => {
   const { toast } = useToast();
@@ -390,7 +397,7 @@ const Projects = () => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>{project.startDate} - {project.endDate}</span>
+              <span>{showDate(project.startDate)} تا {showDate(project.endDate)}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
@@ -580,10 +587,7 @@ const Projects = () => {
                     <FormItem>
                       <FormLabel>تاریخ شروع</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field}
-                          placeholder="تاریخ شروع (مثال: ۱۴۰۳/۰۶/۰۱)"
-                        />
+                        <Input type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -597,10 +601,7 @@ const Projects = () => {
                     <FormItem>
                       <FormLabel>تاریخ پایان</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field}
-                          placeholder="تاریخ پایان (مثال: ۱۴۰۳/۱۰/۰۱)"
-                        />
+                        <Input type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -837,10 +838,7 @@ const Projects = () => {
                     <FormItem>
                       <FormLabel>تاریخ شروع</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field}
-                          placeholder="تاریخ شروع (مثال: ۱۴۰۳/۰۶/۰۱)"
-                        />
+                        <Input type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -854,10 +852,7 @@ const Projects = () => {
                     <FormItem>
                       <FormLabel>تاریخ پایان</FormLabel>
                       <FormControl>
-                        <Input 
-                          {...field}
-                          placeholder="تاریخ پایان (مثال: ۱۴۰۳/۱۰/۰۱)"
-                        />
+                        <Input type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1060,11 +1055,11 @@ const Projects = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h3 className="font-semibold mb-2">تاریخ شروع</h3>
-                  <p className="text-muted-foreground">{selectedProject.startDate}</p>
+                  <p className="text-muted-foreground">{showDate(selectedProject.startDate)}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2">تاریخ پایان</h3>
-                  <p className="text-muted-foreground">{selectedProject.endDate}</p>
+                  <p className="text-muted-foreground">{showDate(selectedProject.endDate)}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2">محل اجرا</h3>

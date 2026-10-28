@@ -27,23 +27,17 @@ export interface OrganizationOption {
   icon: string;
 }
 
-// Mapping between UI and Database organization types
-const ORG_TYPE_UI_TO_DB: Record<string, string> = {
-  'company': 'varid',
-  'government': 'farangaran',
-  'educational': 'association',
-  'ngo': 'khadim_e_khalgh',
-  'chamber': 'chamber_commerce',
-  'other': 'other'
-};
+// The type column is plain text now, so the forms' own values (company, ngo, association…) are
+// stored as they are. Rows written before carry the former enum's names; those are read back
+// through ORG_TYPE_DB_TO_UI. («association» used to stand for «educational»; it now means what the
+// form says, an association.)
+export const ORG_TYPE_UI_TO_DB: Record<string, string> = {};
 
-const ORG_TYPE_DB_TO_UI: Record<string, string> = {
+export const ORG_TYPE_DB_TO_UI: Record<string, string> = {
   'varid': 'company',
   'farangaran': 'government',
-  'association': 'educational',
   'khadim_e_khalgh': 'ngo',
   'chamber_commerce': 'chamber',
-  'other': 'other'
 };
 
 export interface UserOrganization {
@@ -429,6 +423,8 @@ class OrganizationService {
     id: string, 
     updates: {
       name?: string;
+      /** the type as the forms name it (company, ngo…); stored in the database's own words */
+      type?: string;
       description?: string | null;
       logo_url?: string | null;
       website?: string | null;
@@ -439,9 +435,10 @@ class OrganizationService {
     }
   ): Promise<boolean> {
     try {
+      const row = updates.type ? { ...updates, type: ORG_TYPE_UI_TO_DB[updates.type] || updates.type } : updates;
       const { error } = await supabase
         .from('organizations')
-        .update(updates as any)
+        .update(row as any)
         .eq('id', id);
 
       if (error) throw error;

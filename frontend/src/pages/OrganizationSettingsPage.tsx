@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Building2, Upload, X, Trash2, Save, CheckCircle, XCircle } from 'lucide-react';
-import { organizationService, Organization } from '@/services/organizationService';
+import { organizationService, Organization, ORG_TYPE_DB_TO_UI } from '@/services/organizationService';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 
@@ -32,7 +32,7 @@ type FormData = z.infer<typeof formSchema>;
 const organizationTypes = [
   { value: 'company', label: 'شرکت' },
   { value: 'government', label: 'نهاد دولتی' },
-  { value: 'ngo', label: 'NGO / خیریه' },
+  { value: 'ngo', label: 'سازمان مردم‌نهاد / خیریه' },
   { value: 'educational', label: 'آموزشی' },
   { value: 'chamber', label: 'اتاق بازرگانی' },
   { value: 'association', label: 'انجمن / اتحادیه' },
@@ -91,7 +91,7 @@ export default function OrganizationSettingsPage() {
 
       form.reset({
         name: org.name,
-        type: org.type,
+        type: ORG_TYPE_DB_TO_UI[org.type] || org.type,
         description: org.description || '',
         website: org.website || '',
         email: org.email || '',
@@ -175,6 +175,7 @@ export default function OrganizationSettingsPage() {
       // به‌روزرسانی اطلاعات سازمان
       const success = await organizationService.updateOrganization(organizationId, {
         name: data.name,
+        type: data.type,
         description: data.description,
         website: data.website,
         email: data.email,
