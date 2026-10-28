@@ -56,7 +56,7 @@ const BACKEND_TABLES = {
   delegation_attachments:      { userCol: 'user_id' },
   delegation_task_events:      { userCol: 'user_id' },
   // Organizations
-  organizations:               { userCol: null },
+  organizations:               { userCol: 'user_id' },
   organization_members:        { userCol: 'user_id' },
   organization_invitations:    { userCol: null },
   organization_departments:    { userCol: null },

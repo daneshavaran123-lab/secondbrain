@@ -688,6 +688,17 @@ CREATE TABLE IF NOT EXISTS organizations (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
+-- The organization screens own each organization by user_id, show a logo and an active flag,
+-- and use their own type names (varid, farangaran, chamber_commerce…), so type is free text
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+DO $$ BEGIN
+  IF (SELECT data_type FROM information_schema.columns WHERE table_name = 'organizations' AND column_name = 'type') = 'USER-DEFINED' THEN
+    ALTER TABLE organizations ALTER COLUMN type TYPE TEXT USING type::text;
+  END IF;
+END $$;
+CREATE INDEX IF NOT EXISTS idx_organizations_user ON organizations(user_id);
 
 CREATE TABLE IF NOT EXISTS organization_invitations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1037,6 +1048,9 @@ CREATE TABLE IF NOT EXISTS personal_planning (
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
+-- Planning pages keep their extra task fields (progress, categories, hours, sprint) here
+ALTER TABLE personal_planning ADD COLUMN IF NOT EXISTS details JSONB DEFAULT '{}'::jsonb;
+CREATE INDEX IF NOT EXISTS idx_personal_planning_user_domain ON personal_planning(user_id, domain);
 
 CREATE TABLE IF NOT EXISTS projects (
     id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -1053,6 +1067,15 @@ CREATE TABLE IF NOT EXISTS projects (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
+-- Projects use their own lifecycle (planning, active, on_hold, completed, cancelled), not task states
+DO $$ BEGIN
+  IF (SELECT data_type FROM information_schema.columns WHERE table_name = 'projects' AND column_name = 'status') = 'USER-DEFINED' THEN
+    ALTER TABLE projects ALTER COLUMN status DROP DEFAULT;
+    ALTER TABLE projects ALTER COLUMN status TYPE TEXT USING (
+      CASE status::text WHEN 'todo' THEN 'planning' WHEN 'in_progress' THEN 'active' WHEN 'done' THEN 'completed' ELSE status::text END);
+    ALTER TABLE projects ALTER COLUMN status SET DEFAULT 'planning';
+  END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS project_tasks (
     id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,

@@ -203,7 +203,7 @@ export async function getCurrentUser() {
     // Try to get user profile
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('full_name, avatar_url')
+      .select('display_name, first_name, last_name, avatar_url')
       .eq('user_id', session.user.id)
       .single();
 
@@ -214,7 +214,8 @@ export async function getCurrentUser() {
       .eq('user_id', session.user.id)
       .single();
 
-    const displayName = profile?.full_name || 
+    const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ');
+    const displayName = profile?.display_name || fullName ||
                        session.user.email?.split('@')[0] || 'کاربر';
 
     const userRole = role?.system_role === 'admin' ? 'مدیر سیستم' : 'کاربر';
