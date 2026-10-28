@@ -1072,6 +1072,9 @@ CREATE TABLE IF NOT EXISTS projects (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
+-- The project form's goal, colour, tags and team live here
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS details JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS manager_id UUID REFERENCES users(id) ON DELETE SET NULL;
 -- Projects use their own lifecycle (planning, active, on_hold, completed, cancelled), not task states
 DO $$ BEGIN
   IF (SELECT data_type FROM information_schema.columns WHERE table_name = 'projects' AND column_name = 'status') = 'USER-DEFINED' THEN
@@ -2104,3 +2107,218 @@ CREATE TABLE IF NOT EXISTS organizational_letters (
   updated_at        TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_org_letters_user ON organizational_letters(user_id, created_at DESC);
+
+-- ─── COLUMNS THE APP SENDS ───────────────────────────────────────────────────
+-- The screens were written against the original Supabase schema
+-- (frontend/src/integrations/supabase/types.ts); these columns existed there and are
+-- written or read by the app, with their original types. Missing ones made inserts and
+-- updates fail (creating an organization, the default company, meeting details…).
+-- NOT NULL is left off so existing rows stay valid.
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS ai_analysis JSONB;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS all_day BOOLEAN DEFAULT false;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS attendance_type TEXT CHECK (attendance_type IN ('in_person', 'virtual', 'hybrid'));
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS capacity INTEGER;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS contact_info TEXT;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS cost DECIMAL(10,2);
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'IRR';
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS organizer TEXT;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS preparation_checklist JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS registration_url TEXT;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS related_meeting_id UUID REFERENCES meetings(id) ON DELETE CASCADE;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS related_task_id UUID;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS website_url TEXT;
+ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS folder_id UUID REFERENCES knowledge_folders(id) ON DELETE SET NULL;
+ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS search_vector tsvector GENERATED ALWAYS AS ( setweight(to_tsvector('simple', coalesce(title, '')), 'A') || setweight(to_tsvector('simple', coalesce(content, '')), 'B') ) STORED;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS settings JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS website TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS agenda TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS company_id UUID REFERENCES business_companies(id) ON DELETE SET NULL;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS domain TEXT DEFAULT 'personal';
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS duration INTEGER;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS location TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id) ON DELETE SET NULL;
+ALTER TABLE gratitude_entries ADD COLUMN IF NOT EXISTS links TEXT[];
+ALTER TABLE gratitude_entries ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS data_source TEXT DEFAULT 'manual';
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS raw_data JSONB;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS source_id TEXT;
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS beneficiaries TEXT[];
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'IRR';
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS end_date DATE;
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS impact_metrics JSONB;
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE;
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS partners TEXT[];
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS start_date DATE;
+ALTER TABLE csr_projects ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE correspondence ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE;
+ALTER TABLE correspondence ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS audio_format TEXT;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS audio_size INTEGER;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS connection_id UUID REFERENCES hi_dock_connections(id) ON DELETE CASCADE;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS duration INTEGER;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS error_message TEXT;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS extracted_keywords JSONB;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS linked_calendar_event_id UUID;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS linked_meeting_id UUID;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS linked_task_id UUID;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS notes_text TEXT;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS participants JSONB;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS storage_bucket TEXT DEFAULT 'recordings';
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS storage_path TEXT;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS summary TEXT;
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE hi_dock_recordings ADD COLUMN IF NOT EXISTS transcript_language TEXT DEFAULT 'fa';
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS full_name TEXT;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE cultural_content ADD COLUMN IF NOT EXISTS language TEXT DEFAULT 'fa';
+ALTER TABLE ai_chat_sessions ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE ai_chat_messages ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE ai_chat_messages ADD COLUMN IF NOT EXISTS sentiment TEXT;
+ALTER TABLE ai_chat_messages ADD COLUMN IF NOT EXISTS summary TEXT;
+ALTER TABLE ai_chat_messages ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE delegation_subtasks ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS website TEXT;
+ALTER TABLE organization_policies ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS company_id UUID REFERENCES business_companies(id) ON DELETE SET NULL;
+ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS assigned_to UUID REFERENCES users(id);
+ALTER TABLE project_tasks ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS full_name TEXT;
+ALTER TABLE idea_risks ADD COLUMN IF NOT EXISTS severity TEXT DEFAULT 'medium';
+ALTER TABLE idea_risks ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE knowledge_items ADD COLUMN IF NOT EXISTS para_category TEXT;
+ALTER TABLE knowledge_items ADD COLUMN IF NOT EXISTS source_url TEXT;
+ALTER TABLE knowledge_items ADD COLUMN IF NOT EXISTS tags TEXT[];
+ALTER TABLE user_organizations ADD COLUMN IF NOT EXISTS invited_by UUID REFERENCES users(id);
+ALTER TABLE user_organizations ADD COLUMN IF NOT EXISTS joined_at TIMESTAMPTZ DEFAULT now();
+ALTER TABLE user_organizations ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE user_organizations ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'member';
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS criticality TEXT DEFAULT 'medium';
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS level TEXT;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS requirements TEXT[];
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS title TEXT;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE CASCADE;
+
+-- Columns added by later Supabase migrations (frontend/supabase/migrations) that the screens
+-- read or write; same types, without CHECK constraints from older versions of a table.
+ALTER TABLE ai_chat_messages ADD COLUMN IF NOT EXISTS session_type TEXT;
+ALTER TABLE ai_chat_messages ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS contact_phone TEXT;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS end_date DATE;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::JSONB;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS start_date DATE;
+ALTER TABLE business_companies ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS end_time TIMESTAMP WITH TIME ZONE;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS family_member text;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS location TEXT;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS organization_id UUID;
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS participants JSONB DEFAULT '[]';
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium';
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS recurring JSONB DEFAULT '{}';
+ALTER TABLE calendar_events ADD COLUMN IF NOT EXISTS start_time TIMESTAMP WITH TIME ZONE;
+ALTER TABLE delegation_attachments ADD COLUMN IF NOT EXISTS file_url TEXT;
+ALTER TABLE delegation_notifications ADD COLUMN IF NOT EXISTS delegation_task_id UUID REFERENCES delegation_tasks(id) ON DELETE CASCADE;
+ALTER TABLE delegation_notifications ADD COLUMN IF NOT EXISTS error_message TEXT;
+ALTER TABLE delegation_notifications ADD COLUMN IF NOT EXISTS method TEXT;
+ALTER TABLE delegation_notifications ADD COLUMN IF NOT EXISTS recipient TEXT;
+ALTER TABLE delegation_notifications ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
+ALTER TABLE delegation_subtasks ADD COLUMN IF NOT EXISTS due_date timestamptz;
+ALTER TABLE delegation_task_events ADD COLUMN IF NOT EXISTS actor_id uuid;
+ALTER TABLE delegation_task_events ADD COLUMN IF NOT EXISTS delegation_task_id uuid;
+ALTER TABLE delegation_task_events ADD COLUMN IF NOT EXISTS note text;
+ALTER TABLE delegation_tasks ADD COLUMN IF NOT EXISTS channel_id uuid REFERENCES channels(id) on delete set null;
+ALTER TABLE delegation_tasks ADD COLUMN IF NOT EXISTS project_id UUID;
+ALTER TABLE delegation_tasks ADD COLUMN IF NOT EXISTS reminder_sent boolean DEFAULT false;
+ALTER TABLE gratitude_entries ADD COLUMN IF NOT EXISTS gratitude_item_1 TEXT;
+ALTER TABLE gratitude_entries ADD COLUMN IF NOT EXISTS gratitude_item_2 TEXT;
+ALTER TABLE gratitude_entries ADD COLUMN IF NOT EXISTS gratitude_item_3 TEXT;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS energy_level INTEGER DEFAULT 0;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS recorded_at TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS sleep_quality INTEGER DEFAULT 0;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'manual';
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS stress_level INTEGER DEFAULT 0;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS unit TEXT;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS value DECIMAL(10,2);
+ALTER TABLE idea_milestones ADD COLUMN IF NOT EXISTS due_date TIMESTAMP WITH TIME ZONE;
+ALTER TABLE idea_milestones ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
+ALTER TABLE idea_risks ADD COLUMN IF NOT EXISTS risk_description TEXT;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS break_even_months integer;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS business_model_canvas jsonb DEFAULT '{}'::jsonb;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS customer_acquisition_cost numeric;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS customer_lifetime_value numeric;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS estimated_budget DECIMAL(12,2);
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS estimated_cost NUMERIC;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS estimated_timeline TEXT;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS expected_roi DECIMAL(5,2);
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS financial_projections jsonb DEFAULT '{}'::jsonb;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS market_size numeric;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS monetization_strategies jsonb DEFAULT '[]'::jsonb;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS monthly_revenue_projection numeric;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS pricing_strategy text;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS revenue_models jsonb DEFAULT '[]'::jsonb;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS target_customers text;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS target_market TEXT;
+ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false;
+ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id);
+ALTER TABLE knowledge_base ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'draft';
+ALTER TABLE knowledge_items ADD COLUMN IF NOT EXISTS search_vector tsvector;
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS lawyer TEXT;
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS next_hearing DATE;
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS opponent TEXT;
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id);
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium';
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS total_cost BIGINT DEFAULT 0;
+ALTER TABLE legal_cases ADD COLUMN IF NOT EXISTS type TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS end_time TIMESTAMP WITH TIME ZONE;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS recording_url TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS start_time TIMESTAMP WITH TIME ZONE;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS summary TEXT;
+ALTER TABLE meetings ADD COLUMN IF NOT EXISTS transcript TEXT;
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE poll_options ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE poll_votes ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT now();
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS current_holder_id UUID;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS current_holder_name TEXT;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS qualifications_required TEXT;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS readiness_level TEXT DEFAULT 'not_ready';
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS skills_required JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE succession_positions ADD COLUMN IF NOT EXISTS successor_count INTEGER DEFAULT 0;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS birth_date DATE;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS hire_date DATE;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id);
+
+-- Statuses and roles the app uses that the enums here lack («archived» tasks, the «manager»
+-- organization role) are kept as text, like projects.status above.
+DO $$ DECLARE r record; BEGIN
+  FOR r IN SELECT * FROM (VALUES
+      ('personal_planning', 'status', 'todo'),
+      ('project_tasks', 'status', 'todo'),
+      ('organization_invitations', 'role', 'member')) AS v(t, c, d) LOOP
+    IF (SELECT data_type FROM information_schema.columns WHERE table_name = r.t AND column_name = r.c) = 'USER-DEFINED' THEN
+      EXECUTE format('ALTER TABLE %I ALTER COLUMN %I DROP DEFAULT', r.t, r.c);
+      EXECUTE format('ALTER TABLE %I ALTER COLUMN %I TYPE TEXT USING %I::text', r.t, r.c, r.c);
+      EXECUTE format('ALTER TABLE %I ALTER COLUMN %I SET DEFAULT %L', r.t, r.c, r.d);
+    END IF;
+  END LOOP;
+END $$;

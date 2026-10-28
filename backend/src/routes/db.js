@@ -19,6 +19,8 @@ const router = Router();
 //   { userCol }  the row has its own owner column
 //   { via }      the row belongs to a parent row the user owns (idea_risks → ideas)
 //   userCol null tables cannot be reached through this proxy
+// Organization-wide tables (employees, invitations, funnel stages…) belong to the organization's
+// owner through organization_id.
 const BACKEND_TABLES = {
   ideas:                  { userCol: 'user_id' },
   calendar_events:        { userCol: 'user_id' },
@@ -58,9 +60,9 @@ const BACKEND_TABLES = {
   // Organizations
   organizations:               { userCol: 'user_id' },
   organization_members:        { userCol: 'user_id' },
-  organization_invitations:    { userCol: null },
-  organization_departments:    { userCol: null },
-  organization_employees:      { userCol: null },
+  organization_invitations:    { via: { col: 'organization_id', parent: 'organizations' } },
+  organization_departments:    { via: { col: 'organization_id', parent: 'organizations' } },
+  organization_employees:      { via: { col: 'organization_id', parent: 'organizations' } },
   organization_missions:       { userCol: 'user_id' },
   organization_policies:       { userCol: 'created_by' },
   organization_finance:        { userCol: 'user_id' },
@@ -76,9 +78,9 @@ const BACKEND_TABLES = {
   organization_sop_steps:      { via: { col: 'operations_id', parent: 'organization_operations' } },
   organization_succession_plans:{ via: { col: 'hr_id', parent: 'organization_hr' } },
   organization_succession_successors:{ via: { col: 'succession_plan_id', parent: 'organization_succession_plans' } },
-  organization_performance_evaluations:{ userCol: null },
+  organization_performance_evaluations:{ via: { col: 'organization_id', parent: 'organizations' } },
   organizational_claims:       { userCol: 'user_id' },
-  organizational_policy_attachments:{ userCol: null },
+  organizational_policy_attachments:{ via: { col: 'organization_id', parent: 'organizations' } },
   // Planning & Projects
   personal_planning:           { userCol: 'user_id' },
   projects:                    { userCol: 'user_id' },
@@ -101,7 +103,7 @@ const BACKEND_TABLES = {
   // Sales & Marketing
   sales_leads:                 { userCol: 'user_id' },
   sales_icp_profiles:          { userCol: 'user_id' },
-  sales_funnel_stages:         { userCol: 'user_id' },
+  sales_funnel_stages:         { via: { col: 'organization_id', parent: 'organizations' } },
   marketing_campaigns:         { userCol: 'user_id' },
   // Ideas sub-tables
   idea_business_model_canvas:  { via: { col: 'idea_id', parent: 'ideas' } },
@@ -145,7 +147,7 @@ const BACKEND_TABLES = {
   system_permissions:          { userCol: null },
   assistant_action_logs:       { userCol: 'user_id' },
   auth_audit:                  { userCol: null },
-  succession_positions:        { userCol: null },
+  succession_positions:        { userCol: 'user_id' },
   documents:                   { userCol: 'user_id' },
   attachments:                 { userCol: 'user_id' },
   recordings:                  { userCol: 'user_id' },
