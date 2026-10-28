@@ -31,36 +31,15 @@ export function PlanningActionsMenu({
   variant = 'personal'
 }: PlanningActionsMenuProps) {
   const isMobile = useIsMobile();
-  const getVariantColors = () => {
-    switch (variant) {
-      case 'professional':
-        return {
-          primary: 'bg-blue-600 hover:bg-blue-700',
-          mentor: 'text-blue-600',
-          coach: 'text-green-600'
-        };
-      case 'organizational':
-        return {
-          primary: 'bg-purple-600 hover:bg-purple-700',
-          mentor: 'text-purple-600',
-          coach: 'text-green-600'
-        };
-      default:
-        return {
-          primary: 'btn-professional',
-          mentor: 'text-blue-600',
-          coach: 'text-green-600'
-        };
-    }
-  };
+  // One look for every domain: an ink primary button and grey icons
+  const colors = { primary: 'bg-primary hover:bg-primary-hover', mentor: 'text-muted-foreground', coach: 'text-muted-foreground' };
 
-  const colors = getVariantColors();
 
   return (
     <div className="flex gap-2">
       <Button 
         size={isMobile ? "sm" : "lg"}
-        className={`${colors.primary} text-white shadow-luxury-soft`}
+        className={`${colors.primary} text-primary-foreground`}
         onClick={onNewTask}
       >
         <AppIcon size="sm">

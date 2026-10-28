@@ -115,7 +115,7 @@ export function RoadmapDetail({ strategyId, organizationId, onBack, onEdit, onDe
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-background p-6 md:p-8"
+        className="relative overflow-hidden rounded-xl bg-blue-500/10 p-6 md:p-8"
       >
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">
@@ -219,7 +219,7 @@ export function RoadmapDetail({ strategyId, organizationId, onBack, onEdit, onDe
             <CardContent>
               <div className="relative">
                 {/* Timeline Line */}
-                <div className="absolute right-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/20 via-primary to-primary/20" />
+                <div className="absolute right-8 top-0 bottom-0 w-0.5 bg-primary/20" />
 
                 {/* Milestones */}
                 <div className="space-y-6">

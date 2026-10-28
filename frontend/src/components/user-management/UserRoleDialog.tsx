@@ -92,11 +92,11 @@ export default function UserRoleDialog({ open, onOpenChange, userId }: UserRoleD
 
   const getRoleColor = (role: SystemRole) => {
     const colors = {
-      admin: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      general_manager: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      department_manager: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      secretary: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      user: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+      admin: 'bg-red-100 text-red-800',
+      general_manager: 'bg-purple-100 text-purple-800',
+      department_manager: 'bg-blue-100 text-blue-800',
+      secretary: 'bg-green-100 text-green-800',
+      user: 'bg-gray-100 text-gray-800',
     };
     return colors[role] || colors.user;
   };
@@ -194,17 +194,17 @@ export default function UserRoleDialog({ open, onOpenChange, userId }: UserRoleD
 
             {/* هشدار تغییر نقش */}
             {form.watch('system_role') !== currentRole?.system_role && (
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-medium text-amber-800 dark:text-amber-200">
+                    <h4 className="font-medium text-amber-800">
                       تغییر نقش کاربر
                     </h4>
-                    <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                    <p className="text-sm text-amber-700 mt-1">
                       با تغییر نقش، دسترسی‌های کاربر بلافاصله تغییر خواهد کرد. این تغییر در لاگ سیستم ثبت می‌شود.
                     </p>
-                    <div className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                    <div className="mt-2 text-xs text-amber-600">
                       <span className="font-medium">نقش قبلی:</span> {currentRole ? ROLE_NAMES[currentRole.system_role] : 'نامشخص'}
                       <br />
                       <span className="font-medium">نقش جدید:</span> {ROLE_NAMES[form.watch('system_role') as SystemRole]}

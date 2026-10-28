@@ -109,7 +109,7 @@ const KnowledgePage = () => {
         </TabsContent>
 
         <TabsContent value="folders">
-          <Card className="p-8 border-3 border-primary/20 shadow-2xl rounded-2xl bg-gradient-to-br from-background to-muted/20">
+          <Card className="p-8 border-3 border-primary/20 shadow-2xl rounded-2xl bg-background">
             <CardHeader className="pb-6">
               <CardTitle className="text-2xl font-bold text-primary flex items-center gap-3">
                 <Folder className="h-7 w-7" />
@@ -128,7 +128,7 @@ const KnowledgePage = () => {
 
         <TabsContent value="graph">
           {items.length === 0 ? (
-            <Card className="p-8 border-3 border-primary/20 shadow-2xl rounded-2xl bg-gradient-to-br from-background to-muted/20">
+            <Card className="p-8 border-3 border-primary/20 shadow-2xl rounded-2xl bg-background">
               <CardHeader className="pb-6">
                 <CardTitle className="text-2xl font-bold text-primary flex items-center gap-3">
                   <Brain className="h-7 w-7" />

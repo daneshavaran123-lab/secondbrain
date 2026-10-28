@@ -188,7 +188,7 @@ export default function ProjectManagementPage() {
               magnetic
               glow
               size={isMobile ? "sm" : "default"}
-              className="bg-gradient-to-r from-primary to-primary/80"
+              className="bg-primary"
             >
               {isMobile ? "پروژه" : "پروژه جدید"}
             </ModernButton>
@@ -202,9 +202,9 @@ export default function ProjectManagementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">کل پروژه‌ها</p>
-                <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-primary`}>{stats.total}</p>
+                <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-semibold`}>{stats.total}</p>
               </div>
-              <div className="p-2 md:p-3 bg-gradient-to-r from-primary to-primary/80 rounded-xl text-white shadow-md flex-shrink-0">
+              <div className="p-2 md:p-3 rounded-lg bg-muted text-muted-foreground flex-shrink-0">
                 <AppIcon size={isMobile ? "sm" : "md"}><Briefcase /></AppIcon>
               </div>
             </div>
@@ -214,9 +214,9 @@ export default function ProjectManagementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">فعال</p>
-                <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-emerald-600`}>{stats.active}</p>
+                <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-semibold`}>{stats.active}</p>
               </div>
-              <div className="p-2 md:p-3 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-xl text-white shadow-md flex-shrink-0">
+              <div className="p-2 md:p-3 rounded-lg bg-muted text-muted-foreground flex-shrink-0">
                 <AppIcon size={isMobile ? "sm" : "md"}><Activity /></AppIcon>
               </div>
             </div>
@@ -226,9 +226,9 @@ export default function ProjectManagementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">تکمیل شده</p>
-                <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-blue-600`}>{stats.completed}</p>
+                <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-semibold`}>{stats.completed}</p>
               </div>
-              <div className="p-2 md:p-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl text-white shadow-md flex-shrink-0">
+              <div className="p-2 md:p-3 rounded-lg bg-muted text-muted-foreground flex-shrink-0">
                 <AppIcon size={isMobile ? "sm" : "md"}><Target /></AppIcon>
               </div>
             </div>
@@ -240,7 +240,7 @@ export default function ProjectManagementPage() {
                 <p className="text-muted-foreground text-sm">متوقف</p>
                 <p className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-amber-600`}>{stats.onHold}</p>
               </div>
-              <div className="p-2 md:p-3 bg-gradient-to-r from-amber-600 to-amber-500 rounded-xl text-white shadow-md flex-shrink-0">
+              <div className="p-2 md:p-3 rounded-lg bg-muted text-muted-foreground flex-shrink-0">
                 <AppIcon size={isMobile ? "sm" : "md"}><Calendar /></AppIcon>
               </div>
             </div>

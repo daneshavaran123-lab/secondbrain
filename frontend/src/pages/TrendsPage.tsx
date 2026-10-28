@@ -377,15 +377,11 @@ const TrendsPage = () => {
               <Button
                 key={category.name}
                 variant={selectedDomains.includes(category.name) ? "default" : "outline"}
-                className={`p-3 md:p-4 h-auto flex flex-col items-center gap-2 ${category.color} hover:scale-105 transition-transform`}
+                className="p-3 md:p-4 h-auto flex flex-col items-center gap-2"
                 onClick={() => handleDomainToggle(category.name)}
               >
-                <ResponsiveText className="font-medium text-xs md:text-sm">
-                  {category.name}
-                </ResponsiveText>
-                <Badge variant="outline" className="text-xs">
-                  {category.count}
-                </Badge>
+                <span className="font-medium text-xs md:text-sm">{category.name}</span>
+                <span className="text-xs opacity-70">{category.count.toLocaleString('fa-IR')}</span>
               </Button>
             ))}
           </ResponsiveLayout>

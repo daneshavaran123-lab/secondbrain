@@ -140,28 +140,28 @@ export function StrategyStats({ type, organizationId }: StrategyStatsProps) {
           icon={<Target />}
           label="کل OKRها"
           value={okrStats.total}
-          gradient="from-violet-500 to-purple-500"
+          gradient="bg-violet-500"
           delay={0}
         />
         <StatCard
           icon={<Clock />}
           label="OKRهای فعال"
           value={okrStats.active}
-          gradient="from-blue-500 to-cyan-500"
+          gradient="bg-blue-500"
           delay={0.1}
         />
         <StatCard
           icon={<CheckCircle />}
           label="محقق شده"
           value={okrStats.achieved}
-          gradient="from-green-500 to-emerald-500"
+          gradient="bg-green-500"
           delay={0.2}
         />
         <StatCard
           icon={<TrendingUp />}
           label="میانگین پیشرفت"
           value={`${okrStats.averageProgress}%`}
-          gradient="from-orange-500 to-amber-500"
+          gradient="bg-orange-500"
           delay={0.3}
         />
       </div>
@@ -175,28 +175,28 @@ export function StrategyStats({ type, organizationId }: StrategyStatsProps) {
           icon={<Map />}
           label="کل نقشه‌ها"
           value={roadmapStats.total}
-          gradient="from-emerald-500 to-teal-500"
+          gradient="bg-emerald-500"
           delay={0}
         />
         <StatCard
           icon={<CheckCircle />}
           label="تکمیل شده"
           value={roadmapStats.completedMilestones}
-          gradient="from-green-500 to-lime-500"
+          gradient="bg-green-500"
           delay={0.1}
         />
         <StatCard
           icon={<Clock />}
           label="در حال انجام"
           value={roadmapStats.inProgressMilestones}
-          gradient="from-blue-500 to-indigo-500"
+          gradient="bg-blue-500"
           delay={0.2}
         />
         <StatCard
           icon={<AlertCircle />}
           label="مسدود شده"
           value={roadmapStats.blockedMilestones}
-          gradient="from-red-500 to-rose-500"
+          gradient="bg-red-500"
           delay={0.3}
         />
       </div>
@@ -209,28 +209,28 @@ export function StrategyStats({ type, organizationId }: StrategyStatsProps) {
         icon={<GitBranch />}
         label="کل تصمیمات"
         value={decisionStats.total}
-        gradient="from-indigo-500 to-purple-500"
+        gradient="bg-indigo-500"
         delay={0}
       />
       <StatCard
         icon={<AlertCircle />}
         label="تأثیر بالا"
         value={decisionStats.highImpact}
-        gradient="from-orange-500 to-red-500"
+        gradient="bg-orange-500"
         delay={0.1}
       />
       <StatCard
         icon={<Flag />}
         label="میانگین گزینه‌ها"
         value={decisionStats.averageOptions}
-        gradient="from-cyan-500 to-blue-500"
+        gradient="bg-cyan-500"
         delay={0.2}
       />
       <StatCard
         icon={<Clock />}
         label="این ماه"
         value={decisionStats.thisMonth}
-        gradient="from-pink-500 to-rose-500"
+        gradient="bg-pink-500"
         delay={0.3}
       />
     </div>

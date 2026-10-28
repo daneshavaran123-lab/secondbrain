@@ -662,7 +662,7 @@ const CulturalContentPage: React.FC = () => {
                          {item.category && (
                            <Badge 
                              variant="secondary" 
-                             className="bg-gradient-to-r from-primary/10 to-primary/20 text-primary text-xs"
+                             className="bg-primary/10 text-primary text-xs"
                            >
                              <Tag className="h-3 w-3 ml-1" />
                              {item.category}
@@ -797,7 +797,7 @@ const CulturalContentPage: React.FC = () => {
                          {item.category && (
                            <Badge 
                              variant="secondary" 
-                             className="bg-gradient-to-r from-primary/10 to-primary/20 text-primary text-xs"
+                             className="bg-primary/10 text-primary text-xs"
                            >
                              <Tag className="h-3 w-3 ml-1" />
                              {item.category}

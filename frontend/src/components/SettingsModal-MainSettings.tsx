@@ -125,7 +125,7 @@ export function MainCompanyOrgSettings() {
                     </div>
                     <div className="flex gap-2">
                       {companiesService.isDefaultCompany(company) && (
-                        <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950">پیش‌فرض</Badge>
+                        <Badge variant="outline" className="bg-blue-50">پیش‌فرض</Badge>
                       )}
                       {mainCompany?.id === company.id && (
                         <Badge>اصلی</Badge>
@@ -192,7 +192,7 @@ export function MainCompanyOrgSettings() {
                     </div>
                     <div className="flex gap-2">
                       {organizationService.isDefaultOrganization(org) && (
-                        <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950">پیش‌فرض</Badge>
+                        <Badge variant="outline" className="bg-blue-50">پیش‌فرض</Badge>
                       )}
                       {mainOrg?.id === org.id && (
                         <Badge className="bg-purple-500">اصلی</Badge>

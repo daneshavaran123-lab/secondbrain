@@ -40,30 +40,30 @@ export function SWOTEditor({
     {
       key: "strengths",
       label: "نقاط قوت (S)",
-      color: "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800",
+      color: "bg-green-50 border-green-200",
     },
     {
       key: "weaknesses",
       label: "نقاط ضعف (W)",
-      color: "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800",
+      color: "bg-red-50 border-red-200",
     },
     {
       key: "opportunities",
       label: "فرصت‌ها (O)",
-      color: "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800",
+      color: "bg-blue-50 border-blue-200",
     },
     {
       key: "threats",
       label: "تهدیدها (T)",
-      color: "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800",
+      color: "bg-orange-50 border-orange-200",
     },
   ];
 
   const strategySections = [
-    { key: "so_strategies", label: "استراتژی‌های SO (قوت-فرصت)", color: "bg-emerald-50 dark:bg-emerald-950" },
-    { key: "st_strategies", label: "استراتژی‌های ST (قوت-تهدید)", color: "bg-cyan-50 dark:bg-cyan-950" },
-    { key: "wo_strategies", label: "استراتژی‌های WO (ضعف-فرصت)", color: "bg-violet-50 dark:bg-violet-950" },
-    { key: "wt_strategies", label: "استراتژی‌های WT (ضعف-تهدید)", color: "bg-rose-50 dark:bg-rose-950" },
+    { key: "so_strategies", label: "استراتژی‌های SO (قوت-فرصت)", color: "bg-emerald-50" },
+    { key: "st_strategies", label: "استراتژی‌های ST (قوت-تهدید)", color: "bg-cyan-50" },
+    { key: "wo_strategies", label: "استراتژی‌های WO (ضعف-فرصت)", color: "bg-violet-50" },
+    { key: "wt_strategies", label: "استراتژی‌های WT (ضعف-تهدید)", color: "bg-rose-50" },
   ];
 
   const handleAddItem = (sectionKey: string) => {

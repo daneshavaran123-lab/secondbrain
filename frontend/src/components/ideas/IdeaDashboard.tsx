@@ -183,7 +183,7 @@ export function IdeaDashboard() {
               
               <div className="w-full bg-muted rounded-full h-3">
                 <div 
-                  className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition duration-300"
+                  className="bg-primary h-3 rounded-full transition duration-300"
                   style={{ 
                     width: `${stats.totalMilestones > 0 ? (stats.completedMilestones / stats.totalMilestones) * 100 : 0}%` 
                   }}

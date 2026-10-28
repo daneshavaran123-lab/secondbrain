@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LawyerNote } from '@/services/legalService';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { faIR } from 'date-fns/locale';
 
 interface LawyerNoteCardProps {
@@ -76,13 +77,13 @@ export function LawyerNoteCard({
                 </Badge>
                 
                 <span className="text-xs text-muted-foreground">
-                  📅 {format(new Date(note.createdAt), 'yyyy/MM/dd HH:mm', { locale: faIR })}
+                  📅 {formatJalali(new Date(note.createdAt), 'yyyy/MM/dd HH:mm')}
                 </span>
 
                 {note.reminderDate && (
                   <Badge variant={isToday ? 'default' : 'outline'} className={isOverdue ? 'bg-red-500 text-white' : ''}>
                     <Calendar className="h-3 w-3 mr-1" />
-                    یادآوری: {format(new Date(note.reminderDate), 'yyyy/MM/dd')}
+                    یادآوری: {formatJalali(new Date(note.reminderDate), 'yyyy/MM/dd')}
                   </Badge>
                 )}
 

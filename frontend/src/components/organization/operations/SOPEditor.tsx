@@ -281,7 +281,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
                     <div className="flex-1">
-                      <Label className="text-xs text-yellow-600 dark:text-yellow-400">
+                      <Label className="text-xs text-yellow-600">
                         هشدار
                       </Label>
                       <TextInputWithVoice

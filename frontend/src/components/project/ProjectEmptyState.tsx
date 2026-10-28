@@ -28,7 +28,7 @@ export function ProjectEmptyState({ onCreateProject, onDataInitialized }: Projec
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="text-center max-w-md mx-auto space-y-6">
-        <div className="w-20 h-20 mx-auto bg-gradient-to-r from-primary/20 to-primary/10 rounded-full flex items-center justify-center">
+        <div className="w-20 h-20 mx-auto bg-primary/20 rounded-full flex items-center justify-center">
           <AppIcon size="lg">
             <Briefcase className="text-primary" />
           </AppIcon>
@@ -49,7 +49,7 @@ export function ProjectEmptyState({ onCreateProject, onDataInitialized }: Projec
             icon={<AppIcon size="sm"><Plus /></AppIcon>}
             magnetic
             glow
-            className="bg-gradient-to-r from-primary to-primary/80"
+            className="bg-primary"
           >
             ایجاد پروژه جدید
           </ModernButton>

@@ -49,7 +49,7 @@ export function OrganizationProjectsPreview({ projects }: OrganizationProjectsPr
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-br from-accent/5 to-transparent pb-4">
+      <CardHeader className="bg-accent/5 pb-4">
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <FolderKanban className="w-5 h-5 text-primary" />

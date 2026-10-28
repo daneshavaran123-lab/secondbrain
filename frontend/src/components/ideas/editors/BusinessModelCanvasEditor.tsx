@@ -35,15 +35,15 @@ export function BusinessModelCanvasEditor({
   const [newItems, setNewItems] = useState<{ [key: string]: string }>({});
 
   const sections = [
-    { key: "value_propositions", label: "پیشنهادات ارزشی", color: "bg-blue-50 dark:bg-blue-950" },
-    { key: "customer_segments", label: "بخش‌های مشتری", color: "bg-green-50 dark:bg-green-950" },
-    { key: "channels", label: "کانال‌ها", color: "bg-purple-50 dark:bg-purple-950" },
-    { key: "customer_relationships", label: "روابط با مشتری", color: "bg-pink-50 dark:bg-pink-950" },
-    { key: "revenue_streams", label: "جریان‌های درآمد", color: "bg-yellow-50 dark:bg-yellow-950" },
-    { key: "key_resources", label: "منابع کلیدی", color: "bg-orange-50 dark:bg-orange-950" },
-    { key: "key_activities", label: "فعالیت‌های کلیدی", color: "bg-indigo-50 dark:bg-indigo-950" },
-    { key: "key_partnerships", label: "شراکت‌های کلیدی", color: "bg-teal-50 dark:bg-teal-950" },
-    { key: "cost_structure", label: "ساختار هزینه", color: "bg-red-50 dark:bg-red-950" },
+    { key: "value_propositions", label: "پیشنهادات ارزشی", color: "bg-blue-50" },
+    { key: "customer_segments", label: "بخش‌های مشتری", color: "bg-green-50" },
+    { key: "channels", label: "کانال‌ها", color: "bg-purple-50" },
+    { key: "customer_relationships", label: "روابط با مشتری", color: "bg-pink-50" },
+    { key: "revenue_streams", label: "جریان‌های درآمد", color: "bg-yellow-50" },
+    { key: "key_resources", label: "منابع کلیدی", color: "bg-orange-50" },
+    { key: "key_activities", label: "فعالیت‌های کلیدی", color: "bg-indigo-50" },
+    { key: "key_partnerships", label: "شراکت‌های کلیدی", color: "bg-teal-50" },
+    { key: "cost_structure", label: "ساختار هزینه", color: "bg-red-50" },
   ];
 
   const handleAddItem = (sectionKey: string) => {

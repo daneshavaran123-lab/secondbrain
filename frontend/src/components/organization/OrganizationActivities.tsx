@@ -39,39 +39,39 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
     switch (type) {
       case 'project':
         return {
-          text: 'text-purple-600 dark:text-purple-400',
-          bg: 'bg-purple-50 dark:bg-purple-950/30',
-          border: 'border-purple-200 dark:border-purple-800'
+          text: 'text-purple-600',
+          bg: 'bg-purple-50',
+          border: 'border-purple-200'
         };
       case 'task':
         return {
-          text: 'text-orange-600 dark:text-orange-400',
-          bg: 'bg-orange-50 dark:bg-orange-950/30',
-          border: 'border-orange-200 dark:border-orange-800'
+          text: 'text-orange-600',
+          bg: 'bg-orange-50',
+          border: 'border-orange-200'
         };
       case 'member':
         return {
-          text: 'text-blue-600 dark:text-blue-400',
-          bg: 'bg-blue-50 dark:bg-blue-950/30',
-          border: 'border-blue-200 dark:border-blue-800'
+          text: 'text-blue-600',
+          bg: 'bg-blue-50',
+          border: 'border-blue-200'
         };
       case 'document':
         return {
-          text: 'text-emerald-600 dark:text-emerald-400',
-          bg: 'bg-emerald-50 dark:bg-emerald-950/30',
-          border: 'border-emerald-200 dark:border-emerald-800'
+          text: 'text-emerald-600',
+          bg: 'bg-emerald-50',
+          border: 'border-emerald-200'
         };
       case 'settings':
         return {
-          text: 'text-slate-600 dark:text-slate-400',
-          bg: 'bg-slate-50 dark:bg-slate-950/30',
-          border: 'border-slate-200 dark:border-slate-800'
+          text: 'text-slate-600',
+          bg: 'bg-slate-50',
+          border: 'border-slate-200'
         };
       default:
         return {
-          text: 'text-gray-600 dark:text-gray-400',
-          bg: 'bg-gray-50 dark:bg-gray-950/30',
-          border: 'border-gray-200 dark:border-gray-800'
+          text: 'text-gray-600',
+          bg: 'bg-gray-50',
+          border: 'border-gray-200'
         };
     }
   };
@@ -85,7 +85,7 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent pb-4">
+      <CardHeader className="bg-primary/5 pb-4">
         <div className="flex items-center justify-between mb-4">
           <CardTitle className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
@@ -93,7 +93,7 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
           </CardTitle>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 blur-xl rounded-full animate-pulse" />
+              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
               <div className="relative w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             </div>
             <span className="text-xs text-muted-foreground">به‌روزرسانی خودکار</span>
@@ -127,7 +127,7 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
           <ScrollArea className="h-[500px]">
             <div className="p-6 space-y-4">
               {/* Timeline line */}
-              <div className="absolute right-[49px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/20 via-primary/50 to-primary/20" />
+              <div className="absolute right-[49px] top-0 bottom-0 w-0.5 bg-primary/20" />
               
               {filteredActivities.map((activity, index) => {
                 const Icon = getActivityIcon(activity.type);
@@ -178,7 +178,7 @@ export function OrganizationActivities({ activities }: OrganizationActivitiesPro
           </ScrollArea>
         ) : (
           <div className="h-[500px] flex flex-col items-center justify-center text-center p-8">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-4">
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <Clock className="w-12 h-12 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground mb-2">

@@ -253,7 +253,7 @@ export function StrategySection({ organizationId }: StrategySectionProps) {
             بازگشت
           </Button>
         ) : (
-          <Button onClick={() => setViewMode('create')} className="bg-gradient-to-r from-primary to-primary/80">
+          <Button onClick={() => setViewMode('create')} className="bg-primary">
             <Plus className="h-4 w-4 ml-2" />
             ایجاد جدید
           </Button>

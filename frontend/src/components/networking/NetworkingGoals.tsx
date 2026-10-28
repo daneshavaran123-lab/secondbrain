@@ -11,7 +11,8 @@ import { networkingService, NetworkingGoal } from "@/services/networkingService"
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { format } from "date-fns";
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { faIR } from "date-fns/locale";
 
 interface NetworkingGoalsProps {
@@ -187,7 +188,7 @@ export function NetworkingGoals({ companyId, organizationId }: NetworkingGoalsPr
                           <span>{categoryLabels[goal.category] || goal.category}</span>
                         )}
                         {goal.deadline && (
-                          <span>مهلت: {format(new Date(goal.deadline), "PPP", { locale: faIR })}</span>
+                          <span>مهلت: {formatJalali(new Date(goal.deadline), 'd MMMM yyyy')}</span>
                         )}
                       </div>
                     </div>

@@ -25,25 +25,25 @@ export function AnalysisHistoryCard({
         return {
           icon: CheckCircle2,
           label: "موفق",
-          className: "bg-green-500/10 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-400"
+          className: "bg-green-500/10 text-green-700 border-green-200"
         };
       case "failed":
         return {
           icon: XCircle,
           label: "ناموفق",
-          className: "bg-red-500/10 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400"
+          className: "bg-red-500/10 text-red-700 border-red-200"
         };
       case "processing":
         return {
           icon: Loader2,
           label: "در حال انجام",
-          className: "bg-blue-500/10 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400"
+          className: "bg-blue-500/10 text-blue-700 border-blue-200"
         };
       case "pending":
         return {
           icon: Clock,
           label: "در صف",
-          className: "bg-yellow-500/10 text-yellow-700 border-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400"
+          className: "bg-yellow-500/10 text-yellow-700 border-yellow-200"
         };
       default:
         return {

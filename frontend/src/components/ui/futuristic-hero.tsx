@@ -42,7 +42,7 @@ export function FuturisticHero({
         {/* Title */}
         <h1 className={cn(
           "text-3xl md:text-5xl lg:text-6xl font-futuristic font-bold",
-          "bg-gradient-to-r from-white via-tech-cyan to-accent bg-clip-text text-transparent",
+          "bg-white bg-clip-text text-transparent",
           "tracking-wide mb-4 leading-tight drop-shadow-2xl",
           "animate-fade-in"
         )}>
@@ -53,7 +53,7 @@ export function FuturisticHero({
         {subtitle && (
           <h2 className={cn(
             "text-lg md:text-2xl lg:text-3xl font-display font-medium",
-            "bg-gradient-to-r from-white/95 to-tech-cyan/80 bg-clip-text text-transparent",
+            "bg-white/95 bg-clip-text text-transparent",
             "mb-4 tracking-wider font-serif italic",
             "animate-slide-up"
           )}>

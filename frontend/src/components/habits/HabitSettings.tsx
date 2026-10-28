@@ -55,12 +55,7 @@ export const HabitSettings: React.FC = () => {
     if (!user) return;
     try {
       const habits = await habitTrackerService.getHabits(user.id);
-      const now = new Date();
-      const completions = await habitTrackerService.getCompletionsForMonth(
-        user.id,
-        now.getFullYear(),
-        now.getMonth() + 1
-      );
+      const completions = await habitTrackerService.getCompletionsForMonth(user.id, new Date());
 
       const data = {
         habits,
@@ -92,12 +87,7 @@ export const HabitSettings: React.FC = () => {
   const handleExportCSV = async () => {
     if (!user) return;
     try {
-      const now = new Date();
-      const completions = await habitTrackerService.getCompletionsForMonth(
-        user.id,
-        now.getFullYear(),
-        now.getMonth() + 1
-      );
+      const completions = await habitTrackerService.getCompletionsForMonth(user.id, new Date());
 
       const csv = Papa.unparse(completions);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

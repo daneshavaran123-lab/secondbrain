@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CalendarClock, MessageSquare, Paperclip, AlertCircle } from 'lucide-react';
-import { format, isAfter } from 'date-fns';
+import { isAfter } from 'date-fns';
+import { format as formatJalali } from 'date-fns-jalali';
 import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
@@ -85,7 +86,7 @@ export function TaskCard({ task, onClick, isLoading = false }: TaskCardProps) {
         <div className="flex items-center text-xs text-muted-foreground mb-3">
           <CalendarClock className="h-3 w-3 mr-1" />
           <span className={cn(isOverdue && "text-red-500")}>
-            {format(new Date(task.deadline), 'dd MMM yyyy')}
+            {formatJalali(new Date(task.deadline), 'd MMMM yyyy')}
           </span>
         </div>
 

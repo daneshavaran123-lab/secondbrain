@@ -28,11 +28,11 @@ export function OrganizationDashboardHeader({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 p-8 mb-8"
+      className="relative overflow-hidden rounded-2xl bg-primary/10 border border-primary/20 p-8 mb-8"
     >
       {/* Animated Background Elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
       
       <div className="relative z-10">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -40,7 +40,7 @@ export function OrganizationDashboardHeader({
           <div className="flex items-start gap-4">
             <motion.div
               whileHover={{ scale: 1.05, rotate: 5 }}
-              className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20"
+              className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20"
             >
               {organization.logo_url ? (
                 <img
@@ -54,7 +54,7 @@ export function OrganizationDashboardHeader({
             </motion.div>
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold bg-gradient-to-l from-primary to-primary/70 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-primary bg-clip-text text-transparent">
                   {organization.name}
                 </h1>
                 <Badge variant={organization.is_active ? "default" : "destructive"} className="animate-pulse">
@@ -106,7 +106,7 @@ export function OrganizationDashboardHeader({
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="sm"
-                className="gap-2 bg-gradient-to-l from-primary to-primary/80 shadow-lg shadow-primary/20"
+                className="gap-2 bg-primary shadow-lg shadow-primary/20"
               >
                 <Users className="w-4 h-4" />
                 دعوت عضو جدید

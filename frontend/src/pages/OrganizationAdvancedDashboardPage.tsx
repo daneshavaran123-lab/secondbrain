@@ -94,7 +94,7 @@ export default function OrganizationAdvancedDashboardPage() {
   // Loading state with modern skeleton
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-[60vh]">
             <motion.div
@@ -103,7 +103,7 @@ export default function OrganizationAdvancedDashboardPage() {
               className="text-center"
             >
               <div className="relative w-24 h-24 mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full blur-xl opacity-50 animate-pulse" />
+                <div className="absolute inset-0 bg-primary rounded-full blur-xl opacity-50 animate-pulse" />
                 <div className="relative w-24 h-24 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
               </div>
               <p className="text-lg font-medium text-muted-foreground">در حال بارگذاری داشبورد…</p>
@@ -117,7 +117,7 @@ export default function OrganizationAdvancedDashboardPage() {
   if (!organization || !stats) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-[1600px]">
         {/* Back Button */}
         <motion.div

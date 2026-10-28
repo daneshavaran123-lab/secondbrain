@@ -119,7 +119,7 @@ export function OKRDetail({ strategyId, organizationId, onBack, onEdit, onDelete
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-background p-6 md:p-8"
+        className="relative overflow-hidden rounded-xl bg-primary/10 p-6 md:p-8"
       >
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">
@@ -268,7 +268,7 @@ export function OKRDetail({ strategyId, organizationId, onBack, onEdit, onDelete
           </Card>
 
           {/* Overall Progress */}
-          <Card className="bg-gradient-to-br from-primary/5 to-background">
+          <Card className="bg-primary/5">
             <CardContent className="pt-6">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">

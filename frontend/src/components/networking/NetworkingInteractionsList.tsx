@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { networkingService, NetworkingInteraction } from "@/services/networkingService";
-import { format } from "date-fns";
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { faIR } from "date-fns/locale";
 import { Video, Phone, Mail, Linkedin, Calendar, Users, MessageSquare, Clock } from "lucide-react";
 
@@ -83,7 +84,7 @@ export function NetworkingInteractionsList({ contactId }: NetworkingInteractions
                     <div>
                       <h4 className="font-medium">{interaction.title}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {typeInfo.label} - {format(new Date(interaction.interaction_date), "PPP", { locale: faIR })}
+                        {typeInfo.label} - {formatJalali(new Date(interaction.interaction_date), 'd MMMM yyyy')}
                       </p>
                     </div>
                     <Badge variant={outcomeInfo.variant}>{outcomeInfo.label}</Badge>

@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Edit, Trash2, Eye, Check, GitBranch } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { Separator } from '@/components/ui/separator';
 
 interface Option {
@@ -91,15 +92,15 @@ export function DecisionLogList({ items, onEdit, onDelete, onView }: DecisionLog
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'critical':
-        return 'from-red-500 to-rose-500';
+        return 'bg-red-500';
       case 'high':
-        return 'from-orange-500 to-amber-500';
+        return 'bg-orange-500';
       case 'medium':
-        return 'from-yellow-500 to-amber-500';
+        return 'bg-yellow-500';
       case 'low':
-        return 'from-green-500 to-emerald-500';
+        return 'bg-green-500';
       default:
-        return 'from-gray-500 to-slate-500';
+        return 'bg-gray-500';
     }
   };
 
@@ -135,7 +136,7 @@ export function DecisionLogList({ items, onEdit, onDelete, onView }: DecisionLog
                         تأثیر: {getImpactLabel(item.content.impact)}
                       </Badge>
                       <Badge variant="outline" className="bg-muted/50">
-                        {format(new Date(item.content.date || item.created_at), 'yyyy/MM/dd')}
+                        {formatJalali(new Date(item.content.date || item.created_at), 'yyyy/MM/dd')}
                       </Badge>
                     </div>
                   </div>
@@ -202,14 +203,14 @@ export function DecisionLogList({ items, onEdit, onDelete, onView }: DecisionLog
                   
                   {/* Chosen Option Highlight */}
                   {item.content.chosen_option && (
-                    <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-lg p-3">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-1">
-                        <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-                        <span className="text-xs font-medium text-green-700 dark:text-green-300">
+                        <Check className="h-4 w-4 text-green-600" />
+                        <span className="text-xs font-medium text-green-700">
                           گزینه انتخاب شده
                         </span>
                       </div>
-                      <p className="text-sm font-semibold text-green-900 dark:text-green-100">
+                      <p className="text-sm font-semibold text-green-900">
                         {item.content.chosen_option}
                       </p>
                     </div>

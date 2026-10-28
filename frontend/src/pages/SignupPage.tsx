@@ -84,13 +84,13 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
       <div className="w-full max-w-2xl space-y-6">
         {/* کارت اصلی ثبت‌نام */}
         <Card className="shadow-xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+              <div className="p-3 rounded-xl bg-blue-600 text-white shadow-lg">
                 <Brain className="h-8 w-8" />
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function SignupPage() {
               {/* دکمه ثبت‌نام */}
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+                className="w-full bg-blue-600 hover:bg-blue-700" 
                 disabled={isLoading}
               >
                 {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}

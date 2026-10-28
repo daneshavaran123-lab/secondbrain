@@ -56,9 +56,9 @@ export function OrganizationCharts({ projectsData }: OrganizationChartsProps) {
           transition={{ delay: 0.1 }}
         >
           <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent">
+            <CardHeader className="bg-primary/5">
               <CardTitle className="flex items-center gap-2">
-                <div className="w-2 h-8 bg-gradient-to-b from-primary to-primary/50 rounded-full" />
+                <div className="w-2 h-8 bg-primary rounded-full" />
                 توزیع پروژه‌ها
               </CardTitle>
             </CardHeader>
@@ -108,9 +108,9 @@ export function OrganizationCharts({ projectsData }: OrganizationChartsProps) {
           transition={{ delay: 0.2 }}
         >
           <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-accent/5 to-transparent">
+            <CardHeader className="bg-accent/5">
               <CardTitle className="flex items-center gap-2">
-                <div className="w-2 h-8 bg-gradient-to-b from-emerald-500 to-emerald-500/50 rounded-full" />
+                <div className="w-2 h-8 bg-emerald-500 rounded-full" />
                 روند فعالیت ماهانه
               </CardTitle>
             </CardHeader>
@@ -164,9 +164,9 @@ export function OrganizationCharts({ projectsData }: OrganizationChartsProps) {
           className="lg:col-span-2"
         >
           <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-purple-500/5 to-transparent">
+            <CardHeader className="bg-purple-500/5">
               <CardTitle className="flex items-center gap-2">
-                <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-purple-500/50 rounded-full" />
+                <div className="w-2 h-8 bg-purple-500 rounded-full" />
                 عملکرد تیم‌ها
               </CardTitle>
             </CardHeader>

@@ -24,17 +24,17 @@ export function StatCard({
   className
 }: StatCardProps) {
   const colorClasses = {
-    primary: "from-primary/10 to-primary/5 border-primary/20",
-    medical: "from-medical-blue/10 to-health-green/5 border-medical-blue/20", 
-    tech: "from-tech-cyan/10 to-tech-violet/5 border-tech-cyan/20",
-    accent: "from-accent/10 to-accent/5 border-accent/20"
+    primary: "bg-primary/10 border-primary/20",
+    medical: "bg-medical-blue/10 border-medical-blue/20", 
+    tech: "bg-tech-cyan/10 border-tech-cyan/20",
+    accent: "bg-accent/10 border-accent/20"
   };
 
   const iconColorClasses = {
     primary: "bg-gradient-primary",
     medical: "bg-gradient-medical",
-    tech: "bg-gradient-to-r from-tech-cyan to-tech-violet",
-    accent: "bg-gradient-to-r from-accent to-primary"
+    tech: "bg-tech-cyan",
+    accent: "bg-accent"
   };
 
   return (
@@ -85,9 +85,9 @@ export function StatCard({
         {trend && (
           <div className={cn(
             "inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
-            trend === "up" && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-            trend === "down" && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-            trend === "neutral" && "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+            trend === "up" && "bg-green-100 text-green-700",
+            trend === "down" && "bg-red-100 text-red-700",
+            trend === "neutral" && "bg-gray-100 text-gray-700"
           )}>
             {trend === "up" && "↗"}
             {trend === "down" && "↘"}
@@ -102,7 +102,7 @@ export function StatCard({
       </div>
       
       {/* Decorative Element */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/5 to-transparent rounded-bl-3xl" />
+      <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-bl-3xl" />
     </div>
   );
 }

@@ -86,8 +86,8 @@ export function LeadsKanban({ organizationId }: LeadsKanbanProps) {
           const totalValue = stageLeads.reduce((sum, lead) => sum + (lead.value || 0), 0);
 
           return (
-            <Card key={stage.id} className="min-w-[280px] bg-gradient-to-br from-card to-card/50 border-border/50">
-              <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
+            <Card key={stage.id} className="min-w-[280px] bg-card border-border/50">
+              <CardHeader className="bg-primary/10">
                 <CardTitle className="flex items-center justify-between text-base">
                   <span>{stage.stage_name}</span>
                   <Badge variant="secondary">{stageLeads.length}</Badge>

@@ -19,14 +19,14 @@ export const MinimalSectionHeader: React.FC<MinimalSectionHeaderProps> = ({
   <div className={cn('flex items-start justify-between gap-4 mb-6', className)}>
     <div className="flex items-start gap-3">
       {icon && (
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 text-primary backdrop-blur-md border border-primary/10">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/20 text-primary backdrop-blur-md border border-primary/10">
           {icon}
         </div>
       )}
       <div>
         <h2 className="text-xl font-bold tracking-tight text-foreground">
           {title}
-          <span aria-hidden className="block mt-1 h-px w-12 bg-gradient-to-r from-primary to-transparent" />
+          <span aria-hidden className="block mt-1 h-px w-12 bg-primary" />
         </h2>
         {subtitle && (
           <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{subtitle}</p>

@@ -173,9 +173,9 @@ export const IranianTaskCard: React.FC<IranianTaskCardProps> = ({ task }) => {
       {/* Decorative bottom border based on priority */}
       <div className={`
         h-1 -mx-4 -mb-4 rounded-b-lg
-        ${priority === 'high' ? 'bg-gradient-to-r from-orange-400 to-orange-600' :
-          priority === 'medium' ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
-          'bg-gradient-to-r from-green-400 to-green-600'}
+        ${priority === 'high' ? 'bg-orange-400' :
+          priority === 'medium' ? 'bg-yellow-400' :
+          'bg-green-400'}
       `} />
     </Card>
   );

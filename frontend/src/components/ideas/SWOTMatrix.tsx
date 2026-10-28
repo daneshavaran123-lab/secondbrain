@@ -99,32 +99,32 @@ export const SWOTMatrix: React.FC<SWOTMatrixProps> = ({
           "نقاط قوت",
           data.strengths,
           <Shield className="h-5 w-5" />,
-          "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200/50 dark:from-green-950/20 dark:to-emerald-950/20 dark:border-green-800/30",
-          "text-green-800 dark:text-green-300"
+          "bg-green-50 border-green-200/50",
+          "text-green-800"
         )}
         
         {renderSWOTSection(
           "نقاط ضعف",
           data.weaknesses,
           <AlertTriangle className="h-5 w-5" />,
-          "bg-gradient-to-br from-red-50 to-rose-50 border-red-200/50 dark:from-red-950/20 dark:to-rose-950/20 dark:border-red-800/30",
-          "text-red-800 dark:text-red-300"
+          "bg-red-50 border-red-200/50",
+          "text-red-800"
         )}
         
         {renderSWOTSection(
           "فرصت‌ها",
           data.opportunities,
           <Target className="h-5 w-5" />,
-          "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200/50 dark:from-blue-950/20 dark:to-cyan-950/20 dark:border-blue-800/30",
-          "text-blue-800 dark:text-blue-300"
+          "bg-blue-50 border-blue-200/50",
+          "text-blue-800"
         )}
         
         {renderSWOTSection(
           "تهدیدها",
           data.threats,
           <Lightbulb className="h-5 w-5" />,
-          "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200/50 dark:from-orange-950/20 dark:to-amber-950/20 dark:border-orange-800/30",
-          "text-orange-800 dark:text-orange-300"
+          "bg-orange-50 border-orange-200/50",
+          "text-orange-800"
         )}
       </div>
 

@@ -91,7 +91,7 @@ export function DecisionLogDetail({ strategyId, organizationId, onBack, onEdit, 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-background p-6 md:p-8"
+        className="relative overflow-hidden rounded-xl bg-purple-500/10 p-6 md:p-8"
       >
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">

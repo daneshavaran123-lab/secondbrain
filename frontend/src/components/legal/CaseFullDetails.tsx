@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { LegalCase, LawyerMeeting, LegalDocument } from '@/services/legalService';
 import { DocumentViewerDialog } from './DocumentViewerDialog';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 
 interface CaseFullDetailsProps {
   legalCase: LegalCase;
@@ -56,7 +57,7 @@ export function CaseFullDetails({ legalCase, meetings, documents }: CaseFullDeta
             </div>
             <div>
               <p className="text-sm text-muted-foreground">تاریخ ایجاد:</p>
-              <p className="font-medium">{format(new Date(legalCase.createdAt), 'yyyy/MM/dd')}</p>
+              <p className="font-medium">{formatJalali(new Date(legalCase.createdAt), 'yyyy/MM/dd')}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">وکیل مسئول:</p>
@@ -84,7 +85,7 @@ export function CaseFullDetails({ legalCase, meetings, documents }: CaseFullDeta
                   <Calendar className="h-5 w-5 text-yellow-600" />
                   <p className="font-medium text-yellow-800">جلسه بعدی</p>
                 </div>
-                <p className="text-yellow-700">{format(new Date(legalCase.nextHearing), 'yyyy/MM/dd')}</p>
+                <p className="text-yellow-700">{formatJalali(new Date(legalCase.nextHearing), 'yyyy/MM/dd')}</p>
               </div>
             </>
           )}
@@ -123,7 +124,7 @@ export function CaseFullDetails({ legalCase, meetings, documents }: CaseFullDeta
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            {format(new Date(meeting.date), 'yyyy/MM/dd')}
+                            {formatJalali(new Date(meeting.date), 'yyyy/MM/dd')}
                           </span>
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
@@ -212,7 +213,7 @@ export function CaseFullDetails({ legalCase, meetings, documents }: CaseFullDeta
                         </div>
                         
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
-                          <span>تاریخ آپلود: {format(new Date(doc.uploadDate), 'yyyy/MM/dd')}</span>
+                          <span>تاریخ آپلود: {formatJalali(new Date(doc.uploadDate), 'yyyy/MM/dd')}</span>
                         </div>
                         
                         {doc.tags?.length > 0 && (

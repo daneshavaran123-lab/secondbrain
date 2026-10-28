@@ -8,8 +8,22 @@
    Colour: neutral ink and a cool grey ground; Persian turquoise («فیروزه‌ای») is the signal
    colour of the assistant, focus and the data that matters, and nothing else. */
 
+/* Persian digits everywhere: these faces cover only 0-9 and draw them with each font's own
+   Persian digits (built by scripts/build-persian-digit-fonts.py). Declared after the
+   @fontsource faces, so they win for those codepoints. */
+@font-face { font-family: 'Estedad'; font-weight: 400; font-display: swap; unicode-range: U+0030-0039; src: url('./assets/fonts/estedad-persian-digits-400.woff2') format('woff2'); }
+@font-face { font-family: 'Estedad'; font-weight: 500; font-display: swap; unicode-range: U+0030-0039; src: url('./assets/fonts/estedad-persian-digits-500.woff2') format('woff2'); }
+@font-face { font-family: 'Estedad'; font-weight: 600; font-display: swap; unicode-range: U+0030-0039; src: url('./assets/fonts/estedad-persian-digits-600.woff2') format('woff2'); }
+@font-face { font-family: 'Estedad'; font-weight: 700; font-display: swap; unicode-range: U+0030-0039; src: url('./assets/fonts/estedad-persian-digits-700.woff2') format('woff2'); }
+@font-face { font-family: 'Noto Kufi Arabic'; font-weight: 600; font-display: swap; unicode-range: U+0030-0039; src: url('./assets/fonts/noto-kufi-arabic-persian-digits-600.woff2') format('woff2'); }
+@font-face { font-family: 'Noto Kufi Arabic'; font-weight: 700; font-display: swap; unicode-range: U+0030-0039; src: url('./assets/fonts/noto-kufi-arabic-persian-digits-700.woff2') format('woff2'); }
+/* Real Latin digits for what must stay Latin (email, URL, password, code) */
+@font-face { font-family: 'Estedad Latin'; font-weight: 400; font-display: swap; unicode-range: U+0000-00FF; src: url('./assets/fonts/estedad-latin-400.woff2') format('woff2'); }
+@font-face { font-family: 'Estedad Latin'; font-weight: 500; font-display: swap; unicode-range: U+0000-00FF; src: url('./assets/fonts/estedad-latin-500.woff2') format('woff2'); }
+
 :root {
   --font-sans: 'Estedad', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-latin: 'Estedad Latin', 'Estedad', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Noto Kufi Arabic', 'Estedad', ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
@@ -25,6 +39,10 @@ body :is(h1, h2, .font-display, .font-brand) {
 
 body :is(code, pre, samp) {
   font-family: var(--font-mono) !important;
+}
+
+body :is(input[type="email"], input[type="url"], input[type="password"], kbd, .latin-digits, .latin-digits *) {
+  font-family: var(--font-latin) !important;
 }
 
 /* RTL Support */
@@ -433,6 +451,64 @@ body {
 
     --radius: 0.5rem;
 
+    /* Hue scales. Tailwind's colour palettes (blue, purple, gray…) resolve to these five, so
+       older pages share the product's palette and switch with the theme on their own. */
+    --signal-50: 183 40% 96.5%;
+    --signal-100: 183 42% 92.5%;
+    --signal-200: 183 38% 84%;
+    --signal-300: 183 42% 68%;
+    --signal-400: 183 62% 40%;
+    --signal-500: 183 88% 28%;
+    --signal-600: 183 88% 25%;
+    --signal-700: 184 86% 21%;
+    --signal-800: 185 70% 17%;
+    --signal-900: 186 60% 13%;
+    --signal-950: 187 55% 8%;
+    --neutral-50: 180 6% 97%;
+    --neutral-100: 180 6% 94%;
+    --neutral-200: 180 6% 89.5%;
+    --neutral-300: 180 5% 80%;
+    --neutral-400: 185 5% 58%;
+    --neutral-500: 185 6% 42%;
+    --neutral-600: 185 7% 34%;
+    --neutral-700: 187 9% 26%;
+    --neutral-800: 189 13% 16%;
+    --neutral-900: 189 19% 9%;
+    --neutral-950: 189 19% 5%;
+    --success-50: 150 40% 96%;
+    --success-100: 150 42% 91%;
+    --success-200: 150 38% 82%;
+    --success-300: 150 40% 64%;
+    --success-400: 151 50% 42%;
+    --success-500: 152 60% 31%;
+    --success-600: 152 62% 27%;
+    --success-700: 153 60% 22%;
+    --success-800: 154 55% 17%;
+    --success-900: 155 50% 13%;
+    --success-950: 156 45% 8%;
+    --warning-50: 38 80% 95.5%;
+    --warning-100: 38 82% 89%;
+    --warning-200: 36 80% 78%;
+    --warning-300: 34 80% 60%;
+    --warning-400: 32 85% 46%;
+    --warning-500: 30 90% 36%;
+    --warning-600: 28 85% 32%;
+    --warning-700: 26 80% 26%;
+    --warning-800: 24 72% 21%;
+    --warning-900: 22 65% 16%;
+    --warning-950: 20 60% 9%;
+    --danger-50: 355 70% 97%;
+    --danger-100: 355 70% 93.5%;
+    --danger-200: 356 62% 86%;
+    --danger-300: 356 60% 72%;
+    --danger-400: 357 62% 55%;
+    --danger-500: 358 69% 44%;
+    --danger-600: 358 69% 40%;
+    --danger-700: 358 66% 33%;
+    --danger-800: 358 60% 26%;
+    --danger-900: 358 55% 20%;
+    --danger-950: 358 50% 11%;
+
     --sidebar-background: 180 6% 97%;
 
     --sidebar-foreground: 185 6% 30%;
@@ -580,6 +656,63 @@ body {
     --sidebar-accent-foreground: 180 13% 94%;
     --sidebar-border: 180 7% 14.7%;
     --sidebar-ring: 180 59% 48%;
+
+    /* Hue scales, dark: low shades are dark tints, high shades are light ink */
+    --signal-50: 180 30% 10%;
+    --signal-100: 180 34% 13%;
+    --signal-200: 180 32% 20%;
+    --signal-300: 180 45% 60%;
+    --signal-400: 180 50% 55%;
+    --signal-500: 181 64% 35%;
+    --signal-600: 180 59% 50%;
+    --signal-700: 180 55% 62%;
+    --signal-800: 180 50% 74%;
+    --signal-900: 180 40% 85%;
+    --signal-950: 180 35% 92%;
+    --neutral-50: 180 8% 8%;
+    --neutral-100: 180 8% 10.5%;
+    --neutral-200: 180 7% 15%;
+    --neutral-300: 180 6% 30%;
+    --neutral-400: 185 5% 52%;
+    --neutral-500: 185 5% 45%;
+    --neutral-600: 185 6% 62%;
+    --neutral-700: 184 8% 74%;
+    --neutral-800: 182 10% 84%;
+    --neutral-900: 180 13% 93%;
+    --neutral-950: 180 13% 97%;
+    --success-50: 152 30% 9%;
+    --success-100: 152 32% 12%;
+    --success-200: 152 30% 19%;
+    --success-300: 152 40% 58%;
+    --success-400: 152 45% 50%;
+    --success-500: 152 50% 40%;
+    --success-600: 152 50% 50%;
+    --success-700: 152 48% 62%;
+    --success-800: 150 42% 74%;
+    --success-900: 150 35% 85%;
+    --success-950: 150 30% 92%;
+    --warning-50: 36 40% 9%;
+    --warning-100: 36 45% 12%;
+    --warning-200: 36 40% 19%;
+    --warning-300: 36 75% 60%;
+    --warning-400: 36 80% 54%;
+    --warning-500: 34 80% 42%;
+    --warning-600: 36 85% 55%;
+    --warning-700: 38 85% 64%;
+    --warning-800: 40 80% 74%;
+    --warning-900: 42 70% 84%;
+    --warning-950: 44 60% 92%;
+    --danger-50: 352 35% 10%;
+    --danger-100: 352 38% 13%;
+    --danger-200: 352 35% 20%;
+    --danger-300: 350 65% 68%;
+    --danger-400: 350 70% 63%;
+    --danger-500: 350 62% 48%;
+    --danger-600: 350 70% 60%;
+    --danger-700: 350 72% 70%;
+    --danger-800: 350 70% 80%;
+    --danger-900: 350 60% 88%;
+    --danger-950: 350 50% 94%;
 
     --gradient-primary-dark: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
     --gradient-medical-dark: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));

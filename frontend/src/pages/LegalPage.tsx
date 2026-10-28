@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { NewMeetingDialog } from '@/components/legal/NewMeetingDialog';
 import { LegalDocumentUploadDialog } from '@/components/legal/LegalDocumentUploadDialog';
 import { NewDeadlineDialog } from '@/components/legal/NewDeadlineDialog';
@@ -673,7 +674,7 @@ const LegalPage = () => {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-yellow-600" />
                         <p className="text-sm font-medium text-yellow-800">
-                          جلسه بعدی: {format(new Date(case_.nextHearing), 'yyyy/MM/dd')}
+                          جلسه بعدی: {formatJalali(new Date(case_.nextHearing), 'yyyy/MM/dd')}
                         </p>
                       </div>
                     </div>
@@ -704,7 +705,7 @@ const LegalPage = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">جلسه با {meeting.lawyer}</CardTitle>
-                    <Badge variant="outline">{format(new Date(meeting.date), 'yyyy/MM/dd')}</Badge>
+                    <Badge variant="outline">{formatJalali(new Date(meeting.date), 'yyyy/MM/dd')}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -772,7 +773,7 @@ const LegalPage = () => {
                       <div>
                         <p className="font-medium">{doc.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {format(new Date(doc.uploadDate), 'yyyy/MM/dd')}
+                          {formatJalali(new Date(doc.uploadDate), 'yyyy/MM/dd')}
                         </p>
                       </div>
                     </div>
@@ -852,7 +853,7 @@ const LegalPage = () => {
                         </div>
                         <div className="text-left">
                           <p className="font-semibold">
-                            {format(new Date(case_.nextHearing!), 'yyyy/MM/dd')}
+                            {formatJalali(new Date(case_.nextHearing!), 'yyyy/MM/dd')}
                           </p>
                           <p className={`text-sm ${isUrgent ? 'text-red-600' : 'text-muted-foreground'}`}>
                             {daysLeft > 0 ? `${daysLeft} روز مانده` : 'امروز'}

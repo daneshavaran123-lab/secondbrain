@@ -7,7 +7,8 @@ import { getWorkExperience, deleteWorkExperience, type WorkExperience } from '@/
 import { Plus, Briefcase, Loader2, Trash2, Edit, ExternalLink } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ResumeWorkExperienceDialog } from './ResumeWorkExperienceDialog';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { Badge } from '@/components/ui/badge';
 
 export function ResumeWorkExperience() {
@@ -111,8 +112,8 @@ export function ResumeWorkExperience() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {format(new Date(item.start_date), 'yyyy/MM')} -{' '}
-                      {item.end_date ? format(new Date(item.end_date), 'yyyy/MM') : 'اکنون'}
+                      {formatJalali(new Date(item.start_date), 'yyyy/MM')} -{' '}
+                      {item.end_date ? formatJalali(new Date(item.end_date), 'yyyy/MM') : 'اکنون'}
                     </p>
                   </div>
                   <div className="flex gap-2">

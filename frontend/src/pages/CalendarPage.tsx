@@ -525,7 +525,7 @@ const [selectedPacks, setSelectedPacks] = useState<{ IR: boolean; UN: boolean; T
           <AppIcon size="sm"><Calendar /></AppIcon>
           {isMobile ? "مناسبت‌ها" : "مناسبت‌های امسال"}
         </ModernButton>
-        <ModernButton onClick={() => setShowNewEvent(true)} className="bg-gradient-to-r from-primary to-primary/80" magnetic glow>
+        <ModernButton onClick={() => setShowNewEvent(true)} className="bg-primary" magnetic glow>
           <AppIcon size="sm"><Plus /></AppIcon>
           رویداد جدید
         </ModernButton>

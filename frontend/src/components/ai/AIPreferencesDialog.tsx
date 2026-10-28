@@ -81,14 +81,14 @@ export const AIPreferencesDialog: React.FC<AIPreferencesDialogProps> = ({
 
         <div className="space-y-6">
           {/* Security Notice */}
-          <Card className="border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900">
+          <Card className="border-green-200 bg-green-50">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2 text-green-800 dark:text-green-400">
+              <CardTitle className="text-sm flex items-center gap-2 text-green-800">
                 <Shield className="h-4 w-4" />
                 امنیت پیشرفته
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-green-700 dark:text-green-300">
+            <CardContent className="text-sm text-green-700">
               <p>
                 کلید API به صورت امن در سرور ذخیره شده و هیچگاه به مرورگر ارسال نمی‌شود.
                 تمام درخواست‌ها از طریق Edge Function پردازش می‌شوند.
@@ -160,7 +160,7 @@ export const AIPreferencesDialog: React.FC<AIPreferencesDialogProps> = ({
               </div>
 
               {connectionStatus === 'not_configured' && (
-                <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+                <div className="p-3 bg-amber-50 rounded-lg text-sm text-amber-700">
                   <p className="font-medium mb-1">راهنمای پیکربندی:</p>
                   <ol className="list-decimal list-inside space-y-1 text-xs">
                     <li>به داشبورد Supabase بروید</li>

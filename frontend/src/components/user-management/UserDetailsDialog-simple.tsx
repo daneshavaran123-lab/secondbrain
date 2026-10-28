@@ -51,7 +51,7 @@ export function UserDetailsDialog({ open, onOpenChange, user }: UserDetailsDialo
           <Card>
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
+                <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold">
                   {user.display_name?.charAt(0) || user.first_name?.charAt(0) || 'ک'}
                 </div>
                 <div className="flex-1">

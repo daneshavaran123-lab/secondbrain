@@ -14,28 +14,28 @@ const columns = [
   { 
     id: 'todo', 
     title: 'در حال برنامه‌ریزی 📋',
-    color: 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200',
+    color: 'bg-amber-50 border-amber-200',
     headerColor: 'text-amber-700',
     count: 'bg-amber-100 text-amber-700'
   },
   { 
     id: 'this_week', 
     title: 'این هفته 📅',
-    color: 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200',
+    color: 'bg-blue-50 border-blue-200',
     headerColor: 'text-blue-700',
     count: 'bg-blue-100 text-blue-700'
   },
   { 
     id: 'in_progress', 
     title: 'امروز ✅',
-    color: 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200',
+    color: 'bg-purple-50 border-purple-200',
     headerColor: 'text-purple-700',
     count: 'bg-purple-100 text-purple-700'
   },
   { 
     id: 'completed', 
     title: 'انجام شد 🎯',
-    color: 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200',
+    color: 'bg-green-50 border-green-200',
     headerColor: 'text-green-700',
     count: 'bg-green-100 text-green-700'
   },

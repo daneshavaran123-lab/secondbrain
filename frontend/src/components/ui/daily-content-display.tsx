@@ -177,7 +177,7 @@ export const DailyContentDisplay = ({ className = "", compact = false }: DailyCo
                 <span className="text-sm font-medium text-foreground">آیه روز</span>
               </div>
               
-              <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg p-4 border border-primary/10">
+              <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                 {/* متن عربی */}
                 <p className="text-lg font-semibold text-center mb-3 text-foreground leading-relaxed" 
                    style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }}>
@@ -254,7 +254,7 @@ export const DailyContentDisplay = ({ className = "", compact = false }: DailyCo
                 </Badge>
               </div>
               
-              <div className="bg-gradient-to-r from-accent/5 to-primary/5 rounded-lg p-4 border border-accent/10">
+              <div className="bg-accent/5 rounded-lg p-4 border border-accent/10">
                 {/* متن جمله */}
                 <p className="text-base text-foreground leading-relaxed mb-3">
                   "{dailyContent.quote.text}"

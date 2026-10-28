@@ -8,7 +8,7 @@ import { Calendar, Clock, CheckCircle2, AlertCircle, TrendingUp, User, Briefcase
 import { projectManagementService } from '@/services/projectManagementService';
 import { Project, ProjectTask, ProjectMember, ProjectNotification } from '@/types';
 import { format, isToday, isTomorrow, isThisWeek, isPast, startOfWeek, endOfWeek } from 'date-fns';
-import { faIR } from 'date-fns/locale';
+import { format as formatJalali } from 'date-fns-jalali';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { MobileEnhancedCard, MobileCardGrid } from '@/components/ui/mobile-enhanced-card';
@@ -114,8 +114,8 @@ export function PersonalProjectDashboard({ userId: propUserId }: PersonalProject
     const date = new Date(deadline);
     if (isToday(date)) return 'امروز';
     if (isTomorrow(date)) return 'فردا';
-    if (isThisWeek(date)) return format(date, 'EEEE', { locale: faIR });
-    return format(date, 'dd MMM', { locale: faIR });
+    if (isThisWeek(date)) return formatJalali(date, 'EEEE');
+    return formatJalali(date, 'd MMMM');
   };
 
   const getDeadlineColor = (deadline: string, status: string) => {
@@ -133,7 +133,7 @@ export function PersonalProjectDashboard({ userId: propUserId }: PersonalProject
         <div className="space-y-6">
           <MobileEnhancedCard className="text-center" variant="touch-friendly">
             <div className={`py-${isMobile ? '8' : '12'}`}>
-              <div className={`w-${isMobile ? '20' : '24'} h-${isMobile ? '20' : '24'} mx-auto mb-6 rounded-full bg-gradient-to-r from-primary/10 to-primary/5 flex items-center justify-center`}>
+              <div className={`w-${isMobile ? '20' : '24'} h-${isMobile ? '20' : '24'} mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center`}>
                 <Briefcase className={`h-${isMobile ? '10' : '12'} w-${isMobile ? '10' : '12'} text-primary/70`} />
               </div>
               <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-foreground mb-2`}>
@@ -180,7 +180,7 @@ export function PersonalProjectDashboard({ userId: propUserId }: PersonalProject
                 {getProductivityScore}%
               </div>
             </div>
-            <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full bg-gradient-to-r from-primary to-primary/70 flex items-center justify-center`}>
+            <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} rounded-full bg-primary flex items-center justify-center`}>
               <TrendingUp className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'} text-primary-foreground`} />
             </div>
           </div>
@@ -361,7 +361,7 @@ export function PersonalProjectDashboard({ userId: propUserId }: PersonalProject
                       {project.endDate && (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          <span>{format(new Date(project.endDate), 'dd/MM/yyyy')}</span>
+                          <span>{formatJalali(new Date(project.endDate), 'yyyy/MM/dd')}</span>
                         </div>
                       )}
                     </div>

@@ -9,6 +9,7 @@ import { Star, Users, TrendingUp, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
+import { format as formatJalali } from 'date-fns-jalali';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface CSRImpactAssessmentProps {
@@ -62,7 +63,7 @@ export function CSRImpactAssessment({ projectId }: CSRImpactAssessmentProps) {
   };
 
   const chartData = assessments.map(a => ({
-    date: format(new Date(a.assessment_date), 'MM/dd'),
+    date: formatJalali(new Date(a.assessment_date), 'MM/dd'),
     score: Number(a.satisfaction_score),
     beneficiaries: a.beneficiaries_count,
   }));

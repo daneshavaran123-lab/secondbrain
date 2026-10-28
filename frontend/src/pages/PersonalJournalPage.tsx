@@ -149,11 +149,11 @@ const PersonalJournalPage = () => {
 
   const getEntryTypeColor = (type: string) => {
     switch (type) {
-      case "شعر": return "bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20 text-purple-700 dark:text-purple-300";
-      case "خاطره": return "bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/20 text-amber-700 dark:text-amber-300";
-      case "دل‌نوشته": return "bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/20 text-blue-700 dark:text-blue-300";
-      case "ایده": return "bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/20 text-green-700 dark:text-green-300";
-      case "خواب": return "bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border-indigo-500/20 text-indigo-700 dark:text-indigo-300";
+      case "شعر": return "bg-purple-500/10 border-purple-500/20 text-purple-700";
+      case "خاطره": return "bg-amber-500/10 border-amber-500/20 text-amber-700";
+      case "دل‌نوشته": return "bg-blue-500/10 border-blue-500/20 text-blue-700";
+      case "ایده": return "bg-green-500/10 border-green-500/20 text-green-700";
+      case "خواب": return "bg-indigo-500/10 border-indigo-500/20 text-indigo-700";
       default: return "bg-muted/50 border-border text-muted-foreground";
     }
   };
@@ -262,16 +262,16 @@ const PersonalJournalPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4 animate-fade-in">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl backdrop-blur-sm">
+            <div className="p-3 bg-primary/20 rounded-2xl backdrop-blur-sm">
               <BookOpen className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-primary bg-clip-text text-transparent">
             دل‌نوشته‌ها
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -451,7 +451,7 @@ const PersonalJournalPage = () => {
         {filteredEntries.length === 0 ? (
           <div className="text-center py-16 animate-fade-in">
             <div className="max-w-md mx-auto space-y-6">
-              <div className="p-6 bg-gradient-to-r from-muted/50 to-muted/30 rounded-3xl backdrop-blur-sm">
+              <div className="p-6 bg-muted/50 rounded-3xl backdrop-blur-sm">
                 <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">
                   هنوز نوشته‌ای ندارید

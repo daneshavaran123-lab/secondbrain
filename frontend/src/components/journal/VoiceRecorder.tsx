@@ -262,7 +262,7 @@ export const VoiceRecorder = ({ onTextReceived, onCancel }: VoiceRecorderProps) 
         <>
           {/* Real-Time Mode */}
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mb-4 relative">
+            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-primary/20 mb-4 relative">
               {isListening && (
                 <div className="absolute inset-0 rounded-full bg-primary/30 animate-pulse" />
               )}
@@ -359,7 +359,7 @@ export const VoiceRecorder = ({ onTextReceived, onCancel }: VoiceRecorderProps) 
         <>
           {/* Traditional Mode */}
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mb-4 relative">
+            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-primary/20 mb-4 relative">
               {isRecording && (
                 <div className="absolute inset-0 rounded-full bg-primary/30 animate-pulse" />
               )}

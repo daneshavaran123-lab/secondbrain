@@ -186,7 +186,7 @@ export function CompaniesManager() {
                 <span>{company.company_name}</span>
                 <div className="flex gap-2">
                   {companiesService.isDefaultCompany(company) && (
-                    <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950">
+                    <Badge variant="outline" className="bg-blue-50">
                       پیش‌فرض
                     </Badge>
                   )}

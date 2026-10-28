@@ -33,7 +33,7 @@ export const TabsListScrollable = forwardRef<
         {children}
       </TabsPrimitive.List>
       {isMobile && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-background via-muted to-background opacity-50" />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-background opacity-50" />
       )}
     </div>
   );

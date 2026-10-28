@@ -13,8 +13,8 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
       title: 'کل اعضا',
       value: stats.totalMembers,
       icon: Users,
-      gradient: 'from-blue-500 to-cyan-500',
-      bgGradient: 'from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30',
+      gradient: 'bg-blue-500',
+      bgGradient: 'bg-blue-50',
       change: '+12%',
       trend: 'up' as const,
     },
@@ -22,8 +22,8 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
       title: 'پروژه‌های فعال',
       value: stats.activeProjects,
       icon: FolderKanban,
-      gradient: 'from-purple-500 to-pink-500',
-      bgGradient: 'from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30',
+      gradient: 'bg-purple-500',
+      bgGradient: 'bg-purple-50',
       change: '+8%',
       trend: 'up' as const,
     },
@@ -31,8 +31,8 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
       title: 'نرخ تکمیل',
       value: `${stats.completionRate}%`,
       icon: CheckCircle,
-      gradient: 'from-emerald-500 to-teal-500',
-      bgGradient: 'from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30',
+      gradient: 'bg-emerald-500',
+      bgGradient: 'bg-emerald-50',
       change: '+5%',
       trend: 'up' as const,
     },
@@ -40,8 +40,8 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
       title: 'میانگین زمان پاسخ',
       value: `${stats.averageResponseTime}h`,
       icon: Clock,
-      gradient: 'from-orange-500 to-amber-500',
-      bgGradient: 'from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30',
+      gradient: 'bg-orange-500',
+      bgGradient: 'bg-orange-50',
       change: '-3%',
       trend: 'down' as const,
     },
@@ -98,7 +98,7 @@ export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">
                     {stat.title}
                   </h3>
-                  <p className="text-3xl font-bold bg-gradient-to-l from-foreground to-foreground/70 bg-clip-text">
+                  <p className="text-3xl font-bold bg-foreground bg-clip-text">
                     {stat.value}
                   </p>
                 </div>

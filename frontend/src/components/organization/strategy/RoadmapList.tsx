@@ -23,7 +23,8 @@ import {
   Map
 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { cn } from '@/lib/utils';
 
 interface Milestone {
@@ -135,7 +136,7 @@ export function RoadmapList({ items, onEdit, onDelete, onView }: RoadmapListProp
             transition={{ delay: index * 0.1, duration: 0.3 }}
           >
             <Card className="overflow-hidden hover:shadow-luxury-soft transition duration-300">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-emerald-500" />
               
               <CardHeader>
                 <div className="flex justify-between items-start gap-3">
@@ -144,8 +145,8 @@ export function RoadmapList({ items, onEdit, onDelete, onView }: RoadmapListProp
                     <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       <span>
-                        {format(new Date(item.content.start_date), 'yyyy/MM/dd')} تا{' '}
-                        {format(new Date(item.content.end_date), 'yyyy/MM/dd')}
+                        {formatJalali(new Date(item.content.start_date), 'yyyy/MM/dd')} تا{' '}
+                        {formatJalali(new Date(item.content.end_date), 'yyyy/MM/dd')}
                       </span>
                     </div>
                   </div>
@@ -197,7 +198,7 @@ export function RoadmapList({ items, onEdit, onDelete, onView }: RoadmapListProp
                 {/* Timeline */}
                 {milestones.length > 0 && (
                   <div className="relative">
-                    <div className="absolute right-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/20 via-primary to-primary/20" />
+                    <div className="absolute right-4 top-0 bottom-0 w-0.5 bg-primary/20" />
                     
                     <div className="space-y-4">
                       {milestones.slice(0, 4).map((milestone, idx) => {
@@ -235,7 +236,7 @@ export function RoadmapList({ items, onEdit, onDelete, onView }: RoadmapListProp
                               <div className="flex gap-3 text-xs text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3" />
-                                  <span>{format(new Date(milestone.target_date), 'yyyy/MM/dd')}</span>
+                                  <span>{formatJalali(new Date(milestone.target_date), 'yyyy/MM/dd')}</span>
                                 </div>
                                 {milestone.owner && (
                                   <div className="flex items-center gap-1">

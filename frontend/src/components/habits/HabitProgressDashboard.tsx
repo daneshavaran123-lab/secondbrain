@@ -5,7 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Flame, Target, TrendingUp, Award } from 'lucide-react';
 import { MonthlyStats } from '@/services/habitTrackerService';
 import { PersianNumber } from '@/components/ui/persian-number';
-import { format } from 'date-fns';
+import { format } from 'date-fns-jalali';
+import { parseISO } from 'date-fns';
 
 interface HabitProgressDashboardProps {
   stats: MonthlyStats;
@@ -115,7 +116,7 @@ export const HabitProgressDashboard: React.FC<HabitProgressDashboardProps> = ({ 
               <XAxis
                 dataKey="date"
                 stroke="hsl(var(--muted-foreground))"
-                tickFormatter={(date) => format(new Date(date), 'd')}
+                tickFormatter={(date) => format(parseISO(date), 'd')}
               />
               <YAxis stroke="hsl(var(--muted-foreground))" />
               <Tooltip
@@ -128,7 +129,7 @@ export const HabitProgressDashboard: React.FC<HabitProgressDashboardProps> = ({ 
                   `${Math.round(value)}%`,
                   'درصد تکمیل',
                 ]}
-                labelFormatter={(date) => format(new Date(date), 'dd MMM')}
+                labelFormatter={(date) => format(parseISO(date), 'd MMMM')}
               />
               <Area
                 type="monotone"
@@ -175,7 +176,7 @@ export const HabitProgressDashboard: React.FC<HabitProgressDashboardProps> = ({ 
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">
-                {format(new Date(stats.bestDay.date), 'd MMMM')}
+                {format(parseISO(stats.bestDay.date), 'd MMMM')}
               </p>
               <p className="text-sm text-muted-foreground">
                 <PersianNumber>{stats.bestDay.count}</PersianNumber> عادت تکمیل شده
@@ -189,7 +190,7 @@ export const HabitProgressDashboard: React.FC<HabitProgressDashboardProps> = ({ 
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">
-                {format(new Date(stats.worstDay.date), 'd MMMM')}
+                {format(parseISO(stats.worstDay.date), 'd MMMM')}
               </p>
               <p className="text-sm text-muted-foreground">
                 <PersianNumber>{stats.worstDay.count}</PersianNumber> عادت تکمیل شده

@@ -132,7 +132,7 @@ export function SprintPlannerModal({ isOpen, onClose, scope, projectId, onSprint
         <div className="space-y-6">
           {/* Current Sprint */}
           {currentSprint && (
-            <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+            <Card className="border-primary/20 bg-primary/5">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center gap-2">

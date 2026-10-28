@@ -10,7 +10,7 @@ import { DeleteHabitDialog } from '@/components/habits/DeleteHabitDialog';
 import { habitTrackerService, Habit, HabitCompletion, MonthlyStats } from '@/services/habitTrackerService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { addMonths, subMonths } from 'date-fns';
+import { addMonths, subMonths } from 'date-fns-jalali';
 import { useSwipeable } from 'react-swipeable';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -61,16 +61,8 @@ const HabitTrackerPage: React.FC = () => {
     try {
       const [habitsData, completionsData, statsData] = await Promise.all([
         habitTrackerService.getHabits(user.id),
-        habitTrackerService.getCompletionsForMonth(
-          user.id,
-          currentMonth.getFullYear(),
-          currentMonth.getMonth() + 1
-        ),
-        habitTrackerService.getMonthlyStats(
-          user.id,
-          currentMonth.getFullYear(),
-          currentMonth.getMonth() + 1
-        ),
+        habitTrackerService.getCompletionsForMonth(user.id, currentMonth),
+        habitTrackerService.getMonthlyStats(user.id, currentMonth),
       ]);
 
       setHabits(habitsData);

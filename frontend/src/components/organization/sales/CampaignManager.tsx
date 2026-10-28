@@ -133,7 +133,7 @@ export function CampaignManager({ organizationId }: CampaignManagerProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="hover:shadow-lg transition-shadow border-border/50 bg-gradient-to-br from-card to-card/50">
+                <Card className="hover:shadow-lg transition-shadow border-border/50 bg-card">
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
                       <Badge className={getStatusColor(campaign.status || 'draft')}>

@@ -468,7 +468,7 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
         <div className="border-2 border-border/30 rounded-xl overflow-hidden shadow-inner">
           <svg
             ref={svgRef}
-            className="w-full bg-gradient-to-br from-background to-muted/20"
+            className="w-full bg-background"
             style={{ maxHeight: isFullscreen ? '80vh' : '600px' }}
           />
         </div>

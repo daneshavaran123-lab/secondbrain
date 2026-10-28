@@ -16,7 +16,7 @@ import {
   Users,
   Filter
 } from 'lucide-react';
-import { format, differenceInDays, startOfWeek, endOfWeek, addWeeks, subWeeks } from 'date-fns';
+import { format, differenceInDays, startOfWeek, endOfWeek, addWeeks, subWeeks } from 'date-fns-jalali';
 
 interface ProjectTimelineProps {
   project: Project;
@@ -172,7 +172,7 @@ export function ProjectTimeline({ project, onTaskClick }: ProjectTimelineProps) 
         </div>
         
         <div className="text-sm text-muted-foreground">
-          {format(weekDays[0], 'dd/MM')} - {format(weekDays[6], 'dd/MM/yyyy')}
+          {format(weekDays[0], 'd MMMM')} تا {format(weekDays[6], 'd MMMM yyyy')}
         </div>
       </CardHeader>
 
@@ -193,7 +193,7 @@ export function ProjectTimeline({ project, onTaskClick }: ProjectTimelineProps) 
                   {format(day, 'EEEE')}
                 </div>
                 <div className="text-sm">
-                  {format(day, 'dd')}
+                  {format(day, 'd')}
                 </div>
               </div>
             ))}
@@ -232,7 +232,7 @@ export function ProjectTimeline({ project, onTaskClick }: ProjectTimelineProps) 
                         )}
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          <span>{format(new Date(task.deadline), 'dd/MM')}</span>
+                          <span>{format(new Date(task.deadline), 'd MMMM')}</span>
                         </div>
                       </div>
                     </div>

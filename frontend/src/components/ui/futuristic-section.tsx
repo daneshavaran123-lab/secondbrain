@@ -35,8 +35,8 @@ export function FuturisticSection({
       </div>
       
       {/* Subtle decorative elements */}
-      <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-primary/20 to-transparent" />
-      <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-accent/20 to-transparent" />
+      <div className="absolute top-0 left-0 w-px h-full bg-transparent" />
+      <div className="absolute top-0 right-0 w-px h-full bg-transparent" />
     </section>
   );
 }

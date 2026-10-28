@@ -81,21 +81,21 @@ export function IdeaList({ domain }: IdeaListProps) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "high": return "bg-red-500/10 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400";
-      case "medium": return "bg-yellow-500/10 text-yellow-700 border-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-400";
-      case "low": return "bg-green-500/10 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-400";
+      case "high": return "bg-red-500/10 text-red-700 border-red-200";
+      case "medium": return "bg-yellow-500/10 text-yellow-700 border-yellow-200";
+      case "low": return "bg-green-500/10 text-green-700 border-green-200";
       default: return "bg-muted text-muted-foreground border-border";
     }
   };
 
   const getStageColor = (stage: string) => {
     switch (stage) {
-      case "concept": return "bg-blue-500/10 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400";
-      case "research": return "bg-purple-500/10 text-purple-700 border-purple-200 dark:bg-purple-500/20 dark:text-purple-400";
-      case "development": return "bg-orange-500/10 text-orange-700 border-orange-200 dark:bg-orange-500/20 dark:text-orange-400";
-      case "testing": return "bg-pink-500/10 text-pink-700 border-pink-200 dark:bg-pink-500/20 dark:text-pink-400";
-      case "implementation": return "bg-indigo-500/10 text-indigo-700 border-indigo-200 dark:bg-indigo-500/20 dark:text-indigo-400";
-      case "launched": return "bg-emerald-500/10 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400";
+      case "concept": return "bg-blue-500/10 text-blue-700 border-blue-200";
+      case "research": return "bg-purple-500/10 text-purple-700 border-purple-200";
+      case "development": return "bg-orange-500/10 text-orange-700 border-orange-200";
+      case "testing": return "bg-pink-500/10 text-pink-700 border-pink-200";
+      case "implementation": return "bg-indigo-500/10 text-indigo-700 border-indigo-200";
+      case "launched": return "bg-emerald-500/10 text-emerald-700 border-emerald-200";
       default: return "bg-muted text-muted-foreground border-border";
     }
   };
@@ -216,13 +216,13 @@ export function IdeaList({ domain }: IdeaListProps) {
                   <div className="flex items-center justify-between text-caption">
                     <div className="flex items-center gap-3 flex-wrap">
                       {idea.feasibility_score && (
-                        <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-950/30 px-2 py-1 rounded-md">
+                        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md">
                           <TrendingUp className="w-3 h-3 text-blue-600" />
                           <span className="font-medium">{idea.feasibility_score}/10</span>
                         </div>
                       )}
                       {idea.potential_impact && (
-                        <div className="flex items-center gap-1 bg-purple-50 dark:bg-purple-950/30 px-2 py-1 rounded-md">
+                        <div className="flex items-center gap-1 bg-purple-50 px-2 py-1 rounded-md">
                           <Target className="w-3 h-3 text-purple-600" />
                           <span className="font-medium">{idea.potential_impact}/10</span>
                         </div>

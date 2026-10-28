@@ -271,14 +271,14 @@ export default function BusinessEmailPage() {
               </Button>
               <div className="flex items-center gap-3">
                 <motion.div 
-                  className="p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 glow-soft"
+                  className="p-3 rounded-2xl bg-primary/20 glow-soft"
                   whileHover={{ scale: 1.05, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 >
                   <Mail className="h-6 w-6 text-primary" />
                 </motion.div>
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-l from-primary to-accent bg-clip-text text-transparent">
+                  <h1 className="text-xl font-bold bg-primary bg-clip-text text-transparent">
                     ایمیل‌ساز هوشمند تجاری
                   </h1>
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -431,11 +431,11 @@ export default function BusinessEmailPage() {
               <Card className="glass-card rounded-2xl border-0 hover-glow gradient-border">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20">
+                    <div className="p-1.5 rounded-lg bg-primary/20">
                       <FileText className="h-4 w-4 text-primary" />
                     </div>
                     📝 نکات کلیدی ایمیل
-                    <Badge className="text-xs bg-gradient-to-r from-primary/20 to-accent/20 text-primary border-0">
+                    <Badge className="text-xs bg-primary/20 text-primary border-0">
                       مهم
                     </Badge>
                   </CardTitle>
@@ -579,7 +579,7 @@ export default function BusinessEmailPage() {
               >
                 <Button 
                   size="lg" 
-                  className="w-full gap-3 rounded-2xl h-14 text-base font-semibold bg-gradient-to-l from-primary to-accent hover:opacity-90 glow-primary" 
+                  className="w-full gap-3 rounded-2xl h-14 text-base font-semibold bg-primary hover:opacity-90 glow-primary" 
                   onClick={() => generateEmail()}
                   disabled={isGenerating || !purpose || !industry || !recipientType || !keyPoints.trim()}
                 >
@@ -808,7 +808,7 @@ export default function BusinessEmailPage() {
                   >
                     <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button 
-                        className="w-full gap-2 rounded-xl h-12 bg-gradient-to-l from-primary to-accent hover:opacity-90"
+                        className="w-full gap-2 rounded-xl h-12 bg-primary hover:opacity-90"
                         onClick={() => copyToClipboard(`${editedSubject}\n\n${editedBody}`, 'all')}
                       >
                         {copiedField === 'all' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -849,7 +849,7 @@ export default function BusinessEmailPage() {
                   <Card className="glass-card rounded-3xl border-0 h-full min-h-[600px] flex items-center justify-center">
                     <div className="text-center space-y-6 p-8">
                       <motion.div 
-                        className="p-6 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 w-fit mx-auto glow-soft"
+                        className="p-6 rounded-3xl bg-primary/10 w-fit mx-auto glow-soft"
                         animate={{ 
                           y: [0, -10, 0],
                           rotate: [0, 5, 0, -5, 0],
@@ -863,7 +863,7 @@ export default function BusinessEmailPage() {
                         <Mail className="h-16 w-16 text-primary" />
                       </motion.div>
                       <div className="space-y-2">
-                        <h3 className="text-xl font-bold bg-gradient-to-l from-primary to-accent bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-primary bg-clip-text text-transparent">
                           ایمیل شما اینجا نمایش داده می‌شود
                         </h3>
                         <p className="text-muted-foreground text-sm max-w-md mx-auto">

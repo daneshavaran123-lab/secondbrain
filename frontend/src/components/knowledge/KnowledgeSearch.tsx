@@ -110,7 +110,7 @@ export const KnowledgeSearch: React.FC<KnowledgeSearchProps> = ({ onResultsChang
   };
 
   return (
-    <Card className="p-10 border-4 border-primary/20 shadow-2xl rounded-3xl bg-gradient-to-br from-background to-muted/10">
+    <Card className="p-10 border-4 border-primary/20 shadow-2xl rounded-3xl bg-background">
       <CardHeader className="pb-10">
         <CardTitle className="text-4xl font-bold text-primary flex items-center gap-4">
           <Search className="h-12 w-12" />

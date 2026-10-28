@@ -109,8 +109,8 @@ export default function UserPermissionsDialog({ open, onOpenChange, userId }: Us
 
   const getPermissionBadgeColor = (accessType: 'allow' | 'deny') => {
     return accessType === 'allow' 
-      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      ? 'bg-green-100 text-green-800'
+      : 'bg-red-100 text-red-800';
   };
 
   if (userLoading || permissionsLoading || userPermissionsLoading) {

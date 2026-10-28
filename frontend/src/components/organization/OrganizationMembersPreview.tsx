@@ -38,7 +38,7 @@ export function OrganizationMembersPreview({
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-br from-primary/5 to-transparent pb-4">
+      <CardHeader className="bg-primary/5 pb-4">
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" />
@@ -66,7 +66,7 @@ export function OrganizationMembersPreview({
               >
                 <div className="relative">
                   <Avatar className="w-14 h-14 border-2 border-primary/20">
-                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-foreground font-semibold">
+                    <AvatarFallback className="bg-primary/20 text-foreground font-semibold">
                       {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>

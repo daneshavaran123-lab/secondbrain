@@ -27,17 +27,17 @@ export default function CleanupCompletePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-green-50 flex items-center justify-center p-4">
       <ModernCard title="پاکسازی کامل" className="max-w-md w-full p-8 text-center space-y-6">
-        <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-10 h-10 text-green-600" />
         </div>
         
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-gray-900">
             پاکسازی کامل شد!
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600">
             تمام داده‌های تستی حذف شد و داشبورد آماده استفاده است.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function CleanupCompletePage() {
           </ModernButton>
         </div>
 
-        <div className="text-xs text-gray-500 dark:text-gray-500 space-y-1">
+        <div className="text-xs text-gray-500 space-y-1">
           <p>✅ پایگاه داده Supabase پاک شد</p>
           <p>✅ حافظه محلی تمیز شد</p>
           <p>✅ آمار داشبورد به‌روزرسانی شد</p>

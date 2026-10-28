@@ -280,7 +280,7 @@ const EnhancedMeetingManager = () => {
             transition={{ duration: 0.3 }}
             className="space-y-6"
           >
-            <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-elegant">
+            <Card className="bg-primary/5 border-elegant">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Video className="w-6 h-6 text-primary" />
@@ -331,7 +331,7 @@ const EnhancedMeetingManager = () => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="bg-gradient-to-br from-blue-50/50 to-purple-50/50 border-elegant">
+            <Card className="bg-blue-50/50 border-elegant">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">

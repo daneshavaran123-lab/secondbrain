@@ -108,7 +108,7 @@ export function OKRList({ items, onEdit, onDelete, onView }: OKRListProps) {
             <Card className="relative overflow-hidden group hover:shadow-luxury-soft transition duration-300 cursor-pointer"
                   onClick={() => onView(item.id)}>
               {/* Gradient accent bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-violet-500" />
               
               <CardHeader>
                 <div className="flex justify-between items-start gap-3">
@@ -181,7 +181,7 @@ export function OKRList({ items, onEdit, onDelete, onView }: OKRListProps) {
                             <div key={kr.id} className="flex gap-2 items-center text-xs">
                               <div className="flex-1 bg-muted rounded-full h-1.5 overflow-hidden">
                                 <motion.div 
-                                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-500"
+                                  className="h-full bg-blue-500"
                                   initial={{ width: 0 }}
                                   animate={{ width: `${krProgress}%` }}
                                   transition={{ delay: 0.5 + index * 0.1, duration: 0.6 }}

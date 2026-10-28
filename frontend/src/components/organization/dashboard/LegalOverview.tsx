@@ -13,7 +13,7 @@ export function LegalOverview({ organizationId }: LegalOverviewProps) {
   const stats = { total: 0 };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow cursor-pointer border-border/50 bg-gradient-to-br from-card to-card/50">
+    <Card className="hover:shadow-lg transition-shadow cursor-pointer border-border/50 bg-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center">

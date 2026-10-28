@@ -160,7 +160,7 @@ ${description ? `زمینه: ${description}\n` : ''}
 
         for (const point of (d.key_points || [])) {
           if (point.includes('📰') || point.includes('🔗')) {
-            const cleaned = point.replace(/^[📰🔗]\s*/, '');
+            const cleaned = point.replace(/^(?:📰|🔗)\s*/u, '');
             newsItems.push({
               title: cleaned.split('|')[0]?.split('—')[0]?.trim() || cleaned,
               summary: cleaned.split('|')[1]?.trim() || cleaned,
@@ -280,7 +280,7 @@ ${description ? `زمینه: ${description}\n` : ''}
     s === 'positive' ? 'مثبت' : s === 'negative' ? 'منفی' : s === 'mixed' ? 'متفاوت' : 'خنثی';
 
   const getCredibilityBadge = (credibility?: string) => {
-    if (credibility === 'high') return <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20">اعتبار بالا</Badge>;
+    if (credibility === 'high') return <Badge className="bg-green-500/10 text-green-700 border-green-500/20">اعتبار بالا</Badge>;
     if (credibility === 'medium') return <Badge variant="secondary">اعتبار متوسط</Badge>;
     if (credibility === 'low') return <Badge variant="outline">اعتبار پایین</Badge>;
     return null;
@@ -327,7 +327,7 @@ ${description ? `زمینه: ${description}\n` : ''}
       meta = (
         <div className="flex flex-wrap items-center gap-2 mt-3">
           {item.trend_score && (
-            <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-300">
+            <Badge className="bg-purple-500/20 text-purple-700">
               🔥 {Math.round(item.trend_score * 100)}% ترند
             </Badge>
           )}
@@ -484,7 +484,7 @@ ${description ? `زمینه: ${description}\n` : ''}
       </div>
 
       {prep.trending_topics && prep.trending_topics.length > 0 && (
-        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-4 rounded-lg border border-purple-500/20">
+        <div className="bg-purple-500/10 p-4 rounded-lg border border-purple-500/20">
           <h3 className="font-semibold flex items-center gap-2 mb-3">
             <TrendingUp className="w-5 h-5 text-purple-500" />
             ترندهای روز
@@ -499,7 +499,7 @@ ${description ? `زمینه: ${description}\n` : ''}
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="font-medium text-sm">{trend.topic}</h4>
                   {trend.trend_score && (
-                    <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs">
+                    <Badge className="bg-purple-500/20 text-purple-700 text-xs">
                       🔥 {Math.round(trend.trend_score * 100)}%
                     </Badge>
                   )}
@@ -579,7 +579,7 @@ ${description ? `زمینه: ${description}\n` : ''}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
                     <p className="font-medium text-sm mb-1">{stat.statistic}</p>
-                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">{stat.value}</p>
+                    <p className="text-2xl font-bold text-orange-600 mb-1">{stat.value}</p>
                     {stat.context && <p className="text-xs text-muted-foreground">{stat.context}</p>}
                   </div>
                   <Badge variant="outline" className="text-xs shrink-0">📊 {stat.source}</Badge>
@@ -657,7 +657,7 @@ ${description ? `زمینه: ${description}\n` : ''}
 
       {/* Custom Topic Analysis Form */}
       <Card className="border-2 border-primary/20 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-primary/5 to-purple-500/5">
+        <CardHeader className="bg-primary/5">
           <CardTitle className="flex items-center gap-2">
             <Search className="w-6 h-6 text-primary" />
             تحلیل موضوع جلسه
@@ -721,7 +721,7 @@ ${description ? `زمینه: ${description}\n` : ''}
       {/* Custom Analysis Results */}
       {customPreparation && (
         <Card id="custom-results" className="border-2 border-primary/30 animate-fade-in">
-          <CardHeader className="bg-gradient-to-r from-green-500/10 to-blue-500/10">
+          <CardHeader className="bg-green-500/10">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <CardTitle className="flex items-center gap-2 text-xl mb-2">

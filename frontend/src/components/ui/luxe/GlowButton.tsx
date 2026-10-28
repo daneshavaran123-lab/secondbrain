@@ -14,9 +14,9 @@ export const GlowButton = React.forwardRef<HTMLButtonElement, GlowButtonProps>(
   ({ className, glowVariant = 'primary', children, ...props }, ref) => {
     const styles = {
       primary:
-        'bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground border-0 shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.55)] hover:shadow-[0_12px_40px_-8px_hsl(var(--primary)/0.7)]',
+        'bg-primary text-primary-foreground border-0 shadow-[0_8px_30px_-8px_hsl(var(--primary)/0.55)] hover:shadow-[0_12px_40px_-8px_hsl(var(--primary)/0.7)]',
       accent:
-        'bg-gradient-to-r from-accent to-primary text-accent-foreground border-0 shadow-[0_8px_30px_-8px_hsl(var(--accent)/0.55)] hover:shadow-[0_12px_40px_-8px_hsl(var(--accent)/0.7)]',
+        'bg-accent text-accent-foreground border-0 shadow-[0_8px_30px_-8px_hsl(var(--accent)/0.55)] hover:shadow-[0_12px_40px_-8px_hsl(var(--accent)/0.7)]',
       ghost:
         'bg-background/40 backdrop-blur-md border border-border/50 text-foreground hover:bg-background/60 shadow-[0_4px_20px_-8px_hsl(var(--foreground)/0.15)]',
     } as const;

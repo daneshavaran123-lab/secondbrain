@@ -319,10 +319,10 @@ const HealthPage = () => {
           >
             {recommendations.map((recommendation, index) => {
               const colorClasses = {
-                green: 'bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-400',
-                blue: 'bg-blue-500/10 border-blue-500/20 text-blue-700 dark:text-blue-400', 
-                purple: 'bg-purple-500/10 border-purple-500/20 text-purple-700 dark:text-purple-400',
-                orange: 'bg-orange-500/10 border-orange-500/20 text-orange-700 dark:text-orange-400'
+                green: 'bg-green-500/10 border-green-500/20 text-green-700',
+                blue: 'bg-blue-500/10 border-blue-500/20 text-blue-700', 
+                purple: 'bg-purple-500/10 border-purple-500/20 text-purple-700',
+                orange: 'bg-orange-500/10 border-orange-500/20 text-orange-700'
               };
 
               return (

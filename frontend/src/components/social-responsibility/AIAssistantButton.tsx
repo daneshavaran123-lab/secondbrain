@@ -136,7 +136,7 @@ export function AIAssistantButton({
           </ModernButton>
 
           {!title || !type ? (
-            <p className="text-xs text-amber-600 dark:text-amber-400">
+            <p className="text-xs text-amber-600">
               ⚠️ ابتدا عنوان و نوع پروژه را در مرحله اول وارد کنید
             </p>
           ) : null}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format, eachDayOfInterval } from 'date-fns';
+import { format as formatJalali, startOfMonth, endOfMonth } from 'date-fns-jalali';
 import { ChevronLeft, ChevronRight, Plus, MoreVertical, Edit, Archive, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -79,10 +80,10 @@ export const HabitCalendarGrid: React.FC<HabitCalendarGridProps> = ({
             onClick={onPrevMonth}
             className="hover:bg-accent"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
           <h2 className="text-xl font-semibold">
-            {format(currentMonth, 'MMMM yyyy')}
+            {formatJalali(currentMonth, 'MMMM yyyy')}
           </h2>
           <Button
             variant="ghost"
@@ -90,7 +91,7 @@ export const HabitCalendarGrid: React.FC<HabitCalendarGridProps> = ({
             onClick={onNextMonth}
             className="hover:bg-accent"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
         </div>
         <Button onClick={onAddHabit} size="sm" className="gap-2">
@@ -110,7 +111,7 @@ export const HabitCalendarGrid: React.FC<HabitCalendarGridProps> = ({
                 key={day.toISOString()}
                 className="text-center text-xs font-medium text-muted-foreground"
               >
-                {format(day, 'd')}
+                {formatJalali(day, 'd')}
               </div>
             ))}
           </div>

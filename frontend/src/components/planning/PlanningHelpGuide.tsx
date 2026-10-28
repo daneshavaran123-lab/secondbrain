@@ -222,7 +222,7 @@ export function PlanningHelpGuide({ isOpen, onClose, variant }: PlanningHelpGuid
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {getAIFeatures().map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg">
+                  <div key={index} className="flex items-center gap-3 p-4 bg-primary/5 rounded-lg">
                     <MessageSquare className="w-5 h-5 text-primary" />
                     <div>
                       <h4 className="font-medium">{feature.title}</h4>

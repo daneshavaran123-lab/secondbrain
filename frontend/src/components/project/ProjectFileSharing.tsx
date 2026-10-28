@@ -22,6 +22,7 @@ import {
   User
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { format as formatJalali } from 'date-fns-jalali';
 import { projectManagementService } from '@/services/projectManagementService';
 import { useToast } from '@/hooks/use-toast';
 
@@ -284,7 +285,7 @@ export function ProjectFileSharing({ project, task, currentUserId = 'member_1' }
                                     <span>•</span>
                                     <span>آپلود شده توسط: {uploader?.name}</span>
                                     <span>•</span>
-                                    <span>{format(new Date(file.uploadedAt), 'dd/MM/yyyy HH:mm')}</span>
+                                    <span>{formatJalali(new Date(file.uploadedAt), 'yyyy/MM/dd HH:mm')}</span>
                                   </div>
                                   
                                   {file.type.startsWith('image/') && (
@@ -369,7 +370,7 @@ export function ProjectFileSharing({ project, task, currentUserId = 'member_1' }
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            <span>{format(new Date(file.uploadedAt), 'dd/MM HH:mm')}</span>
+                            <span>{formatJalali(new Date(file.uploadedAt), 'd MMMM HH:mm')}</span>
                           </div>
                           {fileComments.length > 0 && (
                             <div className="flex items-center gap-1">

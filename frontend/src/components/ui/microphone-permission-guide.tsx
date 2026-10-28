@@ -108,7 +108,7 @@ export const MicrophonePermissionGuide: React.FC<MicrophonePermissionGuideProps>
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.2 }}
         >
-          <Alert className="relative border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 shadow-lg">
+          <Alert className="relative border-2 border-primary/20 bg-background shadow-lg">
             <Button
               variant="ghost"
               size="sm"

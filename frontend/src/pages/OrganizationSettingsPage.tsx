@@ -294,7 +294,7 @@ export default function OrganizationSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-accent/5">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-8">
           <Button

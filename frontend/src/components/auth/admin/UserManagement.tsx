@@ -203,10 +203,10 @@ const UserManagement: React.FC = () => {
                   <TableRow key={user.id}>
                     <TableCell className="font-mono text-xs">{user.id}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleString()}</TableCell>
+                    <TableCell>{new Date(user.created_at).toLocaleString('fa-IR')}</TableCell>
                     <TableCell>
                       {user.last_sign_in_at
-                        ? new Date(user.last_sign_in_at).toLocaleString()
+                        ? new Date(user.last_sign_in_at).toLocaleString('fa-IR')
                         : 'Never'}
                     </TableCell>
                     <TableCell>

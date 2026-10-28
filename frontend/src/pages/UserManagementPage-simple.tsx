@@ -251,7 +251,7 @@ export default function UserManagementPage() {
           <TableRow key={user.id}>
             <TableCell>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
                   {user.display_name?.charAt(0) || user.first_name?.charAt(0) || 'ک'}
                 </div>
                 <div>

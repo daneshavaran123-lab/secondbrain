@@ -10,7 +10,8 @@ import { networkingService, NetworkingEvent } from "@/services/networkingService
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { format } from "date-fns";
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { faIR } from "date-fns/locale";
 
 interface NetworkingEventsProps {
@@ -161,7 +162,7 @@ export function NetworkingEvents({ companyId, organizationId }: NetworkingEvents
                       {event.event_date && (
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {format(new Date(event.event_date), "PPP", { locale: faIR })}
+                          {formatJalali(new Date(event.event_date), 'd MMMM yyyy')}
                         </span>
                       )}
                       {event.location && (

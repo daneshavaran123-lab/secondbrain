@@ -9,7 +9,8 @@ import { CaseFullDetails } from './CaseFullDetails';
 import { LawyerNotesDialog } from './LawyerNotesDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 import { useToast } from '@/hooks/use-toast';
 
 interface CaseDetailDrawerProps {
@@ -197,7 +198,7 @@ export function CaseDetailDrawer({
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-2">
                                   <CardTitle className="text-sm">
-                                    یادداشت {format(new Date(note.createdAt), 'yyyy/MM/dd HH:mm')}
+                                    یادداشت {formatJalali(new Date(note.createdAt), 'yyyy/MM/dd HH:mm')}
                                   </CardTitle>
                                   {note.hasAudio && (
                                     <Badge variant="secondary" className="text-xs">

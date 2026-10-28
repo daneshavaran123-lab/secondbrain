@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { TextInputWithVoice } from "@/components/ui/text-input-with-voice";
 import { Calendar } from "@/components/ui/calendar";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Plus, Calendar as CalendarIcon, TrendingUp } from "lucide-react";
+import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
+import { format as formatJalali, isSameMonth } from "date-fns-jalali";
+import { SectionHeader } from "@/components/ui/section-header";
 import GratitudeQuoteDisplay from "@/components/gratitude/GratitudeQuoteDisplay";
 import { Session } from "@supabase/supabase-js";
 import { gratitudeLocalService } from "@/services/gratitudeLocalService";
@@ -193,148 +191,91 @@ const GratitudeJournalPage = () => {
   );
 
   const entriesWithData = entries.filter(entry => entry.date);
-  const datesWithEntries = entriesWithData.map(entry => new Date(entry.date));
+  const datesWithEntries = entriesWithData.map(entry => parseISO(entry.date));
+  const now = new Date();
+  const stats = [
+    { label: 'کل روزهای ثبت‌شده', value: entriesWithData.length },
+    { label: `در ${formatJalali(now, 'MMMM')}`, value: datesWithEntries.filter(d => isSameMonth(d, now)).length },
+    { label: 'هفت روز گذشته', value: datesWithEntries.filter(d => now.getTime() - d.getTime() < 7 * 24 * 60 * 60 * 1000).length },
+  ];
+  const longDate = (date: Date) => formatJalali(date, 'EEEE d MMMM yyyy');
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <div className="container mx-auto p-6 md:p-8 space-y-8">
-        {/* Hero Header - Modern & Elegant */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-luxury-rose p-8 md:p-12 shadow-luxury-glow">
-          <div className="absolute inset-0 bg-gradient-glow opacity-30"></div>
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-              <Heart className="h-10 w-10 text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">دفتر شکرگذاری</h1>
-              <p className="text-white/90 text-lg">هر روز، سه چیز که بابتشان شکرگذارم…</p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto max-w-5xl space-y-6 p-4 md:p-8">
+        <SectionHeader
+          title="دفتر شکرگذاری"
+          subtitle="هر روز، سه چیز که بابتشان شکرگذارم"
+          icon={<Heart />}
+          className="mb-0 md:mb-0"
+        />
 
-        {/* Inspirational Quote Display */}
         <GratitudeQuoteDisplay />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Today's Gratitude Entry Form - Modern Card */}
-        <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-elegant border border-border/50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-primary/10 rounded-xl">
-              <Plus className="h-6 w-6 text-primary" />
+        <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-border bg-border">
+          {stats.map(item => (
+            <div key={item.label} className="bg-card px-4 py-3">
+              <dt className="text-xs text-muted-foreground">{item.label}</dt>
+              <dd className="mt-1 text-2xl font-medium leading-8">{item.value.toLocaleString('fa-IR')}</dd>
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">شکرگذاری امروز</h2>
-          </div>
-          
-          <div className="space-y-6">
-            <TextInputWithVoice
-              id="content"
-              value={gratitudeContent}
-              onChange={setGratitudeContent}
-              type="textarea"
-              placeholder="امروز بابت چه چیزی شکرگذارم…"
-              rows={8}
-              enableVoice={true}
-              label="شکرگذاری امروز *"
-              className="rounded-xl border-2 focus:border-primary transition bg-background/50"
-            />
-            
-            <Button
-              onClick={saveGratitudeEntry} 
-              disabled={isLoading}
-              className="w-full h-12 text-lg font-medium rounded-xl bg-gradient-primary hover:shadow-glow transition duration-300"
-            >
-              {isLoading ? "در حال ذخیره…" : todayEntry ? "بروزرسانی" : "ثبت شکرگذاری"}
-            </Button>
-          </div>
-        </div>
+          ))}
+        </dl>
 
-        {/* Calendar View - Modern Card */}
-        <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-elegant border border-border/50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-accent/10 rounded-xl">
-              <CalendarIcon className="h-6 w-6 text-accent" />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_auto]">
+          <section className="rounded-lg border border-border bg-card p-5 md:p-6" aria-labelledby="today-heading">
+            <div className="mb-4 flex items-baseline justify-between gap-3">
+              <h2 id="today-heading" className="text-lg font-semibold">شکرگذاری امروز</h2>
+              <span className="text-sm text-muted-foreground">{longDate(now)}</span>
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-luxury-rose bg-clip-text text-transparent">تقویم شکرگذاری</h2>
-          </div>
-          
-          <div className="bg-background/50 rounded-xl p-4">
+            <div className="space-y-4">
+              <TextInputWithVoice
+                id="content"
+                value={gratitudeContent}
+                onChange={setGratitudeContent}
+                type="textarea"
+                placeholder="امروز بابت چه چیزی شکرگذارم…"
+                rows={8}
+                enableVoice={true}
+                label="چه چیزهایی امروز را خوب کرد؟"
+              />
+              <Button onClick={saveGratitudeEntry} disabled={isLoading || !gratitudeContent.trim()} className="w-full sm:w-auto">
+                {isLoading ? "در حال ذخیره…" : todayEntry ? "به‌روزرسانی" : "ثبت شکرگذاری"}
+              </Button>
+            </div>
+          </section>
+
+          <section className="rounded-lg border border-border bg-card p-2 lg:w-[19rem]" aria-labelledby="calendar-heading">
+            <h2 id="calendar-heading" className="px-3 pt-3 text-sm font-medium text-muted-foreground">روزهای ثبت‌شده</h2>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={(date) => date && setSelectedDate(date)}
-              modifiers={{
-                hasEntry: datesWithEntries
+              modifiers={{ hasEntry: datesWithEntries }}
+              modifiersClassNames={{
+                hasEntry: "relative font-semibold after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-signal",
               }}
-              modifiersStyles={{
-                hasEntry: { 
-                  backgroundColor: 'hsl(var(--accent))', 
-                  color: 'white',
-                  borderRadius: '50%',
-                  fontWeight: 'bold'
-                }
-              }}
-              className="rounded-xl border-0 pointer-events-auto"
+              className="mx-auto w-fit"
             />
-          </div>
-          
-          {selectedDateEntry && (
-            <div className="mt-4 space-y-3">
-              <h3 className="font-medium">شکرگذاری {format(selectedDate, 'yyyy/MM/dd')}</h3>
-              <p className="text-sm bg-muted p-2 rounded">{selectedDateEntry.content}</p>
+            <div className="border-t border-border px-3 py-3 text-sm">
+              <div className="text-muted-foreground">{longDate(selectedDate)}</div>
+              <p className="mt-1 leading-7">{selectedDateEntry ? selectedDateEntry.content : 'برای این روز چیزی ثبت نشده است.'}</p>
             </div>
-          )}
+          </section>
         </div>
-      </div>
 
-      {/* Statistics */}
-      <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-elegant border border-border/50">
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold text-app-readable">آمار شکرگذاری</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">{entries.length}</div>
-            <div className="text-sm text-muted-foreground">کل روزهای ثبت شده</div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {entries.filter(entry => 
-                new Date(entry.date).getMonth() === new Date().getMonth()
-              ).length}
-            </div>
-            <div className="text-sm text-muted-foreground">این ماه</div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {entries.filter(entry => 
-                Date.now() - new Date(entry.date).getTime() < 7 * 24 * 60 * 60 * 1000
-              ).length}
-            </div>
-            <div className="text-sm text-muted-foreground">هفته گذشته</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Entries */}
-      {entries.length > 0 && (
-        <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-elegant border border-border/50">
-          <h2 className="text-xl font-semibold text-app-readable mb-4">شکرگذاری‌های اخیر</h2>
-          <div className="space-y-3">
-            {entries.slice(0, 5).map((entry) => (
-              <div key={entry.id} className="border rounded-lg p-3">
-                <Badge variant="outline" className="mb-2">
-                  {format(new Date(entry.date), 'yyyy/MM/dd')}
-                </Badge>
-                <p className="text-sm">{entry.content}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        {entries.length > 0 && (
+          <section className="rounded-lg border border-border bg-card" aria-labelledby="recent-heading">
+            <h2 id="recent-heading" className="border-b border-border px-5 py-3 text-base font-semibold">شکرگذاری‌های اخیر</h2>
+            <ul className="divide-y divide-border">
+              {entries.slice(0, 5).map((entry) => (
+                <li key={entry.id} className="px-5 py-3">
+                  <div className="text-xs text-muted-foreground">{longDate(parseISO(entry.date))}</div>
+                  <p className="mt-1 text-sm leading-7">{entry.content}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </div>
   );

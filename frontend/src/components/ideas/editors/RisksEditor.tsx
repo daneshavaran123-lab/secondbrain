@@ -131,19 +131,19 @@ export function RisksEditor({
 
       {/* Risk Matrix Summary */}
       <div className="grid grid-cols-4 gap-2">
-        <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg text-center">
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-center">
           <div className="text-2xl font-bold">{risksBySeverity.critical.length}</div>
           <div className="text-xs text-muted-foreground">بحرانی</div>
         </div>
-        <div className="p-3 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg text-center">
+        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg text-center">
           <div className="text-2xl font-bold">{risksBySeverity.high.length}</div>
           <div className="text-xs text-muted-foreground">بالا</div>
         </div>
-        <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg text-center">
+        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
           <div className="text-2xl font-bold">{risksBySeverity.medium.length}</div>
           <div className="text-xs text-muted-foreground">متوسط</div>
         </div>
-        <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg text-center">
+        <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-center">
           <div className="text-2xl font-bold">{risksBySeverity.low.length}</div>
           <div className="text-xs text-muted-foreground">پایین</div>
         </div>

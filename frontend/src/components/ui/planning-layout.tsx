@@ -18,21 +18,13 @@ export function PlanningLayout({
 }: PlanningLayoutProps) {
   const isMobile = useIsMobile();
 
-  const getVariantColors = () => {
-    switch (variant) {
-      case 'professional':
-        return 'bg-blue-50 border-blue-200 text-blue-800';
-      case 'organizational':
-        return 'bg-purple-50 border-purple-200 text-purple-800';
-      default:
-        return 'bg-emerald-50 border-emerald-200 text-emerald-800';
-    }
-  };
+  const getVariantColors = () => 'border-border bg-card';
+
 
   return (
     <div className="min-h-screen bg-app-background">
       <div className={cn(
-        "container mx-auto max-w-7xl animate-fade-in",
+        "container mx-auto max-w-7xl",
         isMobile ? "p-4 space-y-6" : "p-6 space-y-8"
       )}>
         {children}

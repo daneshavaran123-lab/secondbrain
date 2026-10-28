@@ -1,6 +1,23 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
+// Tailwind's hue palettes all resolve to the five scales defined in index.css, so a page
+// written with bg-blue-50 or text-purple-700 still uses the product palette and follows
+// the theme without dark: variants.
+const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+const scale = (name: string) =>
+	Object.fromEntries(SHADES.map((shade) => [shade, `hsl(var(--${name}-${shade}) / <alpha-value>)`]));
+const PALETTES: Record<string, string[]> = {
+	signal: ['blue', 'sky', 'cyan', 'teal'],
+	neutral: ['gray', 'slate', 'zinc', 'neutral', 'stone', 'indigo', 'violet', 'purple', 'fuchsia', 'pink'],
+	success: ['green', 'emerald', 'lime'],
+	warning: ['yellow', 'amber', 'orange'],
+	danger: ['red', 'rose'],
+};
+const hues = Object.fromEntries(
+	Object.entries(PALETTES).flatMap(([name, aliases]) => aliases.map((alias) => [alias, scale(name)])),
+);
+
 export default {
 	darkMode: ["class"],
 	content: [
@@ -20,6 +37,7 @@ export default {
 		},
 		extend: {
 			colors: {
+				...hues,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

@@ -64,7 +64,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             <div className="absolute top-4 left-4">
               <OfflineChip />
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 animate-fade-in bg-gradient-to-br from-primary via-accent to-primary bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 animate-fade-in bg-primary bg-clip-text text-transparent">
               مغز دوم من
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground font-medium">مرکز کنترل هوشمند</p>
@@ -216,7 +216,7 @@ export default function Dashboard({ sidebarOpen }: DashboardProps) {
             </h2>
           </div>
           
-          <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 p-6 rounded-xl border border-primary/10 backdrop-blur-sm">
+          <div className="bg-primary/5 p-6 rounded-xl border border-primary/10 backdrop-blur-sm">
             <p className="text-base text-foreground/80 leading-relaxed">
               داشبورد آماده دریافت داده‌های جدید است. برای تجربه بهتر، از بخش‌های مختلف سیستم استفاده کنید.
             </p>

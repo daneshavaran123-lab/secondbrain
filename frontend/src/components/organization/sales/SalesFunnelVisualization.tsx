@@ -97,7 +97,7 @@ export function SalesFunnelVisualization({ organizationId }: SalesFunnelVisualiz
                   className="relative"
                   style={{ maxWidth: `${maxWidth}%`, margin: '0 auto' }}
                 >
-                  <div className="bg-gradient-to-r from-primary/20 to-primary/10 rounded-lg p-4 border border-border/50 hover:shadow-md transition-shadow">
+                  <div className="bg-primary/20 rounded-lg p-4 border border-border/50 hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h4 className="font-semibold">{stage.stage_name}</h4>

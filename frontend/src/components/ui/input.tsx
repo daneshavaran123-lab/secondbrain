@@ -1,9 +1,14 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { JalaliDateInput } from "@/components/ui/jalali-date-input"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
+    // Dates are picked on the Jalali calendar; the value keeps the browser's yyyy-MM-dd form
+    if (type === "date" || type === "datetime-local") {
+      return <JalaliDateInput ref={ref} type={type as "date" | "datetime-local"} className={className} {...props} />
+    }
     return (
       <input
         type={type}

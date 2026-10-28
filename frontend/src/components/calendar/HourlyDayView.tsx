@@ -73,7 +73,7 @@ export function HourlyDayView({
   return (
     <div className={cn("border rounded-lg overflow-hidden bg-card", className)}>
       {/* Day Header */}
-      <div className="text-center p-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
+      <div className="text-center p-4 border-b bg-primary/5">
         <div className="flex items-center justify-between mb-2">
           <div className="text-right">
             <div className="text-lg font-semibold">

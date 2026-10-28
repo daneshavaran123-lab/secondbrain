@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { format, eachDayOfInterval } from 'date-fns';
+import { startOfMonth, endOfMonth } from 'date-fns-jalali';
 
 export interface Habit {
   id: string;
@@ -165,9 +166,10 @@ export const habitTrackerService = {
     }
   },
 
-  async getCompletionsForMonth(userId: string, year: number, month: number): Promise<HabitCompletion[]> {
-    const startDate = format(startOfMonth(new Date(year, month - 1)), 'yyyy-MM-dd');
-    const endDate = format(endOfMonth(new Date(year, month - 1)), 'yyyy-MM-dd');
+  /** Completions in the Jalali month that contains `monthDate` */
+  async getCompletionsForMonth(userId: string, monthDate: Date): Promise<HabitCompletion[]> {
+    const startDate = format(startOfMonth(monthDate), 'yyyy-MM-dd');
+    const endDate = format(endOfMonth(monthDate), 'yyyy-MM-dd');
 
     const { data, error } = await supabase
       .from('habit_completions')
@@ -215,14 +217,13 @@ export const habitTrackerService = {
   },
 
   // ===== Statistics =====
-  async getMonthlyStats(userId: string, year: number, month: number): Promise<MonthlyStats> {
+  async getMonthlyStats(userId: string, monthDate: Date): Promise<MonthlyStats> {
     const habits = await this.getHabits(userId);
-    const completions = await this.getCompletionsForMonth(userId, year, month);
+    const completions = await this.getCompletionsForMonth(userId, monthDate);
     const streaks = await this.getStreaks(userId);
 
-    const start = startOfMonth(new Date(year, month - 1));
-    const end = endOfMonth(new Date(year, month - 1));
-    const daysInMonth = end.getDate();
+    const days = eachDayOfInterval({ start: startOfMonth(monthDate), end: endOfMonth(monthDate) });
+    const daysInMonth = days.length;
 
     const totalHabits = habits.length;
     const totalPossible = totalHabits * daysInMonth;
@@ -235,8 +236,8 @@ export const habitTrackerService = {
 
     // Calculate daily progress
     const dailyProgress = [];
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = format(new Date(year, month - 1, day), 'yyyy-MM-dd');
+    for (const day of days) {
+      const date = format(day, 'yyyy-MM-dd');
       const dayCompletions = completions.filter(
         c => c.completion_date === date && c.completed
       ).length;

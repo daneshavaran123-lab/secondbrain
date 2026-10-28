@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Brain, Target, MessageCircle, Plus, Scale, Sparkles, Zap, Shield, TrendingUp, BarChart } from 'lucide-react';
+import { Brain, Target, MessageCircle, Plus, Scale, Zap, Shield, TrendingUp, BarChart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ChatInterface from '@/components/ai-chat/ChatInterface';
 import SessionSidebar from '@/components/ai-chat/SessionSidebar';
@@ -90,34 +90,18 @@ const AIChatPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
-      <div className="container mx-auto p-6 space-y-12">
-        <div className="text-center space-y-6 py-12 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 blur-3xl -z-10" />
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-4">
-            <Sparkles className="w-4 h-4" />
-            قدرت‌گرفته از هوش مصنوعی پیشرفته
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-l from-primary via-secondary to-accent bg-clip-text text-transparent">
-            دستیار هوشمند AI
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            منتور، کوچ و مشاور تصمیم‌گیری هوشمند برای موفقیت شما
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto space-y-8 p-4 md:p-6">
+        <div className="mx-auto max-w-6xl space-y-2 pt-4">
+          <h1 className="text-3xl font-bold md:text-4xl">دستیار هوشمند</h1>
+          <p className="max-w-2xl text-base text-muted-foreground">
+            منتور، کوچ و مشاور تصمیم‌گیری؛ یکی را انتخاب کنید و گفتگو را شروع کنید.
           </p>
-          <div className="flex items-center justify-center gap-8 text-sm text-muted-foreground pt-4">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-primary" />
-              <span>پاسخ فوری</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-primary" />
-              <span>محرمانه و امن</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <span>یادگیری مستمر</span>
-            </div>
-          </div>
+          <ul className="flex flex-wrap items-center gap-x-6 gap-y-1 pt-2 text-sm text-muted-foreground">
+            <li className="flex items-center gap-2"><Zap className="h-4 w-4" aria-hidden />پاسخ فوری</li>
+            <li className="flex items-center gap-2"><Shield className="h-4 w-4" aria-hidden />محرمانه و امن</li>
+            <li className="flex items-center gap-2"><TrendingUp className="h-4 w-4" aria-hidden />یادگیری مستمر</li>
+          </ul>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

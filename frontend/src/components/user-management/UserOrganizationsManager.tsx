@@ -431,7 +431,7 @@ export function UserOrganizationsManager() {
                                   {getOrgTypeLabel(org.organization_type || 'company')}
                                 </Badge>
                                 {isDefaultOrg && (
-                                  <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950">
+                                  <Badge variant="outline" className="bg-blue-50">
                                     پیش‌فرض
                                   </Badge>
                                 )}

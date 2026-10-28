@@ -78,9 +78,9 @@ export default function OrganizationDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-accent/5">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+      <div className="bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -120,7 +120,7 @@ export default function OrganizationDashboardPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-6">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-primary bg-clip-text text-transparent">
               داشبورد جامع سازمان
             </h2>
             <p className="text-muted-foreground mt-2">

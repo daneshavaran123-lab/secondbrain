@@ -569,7 +569,7 @@ export function IdeaForm({
   return <div className="space-y-8 max-w-4xl mx-auto">
       {/* Enhanced Header */}
       <div className="text-center space-y-4">
-        <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 mx-auto bg-primary rounded-2xl flex items-center justify-center shadow-lg">
           <Plus className="w-8 h-8 text-white" />
         </div>
         <div className="space-y-2">
@@ -583,7 +583,7 @@ export function IdeaForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Enhanced Basic Information */}
-          <Card className="border-primary/20 bg-gradient-to-br from-background to-accent/5">
+          <Card className="border-primary/20 bg-background">
             <CardHeader className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -726,7 +726,7 @@ export function IdeaForm({
           </Card>
 
           {/* Enhanced Inspirations */}
-          <Card className="border-blue-200/50 bg-gradient-to-br from-background to-blue-50/30 dark:to-blue-950/20">
+          <Card className="border-blue-200/50 bg-background">
             <CardHeader>
               <div className="flex justify-between items-start gap-4">
                 <div className="space-y-2">
@@ -777,7 +777,7 @@ export function IdeaForm({
           </Card>
 
           {/* AI Analysis Section */}
-          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10">
+          <Card className="border-2 border-primary/30 bg-primary/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />

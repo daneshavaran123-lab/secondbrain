@@ -26,7 +26,7 @@ export const RealtimeTranscript: React.FC<RealtimeTranscriptProps> = ({
   const charCount = (transcript + interimTranscript).length;
 
   return (
-    <Card className="p-4 space-y-3 border-2 border-primary/20 bg-gradient-to-br from-background to-muted/10">
+    <Card className="p-4 space-y-3 border-2 border-primary/20 bg-background">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4 text-primary" />

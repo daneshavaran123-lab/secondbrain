@@ -132,7 +132,7 @@ const TasksPage = () => {
           <ModernButton 
             onClick={addTask} 
             disabled={!newTask.trim()} 
-            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            className="bg-primary hover:bg-primary/90"
             magnetic
             size={isMobile ? "default" : "default"}
           >

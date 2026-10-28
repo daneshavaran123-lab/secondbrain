@@ -58,13 +58,13 @@ export function QuickCleanupButton() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+    <Card className="w-full max-w-2xl mx-auto border-orange-200 bg-orange-50/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
+        <CardTitle className="flex items-center gap-2 text-orange-800">
           <AlertCircle className="h-5 w-5" />
           پاکسازی داده‌های تستی
         </CardTitle>
-        <CardDescription className="text-orange-700 dark:text-orange-300">
+        <CardDescription className="text-orange-700">
           این ابزار تمام داده‌های تستی را از localStorage و Supabase پاک می‌کند
         </CardDescription>
       </CardHeader>
@@ -72,7 +72,7 @@ export function QuickCleanupButton() {
       <CardContent className="space-y-4">
         <Alert className="border-amber-200 bg-amber-50/50">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-amber-800 dark:text-amber-200">
+          <AlertDescription className="text-amber-800">
             <strong>هشدار:</strong> این عمل غیرقابل برگشت است و تمام داده‌های تستی پاک خواهد شد.
             فقط در محیط توسعه کار می‌کند.
           </AlertDescription>

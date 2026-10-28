@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LegalCase, LawyerMeeting, LegalDocument } from '@/services/legalService';
-import { format } from 'date-fns';
+
+import { format as formatJalali } from 'date-fns-jalali';
 
 interface CaseDashboardProps {
   legalCase: LegalCase;
@@ -101,7 +102,7 @@ export function CaseDashboard({
               <div>
                 <p className="font-medium text-yellow-800">جلسه بعدی</p>
                 <p className="text-sm text-yellow-700">
-                  {format(new Date(legalCase.nextHearing), 'yyyy/MM/dd')}
+                  {formatJalali(new Date(legalCase.nextHearing), 'yyyy/MM/dd')}
                 </p>
               </div>
             </div>
@@ -183,7 +184,7 @@ export function CaseDashboard({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">تاریخ:</span>
-                <span className="font-medium">{format(new Date(meetings[0].date), 'yyyy/MM/dd')}</span>
+                <span className="font-medium">{formatJalali(new Date(meetings[0].date), 'yyyy/MM/dd')}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">مدت:</span>
