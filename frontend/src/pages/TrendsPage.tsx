@@ -1,496 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, ExternalLink, Clock, Star, Settings, Search, Bell, Download, Filter, Eye, Bookmark } from 'lucide-react';
-import { ResponsiveCard } from '@/components/ui/responsive-card';
-import { ResponsiveContainer, ResponsiveSection } from '@/components/ui/responsive-container';
-import { ResponsiveLayout, ResponsiveStack } from '@/components/ui/responsive-layout';
-import { ResponsiveHeading, ResponsiveText } from '@/components/ui/responsive-typography';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ExternalLink, Newspaper, RefreshCw, Search, TrendingUp } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns-jalali';
+import { SectionHeader } from '@/components/ui/section-header';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { apiFetch } from '@/lib/api';
+import { cn } from '@/lib/utils';
+
+// Latest headlines from news agencies' RSS feeds (read by the server), grouped by field.
+
+interface Headline {
+  title: string;
+  url: string;
+  snippet: string;
+  date: string | null;
+  source: string;
+  domains: string[];
+  keywords: string[];
+}
+interface NewsResponse {
+  items: Headline[];
+  sources: { source: string; count: number }[];
+  keywords: { word: string; count: number }[];
+  domains: string[];
+  fetched_at: string;
+}
+
+const faDigits = (s: string) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+const ago = (iso: string) => faDigits(formatDistanceToNow(new Date(iso), { addSuffix: true }));
 
 const TrendsPage = () => {
-  // Iranian Newspapers List
-  const iranianNewspapers = [
-    'آرمان امروز', 'آرمان ملی', 'آسیا', 'آگاه', 'ابرار', 'ابرار اقتصادی', 'اترک', 'اخبار صنعت',
-    'آذربایجان', 'اعتدال', 'اعتماد', 'اسکناس', 'اصفهان امروز', 'افکار', 'اقتصاد آینده',
-    'اقتصاد پویا', 'اقتصاد سرآمد', 'اقتصاد کیش', 'اقتصاد مردم', 'اقتصاد ملی', 'امروز', 'باختر',
-    'بازار کسب و کار', 'پیام سپیدار', 'پیام عسلویه', 'پیام ما', 'پیشرو', 'تجارت', 'ثروت',
-    'جهان اقتصاد', 'جهان صنعت', 'جوان', 'جمله', 'جمهوری اسلامی', 'خوب', 'دنیای اقتصاد',
-    'روزگار', 'روزگار معدن', 'رویداد امروز', 'رویش ملت', 'ستاره صبح', 'سپهر ایرانیان',
-    'سیاست روز', 'شرق', 'شروع', 'شهرآرا', 'شهروند', 'صبح امروز', 'صبح ساحل', 'صمت',
-    'عصر اصفهان', 'عصر ایرانیان', 'عصر توسعه', 'عصر رسانه', 'عصر قانون', 'فوق العاده',
-    'قدس', 'کار و کارگر', 'کیهان', 'کیمیای وطن', 'مردم سالاری', 'مواجهه اقتصادی',
-    'مهد تمدن', 'نقش اقتصاد', 'نصف جهان', 'هدف و اقتصاد', 'همدان پیام', 'هنرمند',
-    'یادگار امروز', 'یاقوت وطن', 'ابرار ورزشی', 'خبر ورزشی', 'شوت', 'فوتبالز'
-  ];
+  const [news, setNews] = useState<NewsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [query, setQuery] = useState('');
+  const [domain, setDomain] = useState<string>('all');
 
-  // Domains and Keywords Configuration
-  const predefinedDomains = {
-    'اقتصاد': ['تورم', 'بورس', 'ارز', 'سرمایه‌گذاری', 'نفت', 'گاز', 'صادرات', 'واردات', 'بانک'],
-    'سیاست': ['انتخابات', 'دولت', 'مجلس', 'روابط خارجی', 'دیپلماسی', 'وزیر', 'رئیس‌جمهور'],
-    'ورزش': ['فوتبال', 'المپیک', 'تیم ملی', 'لیگ برتر', 'والیبال', 'کشتی', 'شنا'],
-    'فرهنگ': ['هنر', 'سینما', 'کتاب', 'موسیقی', 'تئاتر', 'نمایشگاه', 'فستیوال'],
-    'جامعه': ['آموزش', 'بهداشت', 'محیط زیست', 'ترافیک', 'آلودگی', 'درمان', 'واکسن'],
-    'فناوری': ['هوش مصنوعی', 'بلاکچین', 'اینترنت', 'موبایل', 'نرم‌افزار', 'سایبری', 'دیجیتال']
-  };
-
-  // State Management
-  const [selectedNewspapers, setSelectedNewspapers] = useState<string[]>([]);
-  const [selectedDomains, setSelectedDomains] = useState<string[]>(['اقتصاد']);
-  const [customKeywords, setCustomKeywords] = useState<{[key: string]: string[]}>({});
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredResults, setFilteredResults] = useState<any[]>([]);
-  const [alertThreshold, setAlertThreshold] = useState(5);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-
-  // Mock News Data with Persian content
-  const mockNews = [
-    {
-      id: 1,
-      title: 'افزایش نرخ تورم به ۴۵ درصد در ماه گذشته',
-      newspaper: 'اقتصاد ملی',
-      content: 'گزارش بانک مرکزی نشان می‌دهد که نرخ تورم در ماه گذشته به ۴۵ درصد رسیده است.',
-      domain: 'اقتصاد',
-      keywords: ['تورم', 'بانک مرکزی', 'اقتصاد'],
-      sentiment: 'منفی',
-      date: '1403/09/15',
-      frequency: 8,
-      trending: 'hot'
-    },
-    {
-      id: 2,
-      title: 'صعود تیم ملی فوتبال در رنکینگ فیفا',
-      newspaper: 'خبر ورزشی',
-      content: 'تیم ملی فوتبال ایران پس از پیروزی‌های اخیر، در رنکینگ فیفا صعود کرد.',
-      domain: 'ورزش',
-      keywords: ['فوتبال', 'تیم ملی', 'فیفا'],
-      sentiment: 'مثبت',
-      date: '1403/09/14',
-      frequency: 12,
-      trending: 'rising'
-    },
-    {
-      id: 3,
-      title: 'افتتاح نمایشگاه هنرهای تجسمی در تهران',
-      newspaper: 'هنرمند',
-      content: 'نمایشگاه بزرگ هنرهای تجسمی با حضور هنرمندان برجسته کشور افتتاح شد.',
-      domain: 'فرهنگ',
-      keywords: ['هنر', 'نمایشگاه', 'تهران'],
-      sentiment: 'مثبت',
-      date: '1403/09/13',
-      frequency: 6,
-      trending: 'stable'
-    },
-    {
-      id: 4,
-      title: 'تصویب لایحه بودجه ۱۴۰۴ در مجلس',
-      newspaper: 'جمهوری اسلامی',
-      content: 'لایحه بودجه سال ۱۴۰۴ با اکثریت آرا در مجلس شورای اسلامی تصویب شد.',
-      domain: 'سیاست',
-      keywords: ['بودجه', 'مجلس', 'تصویب'],
-      sentiment: 'خنثی',
-      date: '1403/09/12',
-      frequency: 15,
-      trending: 'hot'
-    },
-    {
-      id: 5,
-      title: 'راه‌اندازی شبکه ۵G در شهرهای بزرگ',
-      newspaper: 'دنیای اقتصاد',
-      content: 'شبکه نسل پنجم تلفن همراه در شهرهای تهران، مشهد و اصفهان راه‌اندازی شد.',
-      domain: 'فناوری',
-      keywords: ['۵G', 'فناوری', 'تلفن همراه'],
-      sentiment: 'مثبت',
-      date: '1403/09/11',
-      frequency: 9,
-      trending: 'rising'
+  const load = useCallback(async (fresh = false) => {
+    setLoading(true);
+    setFailed(false);
+    try {
+      const res = await apiFetch(`/news${fresh ? '?fresh=1' : ''}`);
+      if (!res.ok) throw new Error(String(res.status));
+      setNews(await res.json());
+    } catch {
+      setFailed(true);
     }
-  ];
-
-  const categories = [
-    { name: 'اقتصاد', count: 25, color: 'bg-green-500/10 text-green-500' },
-    { name: 'سیاست', count: 18, color: 'bg-blue-500/10 text-blue-500' },
-    { name: 'ورزش', count: 12, color: 'bg-purple-500/10 text-purple-500' },
-    { name: 'فرهنگ', count: 8, color: 'bg-orange-500/10 text-orange-500' },
-    { name: 'جامعه', count: 15, color: 'bg-teal-500/10 text-teal-500' },
-    { name: 'فناوری', count: 10, color: 'bg-red-500/10 text-red-500' }
-  ];
-
-  // Utility Functions
-  const getTrendingIcon = (trend: string) => {
-    switch (trend) {
-      case 'hot': return '🔥';
-      case 'rising': return '📈';
-      case 'stable': return '📊';
-      default: return '📰';
-    }
-  };
-
-  const getTrendingBadge = (trend: string) => {
-    switch (trend) {
-      case 'hot':
-        return <Badge className="bg-red-500/10 text-red-500 border-red-500/20">داغ</Badge>;
-      case 'rising':
-        return <Badge className="bg-green-500/10 text-green-500 border-green-500/20">صعودی</Badge>;
-      case 'stable':
-        return <Badge variant="outline">ثابت</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  const getSentimentBadge = (sentiment: string) => {
-    switch (sentiment) {
-      case 'مثبت':
-        return <Badge className="bg-green-500/10 text-green-500">مثبت</Badge>;
-      case 'منفی':
-        return <Badge className="bg-red-500/10 text-red-500">منفی</Badge>;
-      case 'خنثی':
-        return <Badge variant="outline">خنثی</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  // Event Handlers
-  const handleNewspaperToggle = (newspaper: string) => {
-    setSelectedNewspapers(prev => 
-      prev.includes(newspaper) 
-        ? prev.filter(n => n !== newspaper)
-        : [...prev, newspaper]
-    );
-  };
-
-  const handleDomainToggle = (domain: string) => {
-    setSelectedDomains(prev => 
-      prev.includes(domain) 
-        ? prev.filter(d => d !== domain)
-        : [...prev, domain]
-    );
-  };
-
-  const handleKeywordSearch = () => {
-    const filtered = mockNews.filter(news => {
-      const matchesDomain = selectedDomains.length === 0 || selectedDomains.includes(news.domain);
-      const matchesQuery = searchQuery === '' || 
-        news.title.includes(searchQuery) || 
-        news.content.includes(searchQuery) ||
-        news.keywords.some(k => k.includes(searchQuery));
-      
-      return matchesDomain && matchesQuery;
-    });
-    
-    setFilteredResults(filtered);
-    
-    // Alert for high frequency keywords
-    const highFrequencyResults = filtered.filter(news => news.frequency >= alertThreshold);
-    if (highFrequencyResults.length > 0) {
-      toast(`🚨 ${highFrequencyResults.length} خبر با فرکانس بالا یافت شد!`);
-    }
-  };
-
-  const handleExportResults = () => {
-    const dataStr = JSON.stringify(filteredResults, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `newspaper_analysis_${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    
-    toast('✅ گزارش با موفقیت export شد');
-  };
-
-  const handleBookmarkNews = (newsId: number) => {
-    toast('🔖 خبر به لیست مطالعه اضافه شد');
-  };
-
-  // Initialize filtered results
-  useEffect(() => {
-    setFilteredResults(mockNews);
+    setLoading(false);
   }, []);
 
-  // Update results when filters change
-  useEffect(() => {
-    handleKeywordSearch();
-  }, [selectedDomains, searchQuery]);
+  useEffect(() => { load(); }, [load]);
+
+  const items = news?.items ?? [];
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const i of items) for (const d of i.domains) c[d] = (c[d] || 0) + 1;
+    return c;
+  }, [items]);
+  const q = query.trim();
+  const shown = items.filter((i) =>
+    (domain === 'all' || i.domains.includes(domain)) &&
+    (!q || i.title.includes(q) || i.snippet.includes(q) || i.source.includes(q)));
+  const reached = news?.sources.filter((s) => s.count > 0).length ?? 0;
 
   return (
-    <ResponsiveContainer variant="page">
-      <ResponsiveSection spacing="lg">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-            <div>
-              <ResponsiveHeading level={1} className="text-foreground">
-                نظارت بر روزنامه‌های ایران
-              </ResponsiveHeading>
-              <ResponsiveText variant="muted" className="mt-1">
-                سیستم هوشمند تحلیل و پایش اخبار روزنامه‌ها
-              </ResponsiveText>
-            </div>
-          </div>
-          
-          <ResponsiveStack direction="responsive" spacing="sm">
-            <Button variant="outline" onClick={handleExportResults} className="w-full md:w-auto">
-              <Download className="h-4 w-4 ml-2" />
-              خروجی گزارش
-            </Button>
-            
-            <ResponsiveDialog
-              open={false}
-              onOpenChange={() => {}}
-              title="تنظیمات نظارت روزنامه‌ها"
-              description="تنظیم منابع خبری، کلیدواژه‌ها و هشدارهای مربوط به نظارت روندها"
-              footer={
-                <Button variant="outline" className="w-full md:w-auto">
-                  <Settings className="h-4 w-4 ml-2" />
-                  تنظیمات
-                </Button>
-              }
-            >
-              <Tabs defaultValue="newspapers" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="newspapers">انتخاب روزنامه‌ها</TabsTrigger>
-                  <TabsTrigger value="domains">حوزه‌ها و کلیدواژه‌ها</TabsTrigger>
-                  <TabsTrigger value="alerts">تنظیمات هشدار</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="newspapers" className="space-y-4">
-                  <ResponsiveLayout cols={{ mobile: 1, tablet: 2, desktop: 3 }} gap="sm">
-                    {iranianNewspapers.slice(0, 12).map(newspaper => (
-                      <div key={newspaper} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={newspaper}
-                          checked={selectedNewspapers.includes(newspaper)}
-                          onCheckedChange={() => handleNewspaperToggle(newspaper)}
-                        />
-                        <Label htmlFor={newspaper} className="text-sm">{newspaper}</Label>
-                      </div>
-                    ))}
-                  </ResponsiveLayout>
-                  <ResponsiveText size="sm" variant="muted">
-                    {selectedNewspapers.length} روزنامه انتخاب شده
-                  </ResponsiveText>
-                </TabsContent>
-                
-                <TabsContent value="domains" className="space-y-4">
-                  <div className="space-y-4">
-                    {Object.entries(predefinedDomains).map(([domain, keywords]) => (
-                      <div key={domain} className="border border-border rounded-lg p-4">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Checkbox
-                            checked={selectedDomains.includes(domain)}
-                            onCheckedChange={() => handleDomainToggle(domain)}
-                          />
-                          <Label className="font-medium">{domain}</Label>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {keywords.map(keyword => (
-                            <Badge key={keyword} variant="outline" className="text-xs">
-                              {keyword}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="alerts" className="space-y-4">
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="threshold">آستانه هشدار (فرکانس کلیدواژه)</Label>
-                      <Input
-                        id="threshold"
-                        type="number"
-                        value={alertThreshold}
-                        onChange={(e) => setAlertThreshold(Number(e.target.value))}
-                        className="w-32"
-                      />
-                    </div>
-                    <ResponsiveText size="sm" variant="muted">
-                      هشدار زمانی نمایش داده می‌شود که فرکانس کلیدواژه از این مقدار بیشتر باشد
-                    </ResponsiveText>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </ResponsiveDialog>
-          </ResponsiveStack>
+    <div className="space-y-6 p-3 md:p-6">
+      <SectionHeader
+        title="رصد اخبار"
+        subtitle="تازه‌ترین تیترهای خبرگزاری‌ها، دسته‌بندی‌شده بر اساس حوزه"
+        icon={<TrendingUp className="h-6 w-6" />}
+        action={
+          <Button variant="outline" onClick={() => load(true)} disabled={loading} className="gap-2">
+            <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
+            به‌روزرسانی
+          </Button>
+        }
+      />
+
+      <div className="flex flex-col gap-3 md:flex-row md:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="جستجو در تیترها، مثلاً «بورس»…" className="ps-9" aria-label="جستجو در تیترها" />
         </div>
+        {news && (
+          <p className="text-sm text-muted-foreground">
+            {faDigits(String(items.length))} تیتر از {faDigits(String(reached))} خبرگزاری · {ago(news.fetched_at)}
+          </p>
+        )}
+      </div>
 
-        {/* Search and Filter */}
-        <ResponsiveCard className="bg-glass border-elegant">
-          <ResponsiveStack spacing="md">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="جستجوی کلیدواژه، عنوان یا محتوا…"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pr-10"
-                  />
-                </div>
-              </div>
-              <Button onClick={handleKeywordSearch} className="w-full md:w-auto">
-                <Search className="h-4 w-4 ml-2" />
-                جستجو
-              </Button>
-            </div>
-            
-            {/* Active Filters */}
-            {selectedDomains.length > 0 && (
-              <div className="mt-4">
-                <ResponsiveText size="sm" variant="muted" className="mb-2">
-                  حوزه‌های فعال:
-                </ResponsiveText>
-                <div className="flex flex-wrap gap-2">
-                  {selectedDomains.map(domain => (
-                    <Badge key={domain} variant="secondary" className="text-xs">
-                      {domain}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </ResponsiveStack>
-        </ResponsiveCard>
-
-        {/* Domain Categories */}
-        <ResponsiveCard title="تحلیل بر اساس حوزه" className="bg-glass border-elegant">
-          <ResponsiveLayout 
-            cols={{ mobile: 2, tablet: 3, desktop: 6 }}
-            gap="sm"
-          >
-            {categories.map(category => (
-              <Button
-                key={category.name}
-                variant={selectedDomains.includes(category.name) ? "default" : "outline"}
-                className="p-3 md:p-4 h-auto flex flex-col items-center gap-2"
-                onClick={() => handleDomainToggle(category.name)}
-              >
-                <span className="font-medium text-xs md:text-sm">{category.name}</span>
-                <span className="text-xs opacity-70">{category.count.toLocaleString('fa-IR')}</span>
-              </Button>
-            ))}
-          </ResponsiveLayout>
-        </ResponsiveCard>
-
-        {/* Analysis Results */}
-        <ResponsiveLayout 
-          cols={{ mobile: 1, tablet: 1, desktop: 2 }}
-          gap="md"
-        >
-          {filteredResults.map(news => (
-            <ResponsiveCard 
-              key={news.id} 
-              className="bg-glass border-elegant hover:border-primary/20 transition-elegant"
-            >
-              <ResponsiveStack spacing="md">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-lg">{getTrendingIcon(news.trending)}</span>
-                    {getTrendingBadge(news.trending)}
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleBookmarkNews(news.id)}
-                      className="h-8 w-8"
-                    >
-                      <Bookmark className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div>
-                  <ResponsiveHeading level={3} className="mb-2 line-clamp-2">
-                    {news.title}
-                  </ResponsiveHeading>
-                  <ResponsiveText size="sm" variant="muted" className="line-clamp-3 mb-3">
-                    {news.content}
-                  </ResponsiveText>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    {news.newspaper}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    {news.domain}
-                  </Badge>
-                  {getSentimentBadge(news.sentiment)}
-                </div>
-
-                <div className="flex flex-wrap gap-1">
-                  {news.keywords.map(keyword => (
-                    <Badge key={keyword} variant="secondary" className="text-xs">
-                      {keyword}
-                    </Badge>
-                  ))}
-                </div>
-
-                <div className="flex justify-between items-center text-sm text-muted-foreground pt-2 border-t border-border/50">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{news.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    <span>فرکانس: {news.frequency}</span>
-                  </div>
-                </div>
-              </ResponsiveStack>
-            </ResponsiveCard>
+      {items.length > 0 && (
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="حوزه">
+          {['all', ...(news?.domains ?? [])].map((d) => (
+            <Button key={d} size="sm" variant={domain === d ? 'default' : 'outline'} aria-pressed={domain === d} onClick={() => setDomain(d)}>
+              {d === 'all' ? 'همه' : d}
+              {d !== 'all' && <span className="ms-1 opacity-70">{faDigits(String(counts[d] || 0))}</span>}
+            </Button>
           ))}
-        </ResponsiveLayout>
+        </div>
+      )}
 
-        {/* Quick Stats */}
-        <ResponsiveCard title="آمار سریع" className="bg-glass border-elegant">
-          <ResponsiveLayout 
-            cols={{ mobile: 2, tablet: 4, desktop: 4 }}
-            gap="sm"
-          >
-            <div className="text-center p-3 md:p-4 rounded-lg bg-gradient-lux">
-              <ResponsiveHeading level={3} className="text-xl md:text-2xl font-bold text-primary">
-                {filteredResults.length}
-              </ResponsiveHeading>
-              <ResponsiveText size="sm" variant="muted">کل اخبار</ResponsiveText>
+      {news && news.keywords.length > 0 && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="mb-2 text-sm font-medium">پرتکرارترین کلیدواژه‌ها</div>
+            <div className="flex flex-wrap gap-1.5">
+              {news.keywords.map((k) => (
+                <button key={k.word} type="button" onClick={() => setQuery(k.word)} className="rounded-full border px-3 py-1 text-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  {k.word} <span className="text-muted-foreground">{faDigits(String(k.count))}</span>
+                </button>
+              ))}
             </div>
-            <div className="text-center p-3 md:p-4 rounded-lg bg-gradient-lux">
-              <ResponsiveHeading level={3} className="text-xl md:text-2xl font-bold text-green-500">
-                {filteredResults.filter(n => n.sentiment === 'مثبت').length}
-              </ResponsiveHeading>
-              <ResponsiveText size="sm" variant="muted">مثبت</ResponsiveText>
-            </div>
-            <div className="text-center p-3 md:p-4 rounded-lg bg-gradient-lux">
-              <ResponsiveHeading level={3} className="text-xl md:text-2xl font-bold text-red-500">
-                {filteredResults.filter(n => n.sentiment === 'منفی').length}
-              </ResponsiveHeading>
-              <ResponsiveText size="sm" variant="muted">منفی</ResponsiveText>
-            </div>
-            <div className="text-center p-3 md:p-4 rounded-lg bg-gradient-lux">
-              <ResponsiveHeading level={3} className="text-xl md:text-2xl font-bold text-orange-500">
-                {filteredResults.filter(n => n.trending === 'hot').length}
-              </ResponsiveHeading>
-              <ResponsiveText size="sm" variant="muted">داغ</ResponsiveText>
-            </div>
-          </ResponsiveLayout>
-        </ResponsiveCard>
-      </ResponsiveSection>
-    </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {loading && !news ? (
+        <div className="space-y-3" aria-busy="true">
+          {[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+        </div>
+      ) : failed || items.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 px-4 py-12 text-center">
+            <Newspaper className="h-10 w-10 text-muted-foreground" aria-hidden />
+            <p className="font-medium">تیتری دریافت نشد</p>
+            <p className="max-w-md text-sm text-muted-foreground">
+              سرور به خبرگزاری‌ها دسترسی نداشت. چند دقیقه دیگر دوباره امتحان کنید؛ اگر باز هم خالی بود، دسترسی اینترنت سرور را بررسی کنید.
+            </p>
+            <Button variant="outline" onClick={() => load(true)} disabled={loading}>تلاش دوباره</Button>
+          </CardContent>
+        </Card>
+      ) : shown.length === 0 ? (
+        <Card>
+          <CardContent className="px-4 py-10 text-center">
+            <p className="font-medium">تیتری با این جستجو پیدا نشد</p>
+            <Button variant="link" onClick={() => { setQuery(''); setDomain('all'); }}>نمایش همه تیترها</Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-0">
+            <ul className="divide-y">
+              {shown.map((i) => (
+                <li key={i.url || i.title} className="px-4 py-3">
+                  <a href={i.url || undefined} target="_blank" rel="noopener noreferrer" className="group inline-flex items-start gap-1.5 font-medium hover:underline">
+                    {i.title}
+                    {i.url && <ExternalLink className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label="(در پنجره تازه)" />}
+                  </a>
+                  {i.snippet && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{i.snippet}</p>}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>{i.source}</span>
+                    {i.date && <span>· {ago(i.date)}</span>}
+                    {i.domains.map((d) => <Badge key={d} variant="secondary" className="font-normal">{d}</Badge>)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
 

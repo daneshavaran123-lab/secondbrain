@@ -7,6 +7,7 @@ import {
   Meeting 
 } from '@/types';
 import { meetingService } from './meetingService';
+import { persistentStorage, PULLED_EVENT } from '@/lib/persistentStorage';
 
 class SecretaryService {
   private secretaryUsers: SecretaryUser[] = [];
@@ -17,6 +18,8 @@ class SecretaryService {
 
   constructor() {
     this.loadFromStorage();
+    // the server's copy arrives after sign-in (lib/persistentStorage)
+    if (typeof window !== 'undefined') window.addEventListener(PULLED_EVENT, () => void this.loadFromStorage());
     this.initializeDefaultSecretary();
   }
 
@@ -307,9 +310,9 @@ class SecretaryService {
 
   // Storage Management
   private async saveToStorage(): Promise<void> {
-    localStorage.setItem('secretary_users', JSON.stringify(this.secretaryUsers));
-    localStorage.setItem('secretary_requests', JSON.stringify(this.secretaryRequests));
-    localStorage.setItem('secretary_notifications', JSON.stringify(this.notifications));
+    persistentStorage.setItem('secretary_users', JSON.stringify(this.secretaryUsers));
+    persistentStorage.setItem('secretary_requests', JSON.stringify(this.secretaryRequests));
+    persistentStorage.setItem('secretary_notifications', JSON.stringify(this.notifications));
   }
 
   private async loadFromStorage(): Promise<void> {
@@ -331,12 +334,12 @@ class SecretaryService {
     console.log('🏢 پاکسازی داده‌های دبیرخانه…');
     
     // پاک کردن تمام localStorage keys مرتبط
-    localStorage.removeItem('secretary_users');
-    localStorage.removeItem('secretary_requests');
-    localStorage.removeItem('secretary_notifications');
-    localStorage.removeItem('secretaryNotifications');
-    localStorage.removeItem('secretary_audit_log');
-    localStorage.removeItem('secretary_permissions');
+    persistentStorage.removeItem('secretary_users');
+    persistentStorage.removeItem('secretary_requests');
+    persistentStorage.removeItem('secretary_notifications');
+    persistentStorage.removeItem('secretaryNotifications');
+    persistentStorage.removeItem('secretary_audit_log');
+    persistentStorage.removeItem('secretary_permissions');
     
     console.log('✅ پاکسازی دبیرخانه کامل شد');
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Heart, Plus, Search, Calendar, Users, MapPin, FileText, Camera, Award, Eye, Edit, Upload, Download, Trash2, Image, Video, File } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCachedSignedUrl } from '@/utils/signedUrlHelper';
@@ -18,6 +18,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
+import { useUserCollection } from '@/services/userCollections';
+import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 
 // Service Project Type
 interface ServiceProject {
@@ -65,7 +67,7 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 const Projects = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-  const [projects, setProjects] = useState<ServiceProject[]>([]);
+  const [projects, setProjects] = useUserCollection<ServiceProject>('khk_service_projects');
   const [selectedProject, setSelectedProject] = useState<ServiceProject | null>(null);
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -229,22 +231,6 @@ const Projects = () => {
   const editForm = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema)
   });
-
-  // Load projects from localStorage on mount
-  useEffect(() => {
-    const savedProjects = localStorage.getItem('khk_service_projects');
-    if (savedProjects) {
-      setProjects(JSON.parse(savedProjects));
-    }
-    // No initial sample data - start with empty state
-  }, []);
-
-  // Save projects to localStorage whenever projects change
-  useEffect(() => {
-    if (projects.length > 0) {
-      localStorage.setItem('khk_service_projects', JSON.stringify(projects));
-    }
-  }, [projects]);
 
   // Create new project
   const onCreateProject = async (data: ProjectFormData) => {
@@ -1212,6 +1198,18 @@ const Projects = () => {
             <TabsTrigger value="in-progress">در حال اجرا</TabsTrigger>
             <TabsTrigger value="planned">برنامه‌ریزی شده</TabsTrigger>
           </TabsList>
+
+          {filteredProjects.length === 0 && (
+            <ListEmpty
+              icon={Heart}
+              hasItems={projects.length > 0}
+              firstTitle="هنوز اقدامی ثبت نشده"
+              firstHint="هر خدمتی که انجام می‌دهید یا در برنامه دارید ثبت کنید: محل، بهره‌مندان، بودجه و پیشرفت."
+              addLabel="ثبت اولین اقدام"
+              onAdd={() => setIsNewDialogOpen(true)}
+              onClearFilters={() => setSearchTerm('')}
+            />
+          )}
 
           <TabsContent value="all" className="space-y-6">
             <div className="grid gap-6">

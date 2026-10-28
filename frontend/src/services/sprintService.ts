@@ -1,5 +1,6 @@
 // Sprint Management Service for Jira-style Agile Development
 import { PersonalTask, ProjectTask } from '@/types';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface Sprint {
   id: string;
@@ -58,7 +59,7 @@ class SprintService {
 
     sprints.push(newSprint);
     const key = this.getStorageKey(scope, projectId);
-    localStorage.setItem(key, JSON.stringify(sprints));
+    persistentStorage.setItem(key, JSON.stringify(sprints));
 
     return newSprint;
   }
@@ -76,7 +77,7 @@ class SprintService {
     };
 
     const key = this.getStorageKey(scope, projectId);
-    localStorage.setItem(key, JSON.stringify(sprints));
+    persistentStorage.setItem(key, JSON.stringify(sprints));
 
     return sprints[index];
   }
@@ -88,20 +89,20 @@ class SprintService {
     if (filtered.length === sprints.length) return false;
 
     const key = this.getStorageKey(scope, projectId);
-    localStorage.setItem(key, JSON.stringify(filtered));
+    persistentStorage.setItem(key, JSON.stringify(filtered));
 
     // Clear current sprint if it was deleted
     const currentSprintKey = this.getCurrentSprintKey(scope, projectId);
     const currentSprint = localStorage.getItem(currentSprintKey);
     if (currentSprint === sprintId) {
-      localStorage.removeItem(currentSprintKey);
+      persistentStorage.removeItem(currentSprintKey);
     }
 
     // Remove task assignments
     const taskAssignments = this.getSprintTasks(scope, projectId);
     const filteredAssignments = taskAssignments.filter(task => task.sprintId !== sprintId);
     const taskKey = this.getTaskAssignmentKey(scope, projectId);
-    localStorage.setItem(taskKey, JSON.stringify(filteredAssignments));
+    persistentStorage.setItem(taskKey, JSON.stringify(filteredAssignments));
 
     return true;
   }
@@ -119,9 +120,9 @@ class SprintService {
   setCurrentSprint(scope: string, sprintId: string | null, projectId?: string): void {
     const currentSprintKey = this.getCurrentSprintKey(scope, projectId);
     if (sprintId) {
-      localStorage.setItem(currentSprintKey, sprintId);
+      persistentStorage.setItem(currentSprintKey, sprintId);
     } else {
-      localStorage.removeItem(currentSprintKey);
+      persistentStorage.removeItem(currentSprintKey);
     }
   }
 
@@ -148,7 +149,7 @@ class SprintService {
 
     const updated = [...filtered, ...newAssignments];
     const key = this.getTaskAssignmentKey(scope, projectId);
-    localStorage.setItem(key, JSON.stringify(updated));
+    persistentStorage.setItem(key, JSON.stringify(updated));
   }
 
   removeTasksFromSprint(scope: string, taskIds: string[], projectId?: string): void {
@@ -156,7 +157,7 @@ class SprintService {
     const filtered = assignments.filter(assignment => !taskIds.includes(assignment.taskId));
     
     const key = this.getTaskAssignmentKey(scope, projectId);
-    localStorage.setItem(key, JSON.stringify(filtered));
+    persistentStorage.setItem(key, JSON.stringify(filtered));
   }
 
   updateTaskStoryPoints(scope: string, taskId: string, storyPoints: number, projectId?: string): void {
@@ -166,7 +167,7 @@ class SprintService {
     if (index !== -1) {
       assignments[index].storyPoints = storyPoints;
       const key = this.getTaskAssignmentKey(scope, projectId);
-      localStorage.setItem(key, JSON.stringify(assignments));
+      persistentStorage.setItem(key, JSON.stringify(assignments));
     }
   }
 

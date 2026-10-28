@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MessageSquare, Plus, Search, Phone, Mail, MapPin, Building, Users, Star, Calendar, Edit, Trash2, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,8 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { formatPersianNumber, toPersianNumbers } from '@/utils/persian-numbers';
+import { useUserCollection } from '@/services/userCollections';
+import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 
 // Types and interfaces
 interface Partner {
@@ -75,7 +77,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 const Partners = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [partners, setPartners] = useState<Partner[]>([]);
+  const [partners, setPartners] = useUserCollection<Partner>('partners');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
@@ -83,20 +85,8 @@ const Partners = () => {
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const { toast } = useToast();
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedPartners = localStorage.getItem('partners');
-    if (savedPartners) {
-      setPartners(JSON.parse(savedPartners));
-    }
-    // No initial sample data - start with empty state
-  }, []);
-
-  // Save partners to localStorage
-  const savePartners = (updatedPartners: Partner[]) => {
-    setPartners(updatedPartners);
-    localStorage.setItem('partners', JSON.stringify(updatedPartners));
-  };
+  // Partners are kept on the server (useUserCollection)
+  const savePartners = (updatedPartners: Partner[]) => setPartners(updatedPartners);
 
   // Add partner form
   const addForm = useForm<PartnerFormData>({
@@ -506,13 +496,15 @@ const Partners = () => {
           </Tabs>
 
           {filteredPartners.length === 0 && (
-            <Card className="glass-card">
-              <CardContent className="text-center py-12">
-                <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">همکاری یافت نشد</h3>
-                <p className="text-muted-foreground">با تغییر عبارت جستجو دوباره تلاش کنید</p>
-              </CardContent>
-            </Card>
+            <ListEmpty
+              icon={MessageSquare}
+              hasItems={partners.length > 0}
+              firstTitle="هنوز همکاری ثبت نشده"
+              firstHint="افراد و سازمان‌هایی را که در خدمت‌رسانی کنارتان هستند ثبت کنید تا راه تماس و سابقه همکاری‌شان در دسترس بماند."
+              addLabel="افزودن اولین همکار"
+              onAdd={() => setIsAddDialogOpen(true)}
+              onClearFilters={() => setSearchTerm('')}
+            />
           )}
         </div>
       </div>

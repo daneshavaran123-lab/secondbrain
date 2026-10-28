@@ -17,6 +17,12 @@ interface MeetingListProps {
   refreshTrigger?: number;
 }
 
+// Names for meetings saved under the built-in sections
+const ORG_LABELS: Record<string, string> = {
+  KhadimEKhalgh: 'خادم خلق', Varid: 'ورید هلث', Frangaran: 'فرانگران', Association: 'انجمن تولیدکنندگان',
+  Chamber: 'اتاق بازرگانی', Professional: 'حرفه‌ای',
+};
+
 export const MeetingList: React.FC<MeetingListProps> = ({ refreshTrigger }) => {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<Meeting['organization'] | 'all'>('all');
@@ -106,7 +112,7 @@ export const MeetingList: React.FC<MeetingListProps> = ({ refreshTrigger }) => {
 
   const getOrganizationInfo = (org: Meeting['organization']) => {
     const orgInfo = organizations.find(o => o.value === org);
-    return orgInfo || { icon: '📋', label: org };
+    return orgInfo || { icon: '📋', label: ORG_LABELS[org] ?? org };
   };
 
   const formatDuration = (minutes: number): string => {

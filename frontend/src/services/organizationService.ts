@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface Organization {
   id: string;
@@ -85,7 +86,7 @@ class OrganizationService {
   // Set main organization to localStorage
   setMainOrganization(organization: Organization): void {
     try {
-      localStorage.setItem('main_organization', JSON.stringify(organization));
+      persistentStorage.setItem('main_organization', JSON.stringify(organization));
       this.emitUpdateEvent();
     } catch (e) {
       console.error('Error saving main organization:', e);

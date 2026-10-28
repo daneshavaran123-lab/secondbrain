@@ -1,5 +1,6 @@
 import { KnowledgeFolder, FolderTreeNode } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 class FolderService {
   async createFolder(
@@ -45,7 +46,7 @@ class FolderService {
     const folders = JSON.parse(stored);
     const fullFolder = { ...folder, items_count: 0, sub_folders_count: 0 };
     folders.push(fullFolder);
-    localStorage.setItem('knowledge_folders', JSON.stringify(folders));
+    persistentStorage.setItem('knowledge_folders', JSON.stringify(folders));
     return fullFolder;
   }
 
@@ -136,7 +137,7 @@ class FolderService {
       updated_at: new Date().toISOString(),
     };
     
-    localStorage.setItem('knowledge_folders', JSON.stringify(folders));
+    persistentStorage.setItem('knowledge_folders', JSON.stringify(folders));
     return folders[index];
   }
 
@@ -173,7 +174,7 @@ class FolderService {
     const stored = localStorage.getItem('knowledge_folders') || '[]';
     const folders = JSON.parse(stored);
     const filtered = folders.filter((f: KnowledgeFolder) => f.id !== id);
-    localStorage.setItem('knowledge_folders', JSON.stringify(filtered));
+    persistentStorage.setItem('knowledge_folders', JSON.stringify(filtered));
   }
 
   async moveFolder(folderId: string, newParentId?: string): Promise<void> {

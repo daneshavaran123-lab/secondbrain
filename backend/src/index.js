@@ -34,9 +34,12 @@ import verifyOtpRouter from './routes/verify-otp.js';
 import perplexityProxyRouter from './routes/perplexity-proxy.js';
 import subUsersRouter from './routes/sub-users.js';
 import dbRouter from './routes/db.js';
+import { requireAuth } from './middleware/auth.js';
 import supabaseProxyRouter from './routes/supabase-proxy.js';
 import orgLettersRouter from './routes/org-letters.js';
 import healthDataRouter from './routes/health-data.js';
+import newsRouter from './routes/news.js';
+import filesRouter from './routes/files.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,7 +56,7 @@ app.get('/health', (req, res) => {
 });
 
 // Debug: test OpenRouter from server
-app.get('/debug-ai', async (req, res) => {
+app.get('/debug-ai', requireAuth, async (req, res) => {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) return res.json({ error: 'no key' });
   const models = ['openai/gpt-oss-120b:free', 'nvidia/nemotron-3-super-120b-a12b:free', 'google/gemma-4-31b-it:free'];
@@ -108,24 +111,8 @@ app.use('/db',                        dbRouter);
 app.use('/supabase-proxy',            supabaseProxyRouter);
 app.use('/org-letters',               orgLettersRouter);
 app.use('/health-data',               healthDataRouter);
-
-// Debug: test OpenRouter connectivity from backend server
-app.get('/debug-ai', async (req, res) => {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) return res.json({ error: 'no key' });
-  try {
-    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'openai/gpt-oss-20b:free', messages: [{ role: 'user', content: 'hi' }], max_tokens: 10 }),
-      signal: AbortSignal.timeout(15000),
-    });
-    const d = await r.json();
-    res.json({ status: r.status, ok: r.ok, content: d.choices?.[0]?.message?.content, error: d.error });
-  } catch (e) {
-    res.json({ error: e.message });
-  }
-});
+app.use('/news',                      newsRouter);
+app.use('/files',                     filesRouter);
 
 // Serve frontend
 if (existsSync('./public/index.html')) {

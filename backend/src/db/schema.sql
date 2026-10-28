@@ -2322,3 +2322,68 @@ DO $$ DECLARE r record; BEGIN
     END IF;
   END LOOP;
 END $$;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Succession planning and policy attachments: the columns the app's forms use
+-- ═══════════════════════════════════════════════════════════════════════════════
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE;
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS position_title TEXT;
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS department TEXT;
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS current_holder_id TEXT;
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS required_qualifications TEXT;
+ALTER TABLE organization_succession_plans ADD COLUMN IF NOT EXISTS required_skills TEXT[];
+ALTER TABLE organization_succession_plans ALTER COLUMN hr_id DROP NOT NULL;
+ALTER TABLE organization_succession_plans ALTER COLUMN position DROP NOT NULL;
+ALTER TABLE organization_succession_plans ALTER COLUMN current_holder DROP NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_succession_plans_org ON organization_succession_plans(organization_id);
+
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS plan_id UUID REFERENCES organization_succession_plans(id) ON DELETE CASCADE;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS employee_name TEXT;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS current_position TEXT;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS career_aspirations TEXT;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS development_gaps TEXT[];
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS development_plan JSONB;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS performance_rating NUMERIC;
+ALTER TABLE organization_succession_successors ADD COLUMN IF NOT EXISTS potential_rating NUMERIC;
+ALTER TABLE organization_succession_successors ALTER COLUMN succession_plan_id DROP NOT NULL;
+ALTER TABLE organization_succession_successors ALTER COLUMN employee_id DROP NOT NULL;
+ALTER TABLE organization_succession_successors ALTER COLUMN name DROP NOT NULL;
+ALTER TABLE organization_succession_successors ALTER COLUMN rank DROP NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_succession_successors_plan ON organization_succession_successors(plan_id);
+
+-- Attachments of a policy or mission (policy_id is the item's id, which may be a local one)
+ALTER TABLE organizational_policy_attachments ADD COLUMN IF NOT EXISTS policy_id TEXT;
+ALTER TABLE organizational_policy_attachments ALTER COLUMN item_type DROP NOT NULL;
+ALTER TABLE organizational_policy_attachments ALTER COLUMN item_id DROP NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_policy_attachments_policy ON organizational_policy_attachments(policy_id);
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Lists the app used to keep only in the browser (social needs, partners, service log,
+-- roadmap…): one JSON document per person and list, so they follow the person to any device
+-- ═══════════════════════════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS user_collections (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  collection TEXT NOT NULL,
+  data       JSONB NOT NULL DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, collection)
+);
+
+-- Uploaded files (routes/files.js) and the key in their links
+CREATE TABLE IF NOT EXISTS user_files (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  bucket       TEXT NOT NULL,
+  path         TEXT NOT NULL,
+  content_type TEXT,
+  size         INTEGER NOT NULL,
+  data         BYTEA NOT NULL,
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, bucket, path)
+);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS file_key TEXT UNIQUE;

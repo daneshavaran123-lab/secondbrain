@@ -41,6 +41,7 @@ const BACKEND_TABLES = {
   habit_completions:           { userCol: 'user_id' },
   habit_streaks:               { userCol: 'user_id' },
   habit_settings:              { userCol: 'user_id', conflictCol: 'user_id' },
+  user_collections:            { userCol: 'user_id' },
   // Contacts & Networking
   personal_contacts:           { userCol: 'user_id' },
   networking_contacts:         { userCol: 'user_id' },
@@ -76,11 +77,11 @@ const BACKEND_TABLES = {
   organization_checklist_items:{ via: { col: 'operations_id', parent: 'organization_operations' } },
   organization_decision_options:{ via: { col: 'strategy_id', parent: 'organization_strategies' } },
   organization_sop_steps:      { via: { col: 'operations_id', parent: 'organization_operations' } },
-  organization_succession_plans:{ via: { col: 'hr_id', parent: 'organization_hr' } },
-  organization_succession_successors:{ via: { col: 'succession_plan_id', parent: 'organization_succession_plans' } },
+  organization_succession_plans:{ via: { col: 'organization_id', parent: 'organizations' } },
+  organization_succession_successors:{ via: { col: 'plan_id', parent: 'organization_succession_plans' } },
   organization_performance_evaluations:{ via: { col: 'organization_id', parent: 'organizations' } },
   organizational_claims:       { userCol: 'user_id' },
-  organizational_policy_attachments:{ via: { col: 'organization_id', parent: 'organizations' } },
+  organizational_policy_attachments:{ userCol: 'uploaded_by' },
   // Planning & Projects
   personal_planning:           { userCol: 'user_id' },
   projects:                    { userCol: 'user_id' },
@@ -146,7 +147,8 @@ const BACKEND_TABLES = {
   user_audit_log:              { userCol: 'user_id' },
   system_permissions:          { userCol: null },
   assistant_action_logs:       { userCol: 'user_id' },
-  auth_audit:                  { userCol: null },
+  // a person's own sign-in history; the server writes it, the app only reads it
+  auth_audit:                  { userCol: 'actor_id', readOnly: true },
   succession_positions:        { userCol: 'user_id' },
   documents:                   { userCol: 'user_id' },
   attachments:                 { userCol: 'user_id' },
@@ -222,6 +224,10 @@ router.post('/:table', async (req, res) => {
   }
   if (!isScoped(conf)) {
     return res.status(403).json({ data: null, error: { message: `Table '${table}' has no per-user scope and cannot be accessed directly` } });
+  }
+
+  if (conf.readOnly && !['select', 'count'].includes(req.body?.operation ?? 'select')) {
+    return res.status(403).json({ data: null, error: { message: `Table '${table}' is read-only` } });
   }
 
   const userId = req.user.id;

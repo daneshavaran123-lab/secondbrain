@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowRight, Plus, Search, Filter, Book, Film, Headphones, AudioLines, FileText, Play, ExternalLink, Trash2, Edit, Grid, List, Sparkles, Settings, Drama, Tag, RefreshCw } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { AppIcon } from '@/components/ui/app-icon';
@@ -23,13 +23,13 @@ import { CommandPalette } from '@/components/navigation/CommandPalette';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { SectionHeader } from '@/components/ui/section-header';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ModernCard } from '@/components/ui/modern-card';
 import { ModernButton } from '@/components/ui/modern-button';
 import { LuxuryTabs } from '@/components/ui/luxury-tabs';
 import { LuxuryToolbar } from '@/components/ui/luxury-toolbar';
 import { categoryService } from '@/services/categoryService';
-import { supabase } from '@/integrations/supabase/client';
-import { offlineStorage } from '@/services/offlineStorageService';
+import { culturalItemsService } from '@/services/culturalItemsService';
 
 export interface ContentItem {
   id: string;
@@ -53,9 +53,32 @@ export interface ContentItem {
 
 type TabType = 'books' | 'movies' | 'podcasts' | 'audiobooks' | 'articles' | 'theater';
 
+const TYPE_ICON: Record<ContentItem['type'], React.ElementType> = {
+  book: Book, article: FileText, movie: Film, series: Film, youtube: Play, podcast: Headphones, audiobook: AudioLines, theater: Drama,
+};
+
+// The item's cover, or a quiet band with its type's icon when it has none (or it fails to load)
+const ContentCover: React.FC<{ src: string; ratio: number; type: ContentItem['type'] }> = ({ src, ratio, type }) => {
+  const [failed, setFailed] = useState(false);
+  const Icon = TYPE_ICON[type] ?? Book;
+  if (!src || failed) {
+    return (
+      <div className="flex h-24 items-center justify-center rounded-lg bg-muted text-muted-foreground" aria-hidden>
+        <Icon className="h-8 w-8" />
+      </div>
+    );
+  }
+  return (
+    <AspectRatio ratio={ratio}>
+      <img src={src} alt="" loading="lazy" className="h-full w-full rounded-lg object-cover" onError={() => setFailed(true)} />
+    </AspectRatio>
+  );
+};
+
 const CulturalContentPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('books');
   const [items, setItems] = useState<ContentItem[]>([]);
+  const loadItemsRef = useRef<() => void>();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -88,38 +111,23 @@ const CulturalContentPage: React.FC = () => {
     }
   }, []);
 
-  // Load all tab counts on mount
-  useEffect(() => {
-    const loadAllCounts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('cultural_content')
-          .select('content_type');
-        
-        if (error) {
-          console.error('[CulturalContent] Count fetch error:', error);
-          return;
-        }
-        
-        if (data) {
-          const counts: Record<TabType, number> = {
-            books: 0, movies: 0, podcasts: 0, audiobooks: 0, articles: 0, theater: 0
-          };
-          
-          data.forEach(item => {
-            const tab = mapContentTypeToTab(item.content_type);
-            counts[tab] = (counts[tab] || 0) + 1;
-          });
-          
-          setTabCounts(counts);
-        }
-      } catch (e) {
-        console.error('[CulturalContent] Failed to load counts:', e);
-      }
-    };
-    
-    loadAllCounts();
+  // Count of items in every tab
+  const loadCounts = useCallback(async () => {
+    try {
+      const counts: Record<TabType, number> = { books: 0, movies: 0, podcasts: 0, audiobooks: 0, articles: 0, theater: 0 };
+      for (const type of await culturalItemsService.types()) counts[mapContentTypeToTab(type)] += 1;
+      setTabCounts(counts);
+    } catch (e) {
+      console.error('[CulturalContent] Failed to load counts:', e);
+    }
   }, [mapContentTypeToTab]);
+
+  useEffect(() => {
+    // Items earlier versions kept only in this browser move to the server first
+    culturalItemsService.moveBrowserItems()
+      .catch(() => 0)
+      .then((moved) => { if (moved) loadItemsRef.current?.(); loadCounts(); });
+  }, [loadCounts]);
 
   // Command palette shortcut
   useHotkeys('mod+k', (e) => {
@@ -140,114 +148,25 @@ const CulturalContentPage: React.FC = () => {
     }
   }, []);
 
-  // Load items from Supabase AND IndexedDB (for offline support)
+  // Load the active tab's items from the server
   const loadItems = useCallback(async () => {
     setIsLoading(true);
     categoryService.initializeDefaultCategories('cultural');
     setCategories(categoryService.getCustomCategories('cultural'));
-
-    const contentTypes = getContentTypeForTab(activeTab);
-    
-    // 1. First load from IndexedDB (for offline/instant display)
     try {
-      const localItems = await offlineStorage.getAllKnowledgeItems();
-      const filteredLocal = localItems.filter(item => 
-        contentTypes.includes(item.category)
-      );
-      if (filteredLocal.length > 0) {
-        setItems(filteredLocal.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.content,
-          type: item.category as ContentItem['type'],
-          status: 'planning' as const,
-          tags: item.tags,
-          link: item.source_url,
-          createdAt: item.createdAt,
-          updatedAt: item.createdAt
-        })));
-      }
-    } catch (e) {
-      console.log('[CulturalContent] IndexedDB not available:', e);
-    }
-
-    // 2. Then load from Supabase (fresh data)
-    try {
-      const { data, error } = await supabase
-        .from('cultural_content')
-        .select('*')
-        .in('content_type', contentTypes)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('[CulturalContent] Supabase error:', error);
-        // Fall back to localStorage if Supabase fails
-        const storageKey = `cw_${activeTab}`;
-        const stored = localStorage.getItem(storageKey);
-        if (stored) {
-          setItems(JSON.parse(stored));
-        }
-      } else if (data && data.length > 0) {
-        const mappedItems: ContentItem[] = data.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.content,
-          type: item.content_type as ContentItem['type'],
-          status: 'planning' as const,
-          tags: item.tags || [],
-          link: item.reference,
-          createdAt: item.created_at || new Date().toISOString(),
-          updatedAt: item.created_at || new Date().toISOString()
-        }));
-        setItems(mappedItems);
-        
-        // Save to IndexedDB for offline access
-        try {
-          await offlineStorage.syncKnowledgeItems(data.map(item => ({
-            id: item.id,
-            title: item.title,
-            content: item.content,
-            category: item.content_type,
-            source_url: item.reference || undefined,
-            tags: item.tags || [],
-            createdAt: item.created_at || new Date().toISOString(),
-            syncStatus: 'synced' as const
-          })));
-        } catch (e) {
-          console.log('[CulturalContent] IndexedDB sync skipped:', e);
-        }
-      } else {
-        // No data in Supabase, try localStorage as fallback
-        const storageKey = `cw_${activeTab}`;
-        const stored = localStorage.getItem(storageKey);
-        if (stored) {
-          try {
-            setItems(JSON.parse(stored));
-          } catch {
-            setItems([]);
-          }
-        } else {
-          setItems([]);
-        }
-      }
+      setItems(await culturalItemsService.list(getContentTypeForTab(activeTab)));
     } catch (e) {
       console.error('[CulturalContent] Failed to load:', e);
+      toast({ title: 'بارگذاری نشد', description: 'فهرست از سرور خوانده نشد. اتصال را بررسی کنید و دوباره امتحان کنید.', variant: 'destructive' });
     }
-    
     setIsLoading(false);
   }, [activeTab, getContentTypeForTab]);
+  loadItemsRef.current = loadItems;
 
   // Initialize and load items
   useEffect(() => {
     loadItems();
   }, [loadItems]);
-
-  // Save items to localStorage
-  const saveItems = (newItems: ContentItem[]) => {
-    const storageKey = `cw_${activeTab}`;
-    localStorage.setItem(storageKey, JSON.stringify(newItems));
-    setItems(newItems);
-  };
 
   // Generate YouTube thumbnail URL
   const getYouTubeThumbnail = (url: string): string => {
@@ -255,7 +174,7 @@ const CulturalContentPage: React.FC = () => {
     if (videoIdMatch) {
       return `https://img.youtube.com/vi/${videoIdMatch[1]}/hqdefault.jpg`;
     }
-    return '/placeholder.svg';
+    return '';
   };
 
   // Get effective cover image
@@ -264,44 +183,51 @@ const CulturalContentPage: React.FC = () => {
     if (item.type === 'youtube' && item.link) {
       return getYouTubeThumbnail(item.link);
     }
-    return '/placeholder.svg';
+    return '';
   };
 
   // Handle add item
-  const handleAddItem = (itemData: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newItem: ContentItem = {
-      ...itemData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    
-    const newItems = [...items, newItem];
-    saveItems(newItems);
-    toast({
-      title: "آیتم اضافه شد",
-      description: `${newItem.title} با موفقیت اضافه شد.`,
-    });
+  const handleAddItem = async (itemData: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const created = await culturalItemsService.create(itemData);
+      const tab = mapContentTypeToTab(created.type);
+      if (tab === activeTab) setItems((prev) => [created, ...prev]);
+      setTabCounts((prev) => ({ ...prev, [tab]: prev[tab] + 1 }));
+      toast({ title: 'آیتم اضافه شد', description: `«${created.title}» ذخیره شد.` });
+    } catch (e) {
+      toast({ title: 'ذخیره نشد', description: (e as Error).message, variant: 'destructive' });
+    }
   };
 
   // Handle delete item
-  const handleDeleteItem = (id: string) => {
-    const newItems = items.filter(item => item.id !== id);
-    saveItems(newItems);
-    toast({
-      title: "آیتم حذف شد",
-      description: "آیتم با موفقیت حذف شد.",
-    });
+  const handleDeleteItem = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (item && !window.confirm(`«${item.title}» حذف شود؟`)) return;
+    try {
+      await culturalItemsService.remove(id);
+      setItems((prev) => prev.filter((i) => i.id !== id));
+      if (item) {
+        const tab = mapContentTypeToTab(item.type);
+        setTabCounts((prev) => ({ ...prev, [tab]: Math.max(0, prev[tab] - 1) }));
+      }
+      toast({ title: 'آیتم حذف شد' });
+    } catch (e) {
+      toast({ title: 'حذف نشد', description: (e as Error).message, variant: 'destructive' });
+    }
   };
 
-  // Handle update item (for AI summaries/mindmaps)
-  const handleUpdateItem = (id: string, updates: Partial<ContentItem>) => {
-    const newItems = items.map(item =>
-      item.id === id
-        ? { ...item, ...updates, updatedAt: new Date().toISOString() }
-        : item
-    );
-    saveItems(newItems);
+  // Handle update item (status, progress, AI summaries/mindmaps)
+  const handleUpdateItem = async (id: string, updates: Partial<ContentItem>) => {
+    const current = items.find((i) => i.id === id);
+    if (!current) return;
+    const next = { ...current, ...updates, updatedAt: new Date().toISOString() };
+    setItems((prev) => prev.map((i) => (i.id === id ? next : i)));
+    try {
+      await culturalItemsService.update(next);
+    } catch (e) {
+      setItems((prev) => prev.map((i) => (i.id === id ? current : i)));
+      toast({ title: 'ذخیره نشد', description: (e as Error).message, variant: 'destructive' });
+    }
   };
 
   // Filter items
@@ -372,6 +298,22 @@ const CulturalContentPage: React.FC = () => {
     }
   };
 
+  const filtersActive = !!searchQuery || statusFilter !== 'all' || categoryFilter !== 'all' || movieTypeFilter !== 'all';
+  const clearFilters = () => { setSearchQuery(''); setStatusFilter('all'); setCategoryFilter('all'); setMovieTypeFilter('all'); };
+  const loadingGrid = (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-busy="true" aria-label="در حال بارگذاری">
+      {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-48 rounded-xl" />)}
+    </div>
+  );
+  const noMatches = (
+    <EmptyState
+      icon={<Search className="h-12 w-12" />}
+      title="موردی با این جستجو پیدا نشد"
+      description={filtersActive ? 'جستجو یا فیلترها را تغییر دهید.' : 'موردی برای نمایش نیست.'}
+      action={filtersActive ? { label: 'پاک کردن فیلترها', onClick: clearFilters } : undefined}
+    />
+  );
+
   return (
     <div className={cn(
       "container mx-auto animate-fade-in",
@@ -406,7 +348,7 @@ const CulturalContentPage: React.FC = () => {
               icon={<Settings className="h-4 w-4" />}
               magnetic
             >
-              تنظیمات AI
+              تنظیمات هوش مصنوعی
             </ModernButton>
             <ModernButton 
               onClick={() => setIsAddModalOpen(true)}
@@ -595,7 +537,7 @@ const CulturalContentPage: React.FC = () => {
 
         <TabsContent value="books" className="space-y-6">
           {/* Books specific content */}
-          {filteredItems.length === 0 ? (
+          {isLoading && items.length === 0 ? loadingGrid : items.length > 0 && filteredItems.length === 0 ? noMatches : filteredItems.length === 0 ? (
             <EmptyState
               icon={<Book className="h-16 w-16" />}
               title="هیچ کتابی یافت نشد"
@@ -628,16 +570,7 @@ const CulturalContentPage: React.FC = () => {
                   className="overflow-hidden h-full flex flex-col"
                 >
                   <div className="relative mb-3 sm:mb-4">
-                    <AspectRatio ratio={viewMode === 'list' ? 16/9 : 3/4}>
-                      <img
-                        src={getEffectiveCoverImage(item)}
-                        alt={item.title}
-                        className="object-cover w-full h-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </AspectRatio>
+                    <ContentCover src={getEffectiveCoverImage(item)} ratio={viewMode === 'list' ? 16/9 : 3/4} type={item.type} />
                     {item.link && (
                       <Button
                         variant="secondary"
@@ -738,7 +671,7 @@ const CulturalContentPage: React.FC = () => {
           </div>
 
           {/* Movies grid */}
-          {filteredItems.length === 0 ? (
+          {isLoading && items.length === 0 ? loadingGrid : items.length > 0 && filteredItems.length === 0 ? noMatches : filteredItems.length === 0 ? (
             <EmptyState
               icon={<Film className="h-16 w-16" />}
               title="هیچ فیلمی یافت نشد"
@@ -765,16 +698,7 @@ const CulturalContentPage: React.FC = () => {
                   className="overflow-hidden h-full flex flex-col"
                 >
                   <div className="relative mb-3 sm:mb-4 cursor-pointer" onClick={() => item.link && handleExternalLink(item.link)}>
-                    <AspectRatio ratio={viewMode === 'list' ? 16/9 : 2/3}>
-                      <img
-                        src={getEffectiveCoverImage(item)}
-                        alt={item.title}
-                        className="object-cover w-full h-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </AspectRatio>
+                    <ContentCover src={getEffectiveCoverImage(item)} ratio={viewMode === 'list' ? 16/9 : 2/3} type={item.type} />
                     {item.link && (
                       <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
                         <Play className="h-8 w-8 text-white" />
@@ -830,7 +754,7 @@ const CulturalContentPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="podcasts" className="space-y-6">
-          {filteredItems.length === 0 ? (
+          {isLoading && items.length === 0 ? loadingGrid : items.length > 0 && filteredItems.length === 0 ? noMatches : filteredItems.length === 0 ? (
             <EmptyState
               icon={<Headphones className="h-16 w-16" />}
               title="هیچ پادکستی یافت نشد"
@@ -857,16 +781,7 @@ const CulturalContentPage: React.FC = () => {
                   className="overflow-hidden h-full flex flex-col"
                 >
                   <div className="relative mb-3 sm:mb-4">
-                    <AspectRatio ratio={viewMode === 'list' ? 16/9 : 1}>
-                      <img
-                        src={getEffectiveCoverImage(item)}
-                        alt={item.title}
-                        className="object-cover w-full h-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </AspectRatio>
+                    <ContentCover src={getEffectiveCoverImage(item)} ratio={viewMode === 'list' ? 16/9 : 1} type={item.type} />
                     {item.link && (
                       <Button
                         variant="secondary"
@@ -913,7 +828,7 @@ const CulturalContentPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="audiobooks" className="space-y-6">
-          {filteredItems.length === 0 ? (
+          {isLoading && items.length === 0 ? loadingGrid : items.length > 0 && filteredItems.length === 0 ? noMatches : filteredItems.length === 0 ? (
             <EmptyState
               icon={<AudioLines className="h-16 w-16" />}
               title="هیچ کتاب صوتی یافت نشد"
@@ -940,16 +855,7 @@ const CulturalContentPage: React.FC = () => {
                   className="overflow-hidden h-full flex flex-col"
                 >
                   <div className="relative mb-3 sm:mb-4">
-                    <AspectRatio ratio={viewMode === 'list' ? 16/9 : 3/4}>
-                      <img
-                        src={getEffectiveCoverImage(item)}
-                        alt={item.title}
-                        className="object-cover w-full h-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </AspectRatio>
+                    <ContentCover src={getEffectiveCoverImage(item)} ratio={viewMode === 'list' ? 16/9 : 3/4} type={item.type} />
                     {item.link && (
                       <Button
                         variant="secondary"
@@ -996,7 +902,7 @@ const CulturalContentPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="articles" className="space-y-6">
-          {filteredItems.length === 0 ? (
+          {isLoading && items.length === 0 ? loadingGrid : items.length > 0 && filteredItems.length === 0 ? noMatches : filteredItems.length === 0 ? (
             <EmptyState
               icon={<FileText className="h-16 w-16" />}
               title="هیچ مقاله‌ای یافت نشد"
@@ -1023,16 +929,7 @@ const CulturalContentPage: React.FC = () => {
                   className="overflow-hidden h-full flex flex-col"
                 >
                   <div className="relative mb-3 sm:mb-4">
-                    <AspectRatio ratio={viewMode === 'list' ? 16/9 : 4/3}>
-                      <img
-                        src={getEffectiveCoverImage(item)}
-                        alt={item.title}
-                        className="object-cover w-full h-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </AspectRatio>
+                    <ContentCover src={getEffectiveCoverImage(item)} ratio={viewMode === 'list' ? 16/9 : 4/3} type={item.type} />
                     {item.link && (
                       <Button
                         variant="secondary"
@@ -1106,7 +1003,7 @@ const CulturalContentPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="theater" className="space-y-6">
-          {filteredItems.length === 0 ? (
+          {isLoading && items.length === 0 ? loadingGrid : items.length > 0 && filteredItems.length === 0 ? noMatches : filteredItems.length === 0 ? (
             <EmptyState
               icon={<Drama className="h-16 w-16" />}
               title="هیچ تئاتری یافت نشد"
@@ -1139,16 +1036,7 @@ const CulturalContentPage: React.FC = () => {
                   className="overflow-hidden h-full flex flex-col"
                 >
                   <div className="relative mb-3 sm:mb-4">
-                    <AspectRatio ratio={viewMode === 'list' ? 16/9 : 3/4}>
-                      <img
-                        src={getEffectiveCoverImage(item)}
-                        alt={item.title}
-                        className="object-cover w-full h-full rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder.svg';
-                        }}
-                      />
-                    </AspectRatio>
+                    <ContentCover src={getEffectiveCoverImage(item)} ratio={viewMode === 'list' ? 16/9 : 3/4} type={item.type} />
                     {item.link && (
                       <Button
                         variant="secondary"

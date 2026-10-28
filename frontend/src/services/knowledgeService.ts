@@ -1,5 +1,6 @@
 // Knowledge Management Service
 import { KnowledgeItem, SearchFilters, SearchResult } from '@/types';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 class KnowledgeService {
   private items: KnowledgeItem[] = [];
@@ -146,7 +147,7 @@ class KnowledgeService {
     const stored = localStorage.getItem('knowledgeItems') || '[]';
     const items = JSON.parse(stored);
     items.push(item);
-    localStorage.setItem('knowledgeItems', JSON.stringify(items));
+    persistentStorage.setItem('knowledgeItems', JSON.stringify(items));
   }
   
   async loadFromStorage(): Promise<void> {

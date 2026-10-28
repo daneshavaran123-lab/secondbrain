@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface BusinessCompany {
   id: string;
@@ -30,7 +31,7 @@ export const companiesService = {
   // Set main company in localStorage
   setMainCompany(company: BusinessCompany): void {
     try {
-      localStorage.setItem('main_company', JSON.stringify(company));
+      persistentStorage.setItem('main_company', JSON.stringify(company));
     } catch (error) {
       console.error('Error setting main company:', error);
     }

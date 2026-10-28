@@ -1,3 +1,4 @@
+import { persistentStorage } from '@/lib/persistentStorage';
 // Daily Content Service - آیات قرآن و جملات انگیزشی روزانه
 // Service for managing daily Quranic verses and motivational quotes
 
@@ -198,7 +199,7 @@ class DailyContentService {
     const favorites = this.getFavorites();
     if (!favorites[type].includes(id)) {
       favorites[type].push(id);
-      localStorage.setItem('dailyContentFavorites', JSON.stringify(favorites));
+      persistentStorage.setItem('dailyContentFavorites', JSON.stringify(favorites));
     }
   }
 
@@ -206,7 +207,7 @@ class DailyContentService {
   removeFavorite(type: 'verse' | 'quote', id: string): void {
     const favorites = this.getFavorites();
     favorites[type] = favorites[type].filter(fId => fId !== id);
-    localStorage.setItem('dailyContentFavorites', JSON.stringify(favorites));
+    persistentStorage.setItem('dailyContentFavorites', JSON.stringify(favorites));
   }
 
   // دریافت محتوای مورد علاقه
@@ -228,7 +229,7 @@ class DailyContentService {
 
   // ذخیره تنظیمات
   saveSettings(settings: DailyContentSettings): void {
-    localStorage.setItem('dailyContentSettings', JSON.stringify(settings));
+    persistentStorage.setItem('dailyContentSettings', JSON.stringify(settings));
   }
 
   // محاسبه روز سال (1-365/366)

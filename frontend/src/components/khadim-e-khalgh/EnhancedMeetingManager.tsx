@@ -19,6 +19,7 @@ import { MeetingAudioRecorder } from '@/components/organizational/MeetingAudioRe
 import { MeetingResolutionsManager } from '@/components/organizational/MeetingResolutionsManager';
 import { MeetingRecorder } from '@/components/meetings/MeetingRecorder';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 
 const EnhancedMeetingManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,7 +52,7 @@ const EnhancedMeetingManager = () => {
   const loadMeetings = async () => {
     try {
       await meetingService.loadFromStorage();
-      const orgMeetings = await meetingService.getMeetings('Association');
+      const orgMeetings = await meetingService.getMeetings('KhadimEKhalgh');
       setMeetings(orgMeetings);
       setCalendarMeetings(orgMeetings);
     } catch (error) {
@@ -85,7 +86,12 @@ const EnhancedMeetingManager = () => {
 
     setIsLoading(true);
     try {
-      const meeting = await meetingService.createMeeting(formData.title, 'Association');
+      await meetingService.createMeeting(formData.title, 'KhadimEKhalgh', undefined, {
+        date: formData.date,
+        participantNames: formData.participants,
+        description: formData.description,
+        meetingType: formData.meetingType,
+      });
       
       // Reset form
       setFormData({
@@ -440,6 +446,17 @@ const EnhancedMeetingManager = () => {
             </Card>
 
             {/* Meetings List */}
+            {filteredMeetings.length === 0 && (
+              <ListEmpty
+                icon={FileText}
+                hasItems={meetings.length > 0}
+                firstTitle="هنوز صورت‌جلسه‌ای ثبت نشده"
+                firstHint="جلسه تازه بسازید تا تاریخ، حاضران و مصوبات آن یک‌جا ثبت و پیگیری شود."
+                addLabel="ساخت اولین جلسه"
+                onAdd={() => setIsCreateModalOpen(true)}
+                onClearFilters={() => setSearchTerm('')}
+              />
+            )}
             <div className="grid gap-6">
               {filteredMeetings.map((meeting) => (
                 <motion.div

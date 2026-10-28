@@ -20,6 +20,7 @@ import { useServiceWorker } from "@/hooks/useOffline";
 import { useWakeWord } from "@/hooks/useWakeWord";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { pullPersistentStorage } from "@/lib/persistentStorage";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -80,6 +81,8 @@ const Index = () => {
         }
 
         setIsAuthenticated(true);
+        // records kept in the browser come from the server first (at most a short wait offline)
+        await Promise.race([pullPersistentStorage(), new Promise((r) => setTimeout(r, 3000))]);
       } catch (error) {
         console.error('Error in auth check:', error);
         setIsAuthenticated(false);

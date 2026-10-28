@@ -1,5 +1,6 @@
 // Meeting Management Service
 import { Meeting, ActionItem, Participant, MeetingAttachment, MeetingResolution, MeetingLocation } from '@/types';
+import { persistentStorage, PULLED_EVENT } from '@/lib/persistentStorage';
 
 class MeetingService {
   private meetings: Meeting[] = [];
@@ -7,22 +8,32 @@ class MeetingService {
   
   constructor() {
     this.loadFromStorage();
+    // the server's copy arrives after sign-in (lib/persistentStorage)
+    if (typeof window !== 'undefined') window.addEventListener(PULLED_EVENT, () => void this.loadFromStorage());
     this.migrateFromProfessionalService();
   }
   
-  async createMeeting(title: string, organization: Meeting['organization'], location?: MeetingLocation): Promise<Meeting> {
+  async createMeeting(
+    title: string,
+    organization: Meeting['organization'],
+    location?: MeetingLocation,
+    details: { date?: Date | null; participantNames?: string[]; description?: string; meetingType?: string } = {},
+  ): Promise<Meeting> {
     const meeting: Meeting = {
       id: crypto.randomUUID(),
       title,
-      date: new Date().toISOString(),
+      date: (details.date ?? new Date()).toISOString(),
       duration: 0,
-      participants: [],
+      participants: (details.participantNames ?? []).map((n) => n.trim()).filter(Boolean)
+        .map((name) => ({ id: crypto.randomUUID(), name, role: '', speaking_time: 0, attention_score: 0 })),
       action_items: [],
       organization,
       minutes_status: 'draft',
       attachments: [],
       resolutions: [],
-      location
+      location,
+      ...(details.description ? { minutes_text: details.description } : {}),
+      ...(details.meetingType ? { meeting_type: details.meetingType } : {}),
     };
     
     this.meetings.push(meeting);
@@ -516,7 +527,7 @@ class MeetingService {
   }
   
   private async saveToStorage(): Promise<void> {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.meetings));
+    persistentStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.meetings));
   }
 
   // Migration from professional service
@@ -538,7 +549,7 @@ class MeetingService {
           });
           
           this.saveToStorage();
-          localStorage.setItem(migrationKey, 'true');
+          persistentStorage.setItem(migrationKey, 'true');
           console.log('Professional meetings migrated successfully');
         }
       }
@@ -568,13 +579,13 @@ class MeetingService {
     this.meetings = [];
     
     // پاک کردن localStorage
-    localStorage.removeItem(this.STORAGE_KEY);
-    localStorage.removeItem('meetings');
-    localStorage.removeItem('meeting_minutes');
-    localStorage.removeItem('meeting_resolutions');
-    localStorage.removeItem('professional_meetings_v1');
-    localStorage.removeItem('meeting_tracking_data');
-    localStorage.removeItem('professional_meeting_analytics');
+    persistentStorage.removeItem(this.STORAGE_KEY);
+    persistentStorage.removeItem('meetings');
+    persistentStorage.removeItem('meeting_minutes');
+    persistentStorage.removeItem('meeting_resolutions');
+    persistentStorage.removeItem('professional_meetings_v1');
+    persistentStorage.removeItem('meeting_tracking_data');
+    persistentStorage.removeItem('professional_meeting_analytics');
   }
   
   async loadFromStorage(): Promise<void> {

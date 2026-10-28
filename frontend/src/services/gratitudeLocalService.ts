@@ -1,5 +1,6 @@
 // Local storage service for gratitude entries
 import { MediaFile, GratitudeLink } from './enhancedGratitudeService';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface LocalGratitudeEntry {
   id: string;
@@ -30,7 +31,7 @@ export const gratitudeLocalService = {
   // Save all entries to localStorage
   save(entries: LocalGratitudeEntry[]): void {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      persistentStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     } catch (error) {
       console.error('Error saving to localStorage:', error);
     }

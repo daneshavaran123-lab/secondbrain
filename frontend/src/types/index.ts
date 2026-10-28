@@ -47,7 +47,7 @@ export interface Meeting {
   transcript?: string;
   summary?: string;
   action_items: ActionItem[];
-  organization: 'Varid' | 'Frangaran' | 'Association' | 'Chamber' | 'Professional';
+  organization: 'Varid' | 'Frangaran' | 'Association' | 'Chamber' | 'Professional' | 'KhadimEKhalgh';
   audio_url?: string;
   video_url?: string;
   body_language_analysis?: BodyLanguageAnalysis;
@@ -57,6 +57,8 @@ export interface Meeting {
   attachments: MeetingAttachment[];
   resolutions: MeetingResolution[];
   location?: MeetingLocation;
+  /** What kind of meeting it is (e.g. «جلسه هیئت مدیره»), as the form names it */
+  meeting_type?: string;
 }
 
 export interface MeetingLocation {

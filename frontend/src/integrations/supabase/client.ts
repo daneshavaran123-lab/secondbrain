@@ -21,6 +21,7 @@ import {
   clearTokens,
   BACKEND_URL,
 } from '@/lib/api';
+import { fileStorage } from '@/lib/fileStorage';
 
 const SUPABASE_URL = "https://jymajpnwthgqcghmkmam.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5bWFqcG53dGhncWNnaG1rbWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3OTU1OTYsImV4cCI6MjA2OTM3MTU5Nn0.J6dMZX-UCAS7PGCsKyamhQwTaqfBJ662HTWA8KgJCbo";
@@ -154,13 +155,9 @@ const mockAuth = {
 const mockFunctions = {
   invoke: async (fnName: string, options?: { body?: any }) => {
     try {
-      const token = getAccessToken();
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${BACKEND_URL}/${fnName}`, {
+      // apiFetch sends the login token and renews it once when it has expired
+      const res = await apiFetch(`/${fnName}`, {
         method: 'POST',
-        headers,
         body: JSON.stringify(options?.body || {}),
       });
 
@@ -226,7 +223,7 @@ const BACKEND_TABLES = new Set([
   'plaud_connections', 'plaud_recordings', 'hi_dock_connections',
   // سیستم
   'user_organizations', 'user_permissions', 'user_audit_log', 'system_permissions',
-  'assistant_action_logs', 'auth_audit', 'succession_positions',
+  'assistant_action_logs', 'auth_audit', 'succession_positions', 'user_collections',
   'documents', 'attachments', 'recordings', 'avatars',
 ]);
 
@@ -366,8 +363,8 @@ export const supabase = {
     if (BACKEND_TABLES.has(table)) return new BackendQueryBuilder(table) as any;
     return _realSupabase.from(table as any);
   },
-  // storage → Supabase واقعی
-  storage: _realSupabase.storage,
+  // storage → backend (/files)
+  storage: fileStorage as any,
   // rpc → Supabase واقعی
   rpc: _realSupabase.rpc.bind(_realSupabase),
   // realtime → no-op (backend tables don't support realtime)

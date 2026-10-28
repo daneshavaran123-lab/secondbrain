@@ -1,4 +1,5 @@
 import { Project, ProjectTask, ProjectMember, TaskStatus, ProjectStats, ProjectNotification } from '@/types';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 class ProjectManagementService {
   private storageKey = 'brainforge_projects';
@@ -28,7 +29,7 @@ class ProjectManagementService {
     };
     
     projects.push(newProject);
-    localStorage.setItem(this.storageKey, JSON.stringify(projects));
+    persistentStorage.setItem(this.storageKey, JSON.stringify(projects));
     return newProject;
   }
 
@@ -44,7 +45,7 @@ class ProjectManagementService {
       updatedAt: new Date().toISOString()
     };
     
-    localStorage.setItem(this.storageKey, JSON.stringify(projects));
+    persistentStorage.setItem(this.storageKey, JSON.stringify(projects));
     return projects[index];
   }
 
@@ -54,12 +55,12 @@ class ProjectManagementService {
     
     if (filtered.length === projects.length) return false;
     
-    localStorage.setItem(this.storageKey, JSON.stringify(filtered));
+    persistentStorage.setItem(this.storageKey, JSON.stringify(filtered));
     
     // Also delete related tasks
     const tasks = this.getTasks();
     const filteredTasks = tasks.filter(t => t.projectId !== id);
-    localStorage.setItem(this.tasksKey, JSON.stringify(filteredTasks));
+    persistentStorage.setItem(this.tasksKey, JSON.stringify(filteredTasks));
     
     return true;
   }
@@ -88,7 +89,7 @@ class ProjectManagementService {
     };
     
     tasks.push(newTask);
-    localStorage.setItem(this.tasksKey, JSON.stringify(tasks));
+    persistentStorage.setItem(this.tasksKey, JSON.stringify(tasks));
     
     // Update project progress
     this.updateProjectProgress(taskData.projectId);
@@ -112,7 +113,7 @@ class ProjectManagementService {
       updatedAt: new Date().toISOString()
     };
     
-    localStorage.setItem(this.tasksKey, JSON.stringify(tasks));
+    persistentStorage.setItem(this.tasksKey, JSON.stringify(tasks));
     
     // Update project progress
     this.updateProjectProgress(tasks[index].projectId);
@@ -136,7 +137,7 @@ class ProjectManagementService {
     
     if (filtered.length === tasks.length) return false;
     
-    localStorage.setItem(this.tasksKey, JSON.stringify(filtered));
+    persistentStorage.setItem(this.tasksKey, JSON.stringify(filtered));
     
     // Update project progress
     if (task) {
@@ -236,7 +237,7 @@ class ProjectManagementService {
     };
     
     notifications.push(notification);
-    localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
+    persistentStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
     
     // Simulate sending notification based on method
     this.simulateNotificationSend(notification);
@@ -258,7 +259,7 @@ class ProjectManagementService {
     const notification = notifications.find(n => n.id === id);
     if (notification) {
       notification.isRead = true;
-      localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
+      persistentStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
     }
   }
 
@@ -306,14 +307,14 @@ class ProjectManagementService {
     console.log('📋 پاکسازی داده‌های مدیریت پروژه…');
     
     // پاک کردن تمام localStorage keys مرتبط
-    localStorage.removeItem(this.storageKey);
-    localStorage.removeItem(this.tasksKey);
-    localStorage.removeItem(this.notificationsKey);
-    localStorage.removeItem('projectNotifications');
-    localStorage.removeItem('project_notifications');
-    localStorage.removeItem('project_tasks');
-    localStorage.removeItem('project_members');
-    localStorage.removeItem('project_stats');
+    persistentStorage.removeItem(this.storageKey);
+    persistentStorage.removeItem(this.tasksKey);
+    persistentStorage.removeItem(this.notificationsKey);
+    persistentStorage.removeItem('projectNotifications');
+    persistentStorage.removeItem('project_notifications');
+    persistentStorage.removeItem('project_tasks');
+    persistentStorage.removeItem('project_members');
+    persistentStorage.removeItem('project_stats');
     
     console.log('✅ پاکسازی مدیریت پروژه کامل شد');
   }

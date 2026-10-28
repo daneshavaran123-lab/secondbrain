@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Users, Plus, Search, Filter, MapPin, Clock, AlertCircle, Eye, CheckCircle, Edit, Upload, FileText, X, Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
+import { useUserCollection } from '@/services/userCollections';
+import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 
 // Types
 interface SocialNeed {
@@ -64,13 +66,42 @@ const actionFormSchema = z.object({
   notes: z.string().optional(),
 });
 
+const convertOldStatus = (oldStatus: string): 'planned' | 'in-progress' | 'completed' => {
+  switch (oldStatus) {
+    case 'planned':
+    case 'in-progress':
+    case 'completed':
+      return oldStatus;
+    case 'تکمیل شده':
+    case 'انجام شده':
+      return 'completed';
+    case 'در حال اجرا':
+      return 'in-progress';
+    case 'تأیید شده':
+    case 'در انتظار بررسی':
+    case 'در حال بررسی':
+      return 'planned';
+    default:
+      return 'planned';
+  }
+};
+
+// Older entries used Persian status names and numeric ids
+const normalizeNeeds = (list: SocialNeed[]): SocialNeed[] => list.map((need) => ({
+  ...need,
+  id: String(need.id),
+  status: convertOldStatus(need.status),
+  created_at: need.created_at || new Date().toISOString(),
+  updated_at: need.updated_at || new Date().toISOString(),
+}));
+
 const Needs = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
-  const [needs, setNeeds] = useState<SocialNeed[]>([]);
+  const [needs, setNeeds] = useUserCollection<SocialNeed>('khk_social_needs', normalizeNeeds);
   
   // Dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -85,49 +116,7 @@ const Needs = () => {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [actionFiles, setActionFiles] = useState<File[]>([]);
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedNeeds = localStorage.getItem('khk_social_needs');
-    if (savedNeeds) {
-      try {
-        const parsed = JSON.parse(savedNeeds);
-        // Convert old status format to new format
-        const convertedNeeds = parsed.map((need: any) => ({
-          ...need,
-          id: need.id.toString(),
-          status: convertOldStatus(need.status),
-          created_at: need.created_at || new Date().toISOString(),
-          updated_at: need.updated_at || new Date().toISOString(),
-        }));
-        setNeeds(convertedNeeds);
-      } catch (error) {
-        console.error('Error loading needs:', error);
-        setNeeds([]);
-      }
-    } else {
-      setNeeds([]);
-    }
-  }, []);
 
-  // Save to localStorage whenever needs change
-  useEffect(() => {
-    if (needs.length > 0) {
-      localStorage.setItem('khk_social_needs', JSON.stringify(needs));
-    }
-  }, [needs]);
-
-  const convertOldStatus = (oldStatus: string): 'planned' | 'in-progress' | 'completed' => {
-    switch (oldStatus) {
-      case 'در حال اجرا':
-        return 'in-progress';
-      case 'تأیید شده':
-      case 'در انتظار بررسی':
-      case 'در حال بررسی':
-        return 'planned';
-      default:
-        return 'planned';
-    }
-  };
 
 
   // Forms
@@ -556,13 +545,15 @@ const Needs = () => {
         </div>
 
         {filteredNeeds.length === 0 && (
-          <Card className="glass-card">
-            <CardContent className="text-center py-12">
-              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">نیازی یافت نشد</h3>
-              <p className="text-muted-foreground">با تغییر فیلترها یا جستجوی جدید دوباره تلاش کنید</p>
-            </CardContent>
-          </Card>
+          <ListEmpty
+            icon={Users}
+            hasItems={needs.length > 0}
+            firstTitle="هنوز نیازی ثبت نشده"
+            firstHint="نیازهای مردم منطقه را ثبت کنید تا اولویت، هزینه و پیگیری هر کدام یک‌جا بماند."
+            addLabel="ثبت اولین نیاز"
+            onAdd={() => setIsAddDialogOpen(true)}
+            onClearFilters={() => { setSearchTerm(''); setSelectedArea(''); setSelectedCategory(''); setSelectedPriority(''); }}
+          />
         )}
 
         {/* Add Need Dialog */}

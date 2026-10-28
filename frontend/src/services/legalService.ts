@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getStoredUser } from '@/lib/api';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface LegalCase {
   id: string;
@@ -82,7 +83,7 @@ class LegalService {
 
   // Local Storage Methods
   async saveCasesToStorage(cases: LegalCase[]): Promise<void> {
-    localStorage.setItem(this.STORAGE_KEYS.CASES, JSON.stringify(cases));
+    persistentStorage.setItem(this.STORAGE_KEYS.CASES, JSON.stringify(cases));
   }
 
   async loadCasesFromStorage(): Promise<LegalCase[]> {
@@ -91,7 +92,7 @@ class LegalService {
   }
 
   async saveMeetingsToStorage(meetings: LawyerMeeting[]): Promise<void> {
-    localStorage.setItem(this.STORAGE_KEYS.MEETINGS, JSON.stringify(meetings));
+    persistentStorage.setItem(this.STORAGE_KEYS.MEETINGS, JSON.stringify(meetings));
   }
 
   async loadMeetingsFromStorage(): Promise<LawyerMeeting[]> {
@@ -100,7 +101,7 @@ class LegalService {
   }
 
   async saveDocumentsToStorage(documents: LegalDocument[]): Promise<void> {
-    localStorage.setItem(this.STORAGE_KEYS.DOCUMENTS, JSON.stringify(documents));
+    persistentStorage.setItem(this.STORAGE_KEYS.DOCUMENTS, JSON.stringify(documents));
   }
 
   async loadDocumentsFromStorage(): Promise<LegalDocument[]> {
@@ -380,7 +381,7 @@ class LegalService {
 
   // Lawyer Notes Methods
   async saveNotesToStorage(notes: LawyerNote[]): Promise<void> {
-    localStorage.setItem(this.STORAGE_KEYS.LAWYER_NOTES, JSON.stringify(notes));
+    persistentStorage.setItem(this.STORAGE_KEYS.LAWYER_NOTES, JSON.stringify(notes));
   }
 
   async loadNotesFromStorage(): Promise<LawyerNote[]> {

@@ -1,4 +1,5 @@
 import { SuccessionServiceAPI, SuccessionPosition, TalentPoolMember, DevelopmentProgram, PositionGoal } from './successionServiceTypes';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 const STORAGE_KEYS = {
   POSITIONS: 'brainforge_succession_positions',
@@ -22,7 +23,7 @@ class SuccessionLocalService implements SuccessionServiceAPI {
   }
 
   private saveToStorage<T>(key: string, data: T[]): void {
-    localStorage.setItem(key, JSON.stringify(data));
+    persistentStorage.setItem(key, JSON.stringify(data));
   }
 
   // Positions CRUD

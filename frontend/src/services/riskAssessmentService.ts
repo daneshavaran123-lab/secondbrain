@@ -1,4 +1,5 @@
 import { toast } from '@/hooks/use-toast';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface Risk {
   id: number;
@@ -78,7 +79,7 @@ class RiskAssessmentService {
 
   private saveStorageData(data: Record<string, Risk[]>): void {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      persistentStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
       console.error('Error saving to localStorage:', error);
       toast({

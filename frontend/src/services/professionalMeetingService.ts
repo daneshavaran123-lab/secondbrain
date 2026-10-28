@@ -1,5 +1,6 @@
 // Professional Meeting Management Service
 import { Meeting, ActionItem, Participant, MeetingAttachment, MeetingResolution } from '@/types';
+import { persistentStorage, PULLED_EVENT } from '@/lib/persistentStorage';
 
 class ProfessionalMeetingService {
   private meetings: Meeting[] = [];
@@ -7,6 +8,8 @@ class ProfessionalMeetingService {
   
   constructor() {
     this.loadFromStorage();
+    // the server's copy arrives after sign-in (lib/persistentStorage)
+    if (typeof window !== 'undefined') window.addEventListener(PULLED_EVENT, () => void this.loadFromStorage());
   }
 
   private async loadFromStorage(): Promise<void> {
@@ -23,7 +26,7 @@ class ProfessionalMeetingService {
 
   private async saveToStorage(): Promise<void> {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.meetings));
+      persistentStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.meetings));
     } catch (error) {
       console.error('Error saving professional meetings to storage:', error);
     }
@@ -50,9 +53,9 @@ class ProfessionalMeetingService {
     this.meetings = [];
     
     // پاک کردن localStorage
-    localStorage.removeItem(this.STORAGE_KEY);
-    localStorage.removeItem('meeting_tracking_data');
-    localStorage.removeItem('professional_meeting_analytics');
+    persistentStorage.removeItem(this.STORAGE_KEY);
+    persistentStorage.removeItem('meeting_tracking_data');
+    persistentStorage.removeItem('professional_meeting_analytics');
   }
   
   async createMeeting(title: string): Promise<Meeting> {

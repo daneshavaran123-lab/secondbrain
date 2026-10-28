@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { FileText, X, Plus, Check, ChevronsUpDown } from 'lucide-react';
+import { FileText, X, Plus, Check, ChevronsUpDown, Star } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ContentItem } from '@/pages/CulturalContentPage';
 import { PDFUploadModal } from '@/components/cultural-content/PDFUploadModal';
@@ -464,16 +464,19 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                 <img
                   src={uploadedImage || formData.coverImage}
                   alt="پیش‌نمایش"
-                  className="w-32 h-32 object-cover rounded-lg border"
+                  className="w-32 h-32 object-cover rounded-lg border bg-muted"
+                  onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
+                  onLoad={(e) => { e.currentTarget.style.visibility = 'visible'; }}
                 />
                 <Button
                   type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute -top-2 -right-2"
+                  variant="secondary"
+                  size="icon"
+                  className="absolute -top-2 -start-2 h-7 w-7 rounded-full border shadow-sm"
                   onClick={clearUploadedImage}
+                  aria-label="حذف تصویر"
                 >
-                  ×
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             )}
@@ -522,80 +525,44 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="status">وضعیت</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as ContentItem['status'] }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="planning">{getStatusLabel('planning', formData.type)}</SelectItem>
-                  <SelectItem value="in-progress">{getStatusLabel('in-progress', formData.type)}</SelectItem>
-                  <SelectItem value="completed">{getStatusLabel('completed', formData.type)}</SelectItem>
-                  <SelectItem value="archived">بایگانی</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              {/* Quick Status Buttons */}
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <Button
-                  type="button"
-                  variant={formData.status === 'planning' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFormData(prev => ({ ...prev, status: 'planning' }))}
-                >
-                  {getStatusLabel('planning', formData.type)}
-                </Button>
-                <Button
-                  type="button"
-                  variant={formData.status === 'in-progress' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFormData(prev => ({ ...prev, status: 'in-progress' }))}
-                >
-                  {getStatusLabel('in-progress', formData.type)}
-                </Button>
-                <Button
-                  type="button"
-                  variant={formData.status === 'completed' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFormData(prev => ({ ...prev, status: 'completed' }))}
-                >
-                  {getStatusLabel('completed', formData.type)}
-                </Button>
-                <Button
-                  type="button"
-                  variant={formData.status === 'archived' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFormData(prev => ({ ...prev, status: 'archived' }))}
-                >
-                  بایگانی
-                </Button>
+              <Label id="status-label">وضعیت</Label>
+              <div role="radiogroup" aria-labelledby="status-label" className="grid grid-cols-2 gap-2">
+                {(['planning', 'in-progress', 'completed', 'archived'] as const).map((status) => (
+                  <Button
+                    key={status}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData.status === status}
+                    variant={formData.status === status ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFormData(prev => ({ ...prev, status }))}
+                  >
+                    {status === 'archived' ? 'بایگانی' : getStatusLabel(status, formData.type)}
+                  </Button>
+                ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="rating">امتیاز (1-5)</Label>
-              <Select
-                value={formData.rating?.toString() || ''}
-                onValueChange={(value) => setFormData(prev => ({ 
-                  ...prev, 
-                  rating: value === "none" ? undefined : parseInt(value) 
-                }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="انتخاب امتیاز" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">بدون امتیاز</SelectItem>
-                  <SelectItem value="1">⭐ 1</SelectItem>
-                  <SelectItem value="2">⭐ 2</SelectItem>
-                  <SelectItem value="3">⭐ 3</SelectItem>
-                  <SelectItem value="4">⭐ 4</SelectItem>
-                  <SelectItem value="5">⭐ 5</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label id="rating-label">امتیاز</Label>
+              <div role="radiogroup" aria-labelledby="rating-label" className="flex h-10 items-center gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData.rating === n}
+                    aria-label={`${n.toLocaleString('fa-IR')} از ۵`}
+                    onClick={() => setFormData(prev => ({ ...prev, rating: prev.rating === n ? undefined : n }))}
+                    className="rounded-md p-1 text-muted-foreground transition-colors hover:text-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Star className={cn('h-6 w-6', (formData.rating ?? 0) >= n && 'fill-amber-400 text-amber-500')} />
+                  </button>
+                ))}
+                <span className="ms-2 text-xs text-muted-foreground">
+                  {formData.rating ? `${formData.rating.toLocaleString('fa-IR')} از ۵` : 'بدون امتیاز'}
+                </span>
+              </div>
             </div>
           </div>
 

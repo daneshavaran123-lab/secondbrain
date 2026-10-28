@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 // Types for our organizational data
 export interface OrganizationalMission {
@@ -95,7 +96,7 @@ class OrganizationalPolicyMissionService {
             };
             
             const updatedMissions = [...missions, newMission];
-            localStorage.setItem('organizational_missions', JSON.stringify(updatedMissions));
+            persistentStorage.setItem('organizational_missions', JSON.stringify(updatedMissions));
             
             return newMission;
         } catch (error) {
@@ -120,7 +121,7 @@ class OrganizationalPolicyMissionService {
             };
             
             missions[index] = updatedMission;
-            localStorage.setItem('organizational_missions', JSON.stringify(missions));
+            persistentStorage.setItem('organizational_missions', JSON.stringify(missions));
             
             return updatedMission;
         } catch (error) {
@@ -133,7 +134,7 @@ class OrganizationalPolicyMissionService {
         try {
             const missions = await this.getMissions();
             const filteredMissions = missions.filter(m => m.id !== id);
-            localStorage.setItem('organizational_missions', JSON.stringify(filteredMissions));
+            persistentStorage.setItem('organizational_missions', JSON.stringify(filteredMissions));
         } catch (error) {
             console.error('Error deleting mission:', error);
             throw error;
@@ -173,7 +174,7 @@ class OrganizationalPolicyMissionService {
             };
             
             const updatedPolicies = [...policies, newPolicy];
-            localStorage.setItem('organizational_policies', JSON.stringify(updatedPolicies));
+            persistentStorage.setItem('organizational_policies', JSON.stringify(updatedPolicies));
             
             return newPolicy;
         } catch (error) {
@@ -198,7 +199,7 @@ class OrganizationalPolicyMissionService {
             };
             
             policies[index] = updatedPolicy;
-            localStorage.setItem('organizational_policies', JSON.stringify(policies));
+            persistentStorage.setItem('organizational_policies', JSON.stringify(policies));
             
             return updatedPolicy;
         } catch (error) {
@@ -211,7 +212,7 @@ class OrganizationalPolicyMissionService {
         try {
             const policies = await this.getPolicies();
             const filteredPolicies = policies.filter(p => p.id !== id);
-            localStorage.setItem('organizational_policies', JSON.stringify(filteredPolicies));
+            persistentStorage.setItem('organizational_policies', JSON.stringify(filteredPolicies));
         } catch (error) {
             console.error('Error deleting policy:', error);
             throw error;
@@ -251,7 +252,7 @@ class OrganizationalPolicyMissionService {
             };
             
             const updatedKPIs = [...kpis, newKPI];
-            localStorage.setItem('organizational_kpis', JSON.stringify(updatedKPIs));
+            persistentStorage.setItem('organizational_kpis', JSON.stringify(updatedKPIs));
             
             return newKPI;
         } catch (error) {
@@ -276,7 +277,7 @@ class OrganizationalPolicyMissionService {
             };
             
             kpis[index] = updatedKPI;
-            localStorage.setItem('organizational_kpis', JSON.stringify(kpis));
+            persistentStorage.setItem('organizational_kpis', JSON.stringify(kpis));
             
             return updatedKPI;
         } catch (error) {
@@ -289,7 +290,7 @@ class OrganizationalPolicyMissionService {
         try {
             const kpis = await this.getKPIs();
             const filteredKPIs = kpis.filter(k => k.id !== id);
-            localStorage.setItem('organizational_kpis', JSON.stringify(filteredKPIs));
+            persistentStorage.setItem('organizational_kpis', JSON.stringify(filteredKPIs));
         } catch (error) {
             console.error('Error deleting KPI:', error);
             throw error;
@@ -329,7 +330,7 @@ class OrganizationalPolicyMissionService {
             };
             
             const updatedWorkflows = [...workflows, newWorkflow];
-            localStorage.setItem('approval_workflows', JSON.stringify(updatedWorkflows));
+            persistentStorage.setItem('approval_workflows', JSON.stringify(updatedWorkflows));
             
             return newWorkflow;
         } catch (error) {
@@ -354,7 +355,7 @@ class OrganizationalPolicyMissionService {
             };
             
             workflows[index] = updatedWorkflow;
-            localStorage.setItem('approval_workflows', JSON.stringify(workflows));
+            persistentStorage.setItem('approval_workflows', JSON.stringify(workflows));
             
             return updatedWorkflow;
         } catch (error) {
@@ -367,7 +368,7 @@ class OrganizationalPolicyMissionService {
         try {
             const workflows = await this.getApprovalWorkflows();
             const filteredWorkflows = workflows.filter(w => w.id !== id);
-            localStorage.setItem('approval_workflows', JSON.stringify(filteredWorkflows));
+            persistentStorage.setItem('approval_workflows', JSON.stringify(filteredWorkflows));
         } catch (error) {
             console.error('Error deleting approval workflow:', error);
             throw error;

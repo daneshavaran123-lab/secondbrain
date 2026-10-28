@@ -11,7 +11,7 @@ export const corsMiddleware = cors({
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['authorization', 'x-client-info', 'apikey', 'content-type', 'x-telegram-bot-api-secret-token'],
+  allowedHeaders: ['authorization', 'x-client-info', 'apikey', 'content-type', 'x-telegram-bot-api-secret-token', 'x-file-type', 'x-upsert'],
   credentials: true,
 });
 

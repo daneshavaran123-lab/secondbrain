@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Heart, BarChart3, Target, Users, Calendar, MessageSquare, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { khadimEKhalghStatsService, type KhadimEKhalghStats } from '@/services/khadimEKhalghStatsService';
+import { useUserCollection } from '@/services/userCollections';
 
 const KhadimEKhalghPage = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState<KhadimEKhalghStats>({
-    activeProjects: 0,
-    beneficiaries: 0,
-    coveredRegions: 0,
-    activeColleagues: 0
-  });
-  const [loading, setLoading] = useState(true);
+  // Counted from the person's own records in the sections below
+  const [projects, , projectsState] = useUserCollection<{ status?: string; location?: string; beneficiaries?: number }>('khk_service_projects');
+  const [needs, , needsState] = useUserCollection<{ area?: string }>('khk_social_needs');
+  const [partners, , partnersState] = useUserCollection<{ status?: string }>('partners');
+  const loading = projectsState.loading || needsState.loading || partnersState.loading;
+  const stats = useMemo(() => ({
+    activeProjects: projects.filter((p) => p.status === 'in-progress').length,
+    beneficiaries: projects.reduce((sum, p) => sum + (Number(p.beneficiaries) || 0), 0),
+    coveredRegions: new Set([...projects.map((p) => p.location), ...needs.map((n) => n.area)].map((r) => (r || '').trim()).filter(Boolean)).size,
+    activeColleagues: partners.filter((p) => p.status !== 'inactive').length,
+  }), [projects, needs, partners]);
 
   const modules = [
     {
@@ -81,22 +85,6 @@ const KhadimEKhalghPage = () => {
     }
   ];
 
-  // Load Khadim E Khalgh stats
-  useEffect(() => {
-    const loadStats = async () => {
-      try {
-        setLoading(true);
-        const khadimStats = await khadimEKhalghStatsService.getKhadimEKhalghStats();
-        setStats(khadimStats);
-      } catch (error) {
-        console.error('Error loading Khadim E Khalgh stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadStats();
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-subtle p-8">
@@ -156,7 +144,7 @@ const KhadimEKhalghPage = () => {
               <div className="text-3xl font-bold text-primary mb-2">
                 {loading ? '...' : stats.activeProjects.toLocaleString('fa-IR')}
               </div>
-              <p className="text-sm text-muted-foreground">پروژه فعال</p>
+              <p className="text-sm text-muted-foreground">اقدام در جریان</p>
             </CardContent>
           </Card>
           <Card className="text-center">
@@ -180,7 +168,7 @@ const KhadimEKhalghPage = () => {
               <div className="text-3xl font-bold text-purple-600 mb-2">
                 {loading ? '...' : stats.activeColleagues.toLocaleString('fa-IR')}
               </div>
-              <p className="text-sm text-muted-foreground">همکار فعال</p>
+              <p className="text-sm text-muted-foreground">همکار و شریک</p>
             </CardContent>
           </Card>
         </div>

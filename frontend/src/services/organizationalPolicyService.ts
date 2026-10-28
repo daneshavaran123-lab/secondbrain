@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 type OrganizationalMission = Database['public']['Tables']['organization_missions']['Row'];
 type OrganizationalPolicy = Database['public']['Tables']['organization_policies']['Row'];
@@ -228,7 +229,7 @@ class OrganizationalPolicyService {
       updated_at: new Date().toISOString()
     };
     kpis.push(newKPI);
-    localStorage.setItem(this.KPI_STORAGE_KEY, JSON.stringify(kpis));
+    persistentStorage.setItem(this.KPI_STORAGE_KEY, JSON.stringify(kpis));
     return newKPI;
   }
 
@@ -238,14 +239,14 @@ class OrganizationalPolicyService {
     if (index === -1) throw new Error('KPI not found');
     
     kpis[index] = { ...kpis[index], ...updates, updated_at: new Date().toISOString() };
-    localStorage.setItem(this.KPI_STORAGE_KEY, JSON.stringify(kpis));
+    persistentStorage.setItem(this.KPI_STORAGE_KEY, JSON.stringify(kpis));
     return kpis[index];
   }
 
   async deleteKPI(id: string): Promise<void> {
     const kpis = this.getKPIsFromLocalStorage();
     const filtered = kpis.filter(k => k.id !== id);
-    localStorage.setItem(this.KPI_STORAGE_KEY, JSON.stringify(filtered));
+    persistentStorage.setItem(this.KPI_STORAGE_KEY, JSON.stringify(filtered));
   }
 
   // Approval Workflows (localStorage only)
@@ -262,7 +263,7 @@ class OrganizationalPolicyService {
       updated_at: new Date().toISOString()
     };
     workflows.push(newWorkflow);
-    localStorage.setItem(this.WORKFLOW_STORAGE_KEY, JSON.stringify(workflows));
+    persistentStorage.setItem(this.WORKFLOW_STORAGE_KEY, JSON.stringify(workflows));
     return newWorkflow;
   }
 
@@ -272,14 +273,14 @@ class OrganizationalPolicyService {
     if (index === -1) throw new Error('Workflow not found');
     
     workflows[index] = { ...workflows[index], ...updates, updated_at: new Date().toISOString() };
-    localStorage.setItem(this.WORKFLOW_STORAGE_KEY, JSON.stringify(workflows));
+    persistentStorage.setItem(this.WORKFLOW_STORAGE_KEY, JSON.stringify(workflows));
     return workflows[index];
   }
 
   async deleteApprovalWorkflow(id: string): Promise<void> {
     const workflows = this.getWorkflowsFromLocalStorage();
     const filtered = workflows.filter(w => w.id !== id);
-    localStorage.setItem(this.WORKFLOW_STORAGE_KEY, JSON.stringify(filtered));
+    persistentStorage.setItem(this.WORKFLOW_STORAGE_KEY, JSON.stringify(filtered));
   }
 
   // Attachments

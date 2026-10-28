@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface ProfessionalCompanyGoal {
   id: string;
@@ -61,7 +62,7 @@ function getGoalsFromStorage(): ProfessionalCompanyGoal[] {
 
 function saveGoalsToStorage(goals: ProfessionalCompanyGoal[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
+    persistentStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
   } catch (error) {
     console.error('Error saving goals to localStorage:', error);
   }

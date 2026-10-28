@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { persistentStorage } from '@/lib/persistentStorage';
 
 export interface MediaFile {
   id: string;
@@ -211,7 +212,7 @@ export const gratitudeLocalService = {
 
   save(entries: LocalGratitudeEntry[]): void {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      persistentStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     } catch (error) {
       console.error('Failed to save to localStorage:', error);
     }
@@ -257,7 +258,7 @@ export const gratitudeLocalService = {
 
   cleanup(): void {
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      persistentStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error('Failed to cleanup localStorage:', error);
     }

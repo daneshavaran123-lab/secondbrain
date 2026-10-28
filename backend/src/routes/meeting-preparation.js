@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
+import { IRAN_FEEDS, INTL_FEEDS, fetchRSS, withTimeout } from '../news/feeds.js';
 import { z } from 'zod';
 
 const router = Router();
@@ -16,84 +18,6 @@ const MODELS = [
   'deepseek/deepseek-v3-0324:free',
   'meta-llama/llama-3.3-70b-instruct:free',
 ];
-
-// ─── RSS Feeds ─────────────────────────────────────────────────────────────────
-const IRAN_FEEDS = [
-  { url: 'https://www.irna.ir/rss/',               source: 'خبرگزاری ایرنا' },
-  { url: 'https://www.isna.ir/rss/',               source: 'ایسنا' },
-  { url: 'https://www.mashreghnews.ir/rss',        source: 'مشرق نیوز' },
-  { url: 'https://www.iribnews.ir/fa/rss/allnews', source: 'صدا و سیما' },
-  { url: 'https://www.yjc.ir/fa/rss/allnews',      source: 'باشگاه خبرنگاران' },
-];
-
-const INTL_FEEDS = [
-  { url: 'https://feeds.bbci.co.uk/persian/rss.xml',              source: 'BBC فارسی' },
-  { url: 'https://feeds.bbci.co.uk/persian/business/rss.xml',     source: 'BBC فارسی اقتصاد' },
-  { url: 'https://feeds.bbci.co.uk/persian/science/rss.xml',      source: 'BBC فارسی علم' },
-];
-
-// ─── RSS Parser ────────────────────────────────────────────────────────────────
-function parseTag(xml, tag) {
-  const re = new RegExp(
-    `<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, 'i'
-  );
-  const m = xml.match(re);
-  if (!m) return '';
-  return m[1]
-    .replace(/<[^>]+>/g, '')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#\d+;/g, '')
-    .trim();
-}
-
-function parseLinkTag(xml) {
-  // <link> tag in RSS is tricky (self-closing or has CDATA)
-  let link = parseTag(xml, 'link');
-  if (!link) {
-    const m = xml.match(/<link[^>]*>([^<]+)<\/link>/i) ||
-              xml.match(/<link[^>]*\/>/) ||
-              xml.match(/<guid[^>]*>([^<]+)<\/guid>/i);
-    link = m ? m[1]?.trim() || '' : '';
-  }
-  return link;
-}
-
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
-  ]);
-}
-
-async function fetchRSS(feedInfo, timeoutMs = 5000) {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    const res = await fetch(feedInfo.url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NewsBot/1.0)' },
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    if (!res.ok) return [];
-    const xml = await withTimeout(res.text(), 4000);
-
-    const items = [];
-    const itemRe = /<item[^>]*>([\s\S]*?)<\/item>/g;
-    let m;
-    while ((m = itemRe.exec(xml)) !== null) {
-      const body = m[1];
-      const title = parseTag(body, 'title');
-      const url   = parseLinkTag(body);
-      const desc  = parseTag(body, 'description').slice(0, 350);
-      const date  = parseTag(body, 'pubDate') || parseTag(body, 'dc:date') || '';
-      if (title) items.push({ title, url, snippet: desc, date, source: feedInfo.source });
-      if (items.length >= 8) break;
-    }
-    return items;
-  } catch {
-    return [];
-  }
-}
 
 // ─── AI Call ──────────────────────────────────────────────────────────────────
 async function callAI(apiKey, messages, maxTokens = 3000) {
@@ -141,7 +65,7 @@ const FALLBACK_DATA = {
 };
 
 // ─── Route ────────────────────────────────────────────────────────────────────
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
   const result = schema.safeParse(req.body);
   if (!result.success) return res.status(400).json({ error: result.error.flatten().fieldErrors });

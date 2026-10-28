@@ -1,3 +1,4 @@
+import { persistentStorage } from '@/lib/persistentStorage';
 // Category management service for custom categories
 export class CategoryService {
   private storageKey = 'custom_categories';
@@ -122,7 +123,7 @@ export class CategoryService {
 
   private saveCustomCategories(domain: 'professional' | 'organizational' | 'cultural', categories: string[]): void {
     try {
-      localStorage.setItem(`${this.storageKey}_${domain}`, JSON.stringify(categories));
+      persistentStorage.setItem(`${this.storageKey}_${domain}`, JSON.stringify(categories));
     } catch (error) {
       console.error(`Error saving custom categories for ${domain}:`, error);
     }

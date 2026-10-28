@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { SuccessionServiceAPI, SuccessionPosition, TalentPoolMember, DevelopmentProgram, PositionGoal } from './successionServiceTypes';
+import { persistentStorage } from '@/lib/persistentStorage';
 
 // Using localStorage for Talent Pool and Programs until tables are created
 const TALENT_POOL_KEY = 'succession_talent_pool';
@@ -17,7 +18,7 @@ function getFromStorage<T>(key: string): T[] {
 
 function saveToStorage<T>(key: string, data: T[]): void {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    persistentStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
     console.error(`Error saving ${key}:`, error);
   }

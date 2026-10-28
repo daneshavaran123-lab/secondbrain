@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { PersianDatePicker } from '@/components/ui/persian-date-picker';
 import { formatJalali, getDaysUntilDue } from '@/lib/date-utils';
+import { useUserCollection } from '@/services/userCollections';
 
 interface Campaign {
   id: number;
@@ -62,13 +63,22 @@ const programSchema = z.object({
 
 type ProgramFormData = z.infer<typeof programSchema>;
 
+// Older programs used other status names
+const migrateCampaigns = (list: Campaign[]): Campaign[] => list.map((campaign) => {
+  const status = campaign.status as string;
+  return {
+    ...campaign,
+    status: (status === 'active' ? 'in-progress' : status === 'upcoming' || status === 'planning' ? 'planned' : status) as Campaign['status'],
+  };
+});
+
 const Roadmap = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useUserCollection<Campaign>('roadmap-programs', migrateCampaigns);
 
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programSchema),
@@ -141,32 +151,6 @@ const Roadmap = () => {
     form.reset();
     setIsDialogOpen(false);
   };
-
-  // Load from localStorage on mount with migration
-  React.useEffect(() => {
-    const saved = localStorage.getItem('roadmap-programs');
-    if (saved) {
-      try {
-        const loadedCampaigns = JSON.parse(saved);
-        // Migrate old status values to new ones
-        const migratedCampaigns = loadedCampaigns.map((campaign: any) => ({
-          ...campaign,
-          status: campaign.status === 'active' ? 'in-progress' 
-                : campaign.status === 'upcoming' ? 'planned'
-                : campaign.status === 'planning' ? 'planned'
-                : campaign.status
-        }));
-        setCampaigns(migratedCampaigns);
-      } catch (error) {
-        console.error('Error loading saved programs:', error);
-      }
-    }
-  }, []);
-
-  // Save to localStorage whenever campaigns change
-  React.useEffect(() => {
-    localStorage.setItem('roadmap-programs', JSON.stringify(campaigns));
-  }, [campaigns]);
 
   const addMilestone = () => {
     appendMilestone({
