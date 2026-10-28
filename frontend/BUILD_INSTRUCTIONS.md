@@ -78,6 +78,27 @@ npx cap sync android
 
 ---
 
+### سلامت: HealthKit و Health Connect
+
+صفحه سلامت در برنامه موبایل با پلاگین `@capgo/capacitor-health` به برنامه سلامت آیفون (و از آن به اپل واچ) و Health Connect اندروید وصل می‌شود. بعد از `npx cap add`:
+
+**iOS** (در Xcode):
+1. App → Signing & Capabilities → `+ Capability` → **HealthKit**.
+2. در `ios/App/App/Info.plist`:
+   ```xml
+   <key>NSHealthShareUsageDescription</key>
+   <string>مغز دوم من قدم، ضربان قلب، کالری و وزن شما را می‌خواند تا روند سلامتتان را نشان دهد.</string>
+   <key>NSHealthUpdateUsageDescription</key>
+   <string>مغز دوم من چیزی در برنامه سلامت نمی‌نویسد.</string>
+   ```
+
+**Android:**
+1. `minSdkVersion` حداقل ۲۶ (در `android/variables.gradle`).
+2. مجوزهای خواندن Health Connect را پلاگین خودش اضافه می‌کند؛ روی اندروید ۱۳ و پایین‌تر کاربر باید Health Connect را از Play Store نصب کند.
+3. برای انتشار در Play Store، فرم «Health Connect permissions» را در Play Console پر کنید و دلیل خواندن هر داده را توضیح دهید.
+
+---
+
 ### 🍎 Build iOS App
 
 #### روش 1: اجرا در شبیه‌ساز (Simulator)

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Command as CommandPrimitive } from 'cmdk';
-import { BarChart3, BookOpen, Calendar as CalendarIcon, CheckSquare, Home, Mail, Search } from 'lucide-react';
+import { BarChart3, BookOpen, Calendar as CalendarIcon, CheckSquare, FlaskConical, Home, Mail, Search } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { BrandMark } from '@/components/brand/BrandMark';
 import { buildNavigation } from '@/config/navigation';
@@ -20,6 +20,7 @@ const CREATE: Destination[] = [
   { path: '/personal-planning', label: 'کار جدید', hint: 'ایجاد', icon: CheckSquare },
   { path: '/personal-journal', label: 'یادداشت جدید', hint: 'ایجاد', icon: BookOpen },
   { path: '/organizational-letters?upload=1', label: 'بارگذاری نامه', hint: 'ایجاد', icon: Mail },
+  { path: '/health?tab=labs&upload=1', label: 'افزودن برگه آزمایش', hint: 'ایجاد', icon: FlaskConical },
 ];
 
 /** Every page once, labelled with the domain it lives in. */

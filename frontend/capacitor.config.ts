@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.32c20929d7c94ded921dfe2a65e90c85',
-  appName: 'Mora',
+  appName: 'مغز دوم من',
   webDir: 'dist',
   plugins: {
     SplashScreen: {

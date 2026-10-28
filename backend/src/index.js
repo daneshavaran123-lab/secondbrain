@@ -36,6 +36,7 @@ import subUsersRouter from './routes/sub-users.js';
 import dbRouter from './routes/db.js';
 import supabaseProxyRouter from './routes/supabase-proxy.js';
 import orgLettersRouter from './routes/org-letters.js';
+import healthDataRouter from './routes/health-data.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -106,6 +107,7 @@ app.use('/sub-users',                 subUsersRouter);
 app.use('/db',                        dbRouter);
 app.use('/supabase-proxy',            supabaseProxyRouter);
 app.use('/org-letters',               orgLettersRouter);
+app.use('/health-data',               healthDataRouter);
 
 // Debug: test OpenRouter connectivity from backend server
 app.get('/debug-ai', async (req, res) => {

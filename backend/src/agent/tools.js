@@ -15,6 +15,7 @@ import {
   addDays, isoDateOf, normalizeDate, normalizeDateTime, normalizeTime,
   persianDateLabel, persianTime, zonedToUtc,
 } from './time.js';
+import { matchTest } from '../health/labs.js';
 
 const fn = (name, description, properties = {}, required = []) => ({
   type: 'function',
@@ -47,9 +48,12 @@ const READ_TOOL_DEFS = [
     query: { type: 'string' },
   }, ['query']),
   fn('get_habits_status', 'عادت‌های فعال کاربر و اینکه امروز کدام انجام شده‌اند.'),
-  fn('get_health_summary', 'خلاصه داده‌های سلامت چند روز اخیر (خواب، ورزش، آب، وزن).', {
+  fn('get_health_summary', 'خلاصه سلامت چند روز اخیر: خواب، ورزش، آب، وزن، و داده‌های ساعت و گوشی (قدم، ضربان استراحت، کالری) به‌همراه آخرین نتایج آزمایش خون.', {
     days: { type: 'number', description: 'تعداد روز (پیش‌فرض ۷)' },
   }),
+  fn('get_lab_results', 'سابقه یک آزمایش (مثل قند ناشتا، کلسترول، ویتامین D، TSH) در برگه‌های آزمایش کاربر، از قدیم به جدید.', {
+    test: { type: 'string', description: 'نام آزمایش به فارسی یا انگلیسی' },
+  }, ['test']),
 ];
 
 const MEMORY_TOOL_DEFS = [
@@ -380,17 +384,66 @@ async function getHabitsStatus(_args, ctx) {
 async function getHealthSummary(args, ctx) {
   const days = Math.min(Math.max(Number(args.days) || 7, 1), 60);
   const since = addDays(isoDateOf(ctx.now, ctx.tz), -days + 1);
-  const rows = await safeRows(`SELECT * FROM health_metrics WHERE user_id = $1 AND date >= $2 ORDER BY date DESC LIMIT 60`, [ctx.userId, since]);
+  const [rows, device, labs] = await Promise.all([
+    safeRows(`SELECT * FROM health_metrics WHERE user_id = $1 AND date >= $2 ORDER BY date DESC LIMIT 60`, [ctx.userId, since]),
+    // One value per day and metric, the phone's health store first (as on the health page)
+    safeRows(`SELECT DISTINCT ON (h.day, h.metric) to_char(h.day, 'YYYY-MM-DD') AS day, h.metric, h.value::float AS value, h.source
+                FROM health_daily h WHERE h.user_id = $1 AND h.day >= $2
+               ORDER BY h.day, h.metric, array_position(ARRAY['apple_health','health_connect','shortcut','import','manual'], h.source::text), h.updated_at DESC`,
+      [ctx.userId, since]),
+    safeRows(`SELECT r.lab_name, to_char(COALESCE(r.report_date, r.created_at::date), 'YYYY-MM-DD') AS day, x.test_key, x.test_name,
+                     x.value::float AS value, x.value_text, x.unit, x.flag
+                FROM health_lab_reports r JOIN health_lab_results x ON x.report_id = r.id
+               WHERE r.user_id = $1 AND r.id = (SELECT id FROM health_lab_reports WHERE user_id = $1
+                                                ORDER BY COALESCE(report_date, created_at::date) DESC, created_at DESC LIMIT 1)
+               ORDER BY x.position`, [ctx.userId]),
+  ]);
   const avg = (key) => {
     const vals = rows.map((r) => Number(r[key])).filter((v) => Number.isFinite(v) && v > 0);
     return vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : null;
   };
+  const deviceAverages = {};
+  for (const metric of [...new Set(device.map((d) => d.metric))]) {
+    const vals = device.filter((d) => d.metric === metric).map((d) => d.value);
+    deviceAverages[metric] = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+  }
   return {
     days, entries: rows.length,
     averages: { sleep_hours: avg('sleep_hours'), exercise_minutes: avg('exercise_minutes'), water_intake: avg('water_intake'), weight: avg('weight') },
     recent: rows.slice(0, 7).map((r) => ({
       date: r.date ? persianDateLabel(new Date(r.date), ctx.tz) : null,
       sleep_hours: r.sleep_hours, exercise_minutes: r.exercise_minutes, water_intake: r.water_intake, weight: r.weight,
+    })),
+    devices: device.length ? {
+      daily_averages: deviceAverages,
+      last_days: device.slice(-21).map((d) => ({ date: persianDateLabel(new Date(`${d.day}T12:00:00Z`), ctx.tz), metric: d.metric, value: d.value })),
+    } : null,
+    latest_lab: labs.length ? {
+      date: persianDateLabel(new Date(`${labs[0].day}T12:00:00Z`), ctx.tz),
+      lab: labs[0].lab_name,
+      results: labs.map((l) => ({ test: l.test_name, value: l.value ?? l.value_text, unit: l.unit, flag: l.flag })),
+    } : null,
+  };
+}
+
+async function getLabResults(args, ctx) {
+  const name = String(args.test || '').trim();
+  if (!name) return { error: 'MISSING_TEST' };
+  const known = matchTest(name);
+  const rows = await safeRows(
+    `SELECT to_char(COALESCE(r.report_date, r.created_at::date), 'YYYY-MM-DD') AS day, x.test_name, x.value::float AS value,
+            x.value_text, x.unit, x.ref_text, x.ref_low::float AS ref_low, x.ref_high::float AS ref_high, x.flag
+       FROM health_lab_results x JOIN health_lab_reports r ON r.id = x.report_id
+      WHERE x.user_id = $1 AND (x.test_key = $2 OR x.test_name ILIKE $3)
+      ORDER BY day LIMIT 40`,
+    [ctx.userId, known?.key || '-', `%${escapeLike(name)}%`],
+  );
+  return {
+    test: known?.label || name,
+    readings: rows.map((r) => ({
+      date: persianDateLabel(new Date(`${r.day}T12:00:00Z`), ctx.tz),
+      value: r.value ?? r.value_text, unit: r.unit, flag: r.flag,
+      range: r.ref_text || (r.ref_low != null || r.ref_high != null ? `${r.ref_low ?? ''}–${r.ref_high ?? ''}` : null),
     })),
   };
 }
@@ -452,6 +505,7 @@ export const SERVER_TOOLS = {
   search_contacts: searchContacts,
   get_habits_status: getHabitsStatus,
   get_health_summary: getHealthSummary,
+  get_lab_results: getLabResults,
   remember,
   forget,
 };
@@ -466,6 +520,7 @@ export function stepLabel(name, args) {
     case 'search_contacts': return `جستجوی مخاطبین${q}`;
     case 'get_habits_status': return 'بررسی عادت‌ها';
     case 'get_health_summary': return 'مرور داده‌های سلامت';
+    case 'get_lab_results': return `سابقه آزمایش${args?.test ? ` «${clip(args.test, 30)}»` : ''}`;
     case 'remember': return 'به خاطر سپردن';
     case 'forget': return 'پاک کردن از حافظه';
     default: return name;

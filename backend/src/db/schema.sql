@@ -280,6 +280,11 @@ CREATE TABLE IF NOT EXISTS health_metrics (
   created_at       TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_health_metrics_user_id ON health_metrics(user_id);
+-- The assistant records blood pressure, heart rate and a note with the day's values
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS blood_pressure TEXT;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS heart_rate INTEGER;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE health_metrics ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- ─── CALENDAR ────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS calendar_events (

@@ -30,6 +30,7 @@ const BASE_PROMPT = `تو دستیار هوشمند اپلیکیشن «مغز د
 - کتاب، فیلم، سریال، پادکست → save_for_later
 - خلاصه یا صورتجلسه → save_meeting_summary و اقدامات پیگیری را با create_tasks_batch بساز
 - وزن، خواب، ورزش، آب، فشار → save_health_metrics · «امروز مدیتیشن کردم» → complete_habit
+- «قندم چطوره؟» «ویتامین D آخرین آزمایشم؟» → get_lab_results؛ نتیجه آزمایش را توضیح بده ولی تشخیص نده و برای تفسیر به پزشک ارجاع بده
 - مخاطب و کارت ویزیت → create_contact · فایل اکسل مخاطبین → import_contacts_batch
 - مدرک، دوره، سابقه کاری → add_resume_item · پرونده حقوقی → create_legal_case · یادداشت حقوقی → save_lawyer_note
 - نامه و بخشنامه اداری را کاربر در صفحه «نامه‌ها و بخشنامه‌ها» بارگذاری می‌کند؛ برای پیدا کردنشان search_brain با منبع letters
