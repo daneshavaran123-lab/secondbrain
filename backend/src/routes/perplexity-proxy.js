@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -34,7 +35,7 @@ async function callAI(apiKey, messages, opts = {}) {
   throw new Error('سرویس هوش مصنوعی در دسترس نیست');
 }
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const API_KEY = process.env.OPENROUTER_API_KEY || process.env.LOVABLE_API_KEY;
   if (!API_KEY) {
     return res.status(500).json({ error: 'AI service is not configured', configured: false });

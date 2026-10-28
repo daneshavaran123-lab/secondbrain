@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -27,7 +28,7 @@ const emailTypeDescriptions = {
   reminder: 'یادآوری', custom: 'ایمیل سفارشی',
 };
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const { contact, emailType, language = 'persian', culture = 'iranian', tone = 'semi_formal', senderInfo, customDescription } = req.body;
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
   if (!OPENAI_API_KEY) return res.status(500).json({ error: 'AI service is not configured' });

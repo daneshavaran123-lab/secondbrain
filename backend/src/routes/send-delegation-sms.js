@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 import { sendSms } from '../utils/sms.js';
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const { taskId, phone, delegateeName, title, description, dueDate } = req.body;
 
   if (!phone) return res.status(400).json({ success: false, error: 'شماره موبایل الزامی است' });

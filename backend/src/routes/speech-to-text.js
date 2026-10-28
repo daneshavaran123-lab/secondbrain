@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 import { Blob } from 'buffer';
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const { audio } = req.body;
   if (!audio) return res.status(400).json({ error: 'No audio data provided' });
 

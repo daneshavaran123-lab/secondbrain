@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -35,7 +36,7 @@ async function fetchWithRetry(url, options) {
   return null;
 }
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const {
     purpose, industry, recipientType, recipientName, recipientOrg,
     keyPoints, primaryLanguage, translateTo = [], senderInfo,

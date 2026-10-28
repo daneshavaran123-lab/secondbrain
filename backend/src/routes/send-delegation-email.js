@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 import { sendDelegationEmail } from '../utils/email.js';
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   const { taskId, email, delegateeName, title, description, dueDate } = req.body;
   if (!email || !title || !taskId) return res.status(400).json({ success: false, error: 'email, title and taskId are required' });
 
