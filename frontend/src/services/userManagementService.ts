@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getStoredUser } from '@/lib/api';
 import type { 
   UserProfile, 
   CreateUserForm, 
@@ -10,6 +11,13 @@ import type {
   SystemPermission,
   UserPermission
 } from '@/types/user-management';
+
+/** The signed-in user's role as the server put it in the session, shaped like a user_roles row. */
+function ownRole(userId: string): UserRole | null {
+  const me = getStoredUser();
+  if (!me?.role || me.id !== userId) return null;
+  return { user_id: userId, system_role: me.role, is_active: true } as unknown as UserRole;
+}
 
 export class UserManagementService {
   // ===== User Profile Management =====
@@ -70,21 +78,17 @@ export class UserManagementService {
    * دریافت اطلاعات یک کاربر
    */
   static async getUserById(userId: string) {
+    // Roles are not readable through the data proxy (a user must not be able to rewrite their
+    // own role there), so the signed-in user's role comes from the session instead.
     const { data, error } = await supabase
       .from('user_profiles' as any)
-      .select(`
-        *,
-        user_roles (
-          *,
-          custom_roles (name, display_name),
-          organizations (id, name)
-        )
-      `)
+      .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
-    return data;
+    const role = ownRole(userId);
+    return data ? { ...(data as object), user_roles: role ? [role] : [] } : null;
   }
 
   /**
@@ -181,6 +185,8 @@ export class UserManagementService {
    * دریافت نقش کاربر
    */
   static async getUserRole(userId: string): Promise<UserRole | null> {
+    const own = ownRole(userId);
+    if (own) return own;
     const { data, error } = await supabase
       .from('user_roles' as any)
       .select(`
