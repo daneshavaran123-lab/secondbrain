@@ -99,7 +99,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
             <Button variant="ghost" size="icon" className={iconButton} onClick={onMenuClick} aria-label="منو">
               <Menu className="h-5 w-5" />
             </Button>
-            <Wordmark size={20} />
+            <Wordmark size={17} />
           </>
         )}
         {device.type === 'desktop' && (

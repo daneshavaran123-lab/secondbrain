@@ -87,12 +87,10 @@
       background: #f6f7f7;
       color: #0f1516;
     }
-    .initial-loader .sig { stroke: #087a80; }
     .initial-loader .node { fill: #087a80; animation: node 1.2s ease-in-out infinite; }
     @keyframes node { 50% { opacity: 0.35; } }
     @media (prefers-color-scheme: dark) {
       body, .initial-loader { background: #0b0d0d; color: #eef2f2; }
-      .initial-loader .sig { stroke: #33c3c4; }
       .initial-loader .node { fill: #33c3c4; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -105,10 +103,9 @@
   <div id="root">
     <!-- Initial loading state before React hydrates -->
     <div class="initial-loader">
-      <svg width="44" height="44" viewBox="0 0 32 32" fill="none" role="img" aria-label="مغز دوم من">
-        <path d="M16 4a12 12 0 0 1 0 24z" fill="currentColor"/>
-        <path class="sig" d="M16 5.25a10.75 10.75 0 0 0 0 21.5" stroke-width="2.5"/>
-        <circle class="node" cx="5.25" cy="16" r="3"/>
+      <svg width="52" height="52" viewBox="22 16.5 220 220" role="img" aria-label="مغز دوم من">
+        <path d="M242 110C242 142.03 216.03 168 184 168H139.25C131.61 192.34 108.87 210 82 210C48.86 210 22 183.14 22 150V124C22 114.06 30.06 106 40 106C49.94 106 58 114.06 58 124V150C58 163.25 68.75 174 82 174C95.25 174 106 163.25 106 150C106 140.06 114.06 132 124 132H130.32C127.53 125.22 126 117.79 126 110C126 77.97 151.97 52 184 52C216.03 52 242 77.97 242 110ZM206 110C206 97.85 196.15 88 184 88C171.85 88 162 97.85 162 110C162 122.15 171.85 132 184 132C196.15 132 206 122.15 206 110Z" fill="currentColor"/>
+        <circle class="node" cx="82" cy="62" r="19"/>
       </svg>
     </div>
   </div>

@@ -219,7 +219,7 @@ const DomainSidebar: React.FC<DomainSidebarProps> = ({
       )}>
         {isOpen ? (
           <NavLink to="/" className="mr-1 rounded-md" aria-label="مغز دوم من، داشبورد">
-            <Wordmark />
+            <Wordmark size={17} />
           </NavLink>
         ) : (
           <button
