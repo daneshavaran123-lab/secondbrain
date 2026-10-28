@@ -46,7 +46,7 @@ export function StrategyStats({ type, organizationId }: StrategyStatsProps) {
           .from('organization_strategies')
           .select('*, organization_okr_key_results(*)')
           .eq('organization_id', organizationId)
-          .eq('type', 'okr');
+          .eq('strategy_type', 'okr');
 
         if (strategies) {
           const total = strategies.length;
@@ -76,7 +76,7 @@ export function StrategyStats({ type, organizationId }: StrategyStatsProps) {
           .from('organization_strategies')
           .select('*, organization_roadmap_milestones(*)')
           .eq('organization_id', organizationId)
-          .eq('type', 'roadmap');
+          .eq('strategy_type', 'roadmap');
 
         if (strategies) {
           const total = strategies.length;
@@ -101,7 +101,7 @@ export function StrategyStats({ type, organizationId }: StrategyStatsProps) {
           .from('organization_strategies')
           .select('*, organization_decision_options(*)')
           .eq('organization_id', organizationId)
-          .eq('type', 'decision_log');
+          .eq('strategy_type', 'decision_log');
 
         if (strategies) {
           const total = strategies.length;

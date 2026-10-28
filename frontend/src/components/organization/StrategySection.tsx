@@ -86,7 +86,7 @@ export function StrategySection({ organizationId }: StrategySectionProps) {
           organization_decision_options(*)
         `)
         .eq('organization_id', organizationId)
-        .eq('type', typeMap[activeTab]);
+        .eq('strategy_type', typeMap[activeTab]);
 
       if (error) throw error;
       setStrategies(data || []);

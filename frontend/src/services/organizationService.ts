@@ -317,7 +317,7 @@ class OrganizationService {
         id: uo.id,
         organization_id: uo.organization_id,
         organization_name: uo.organizations?.name || '',
-        organization_type: uo.organizations?.type,
+        organization_type: ORG_TYPE_DB_TO_UI[uo.organizations?.type] || uo.organizations?.type,
         position_title: uo.position_title,
         role: uo.role,
         joined_date: uo.created_at
