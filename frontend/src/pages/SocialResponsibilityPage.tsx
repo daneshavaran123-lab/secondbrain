@@ -5,6 +5,7 @@ import { ModernButton } from "@/components/ui/modern-button";
 import { Plus, Heart, TreePine, GraduationCap, Folder, BarChart3 } from "lucide-react";
 import { CSRProjectWizard } from "@/components/social-responsibility/wizard/CSRProjectWizard";
 import { CSRProjectList } from "@/components/social-responsibility/CSRProjectList";
+import { CSRReport } from "@/components/social-responsibility/CSRReport";
 import { CSRFilterPanel, CSRFilters } from "@/components/social-responsibility/CSRFilterPanel";
 import {
   socialResponsibilityService,
@@ -243,10 +244,7 @@ export default function SocialResponsibilityPage() {
         </TabsContent>
 
         <TabsContent value="reports" className="mt-6">
-          <div className="text-center py-12 text-muted-foreground">
-            <BarChart3 className="h-12 w-12 mx-auto mb-4" />
-            <p>بخش گزارش‌ها به زودی اضافه خواهد شد</p>
-          </div>
+          <CSRReport projects={projects} />
         </TabsContent>
       </Tabs>
     </div>

@@ -164,6 +164,18 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ organizationName }) => 
 
         {/* Risk List */}
         <TabsContent value="risks" className="space-y-6">
+          {risks.length === 0 && (
+            <Card>
+              <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+                <AlertTriangle className="h-10 w-10 text-muted-foreground" aria-hidden />
+                <h3 className="text-lg font-semibold">هنوز ریسکی ثبت نشده</h3>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  ریسک‌های {organizationName} را با احتمال و اثرشان ثبت کنید تا ماتریس، برنامه کاهش و هشدارها از روی آن‌ها ساخته شوند.
+                </p>
+                <Button onClick={() => setShowForm(true)} className="gap-2"><Plus className="h-4 w-4" />ثبت اولین ریسک</Button>
+              </CardContent>
+            </Card>
+          )}
           <div className="grid gap-6">
             {risks.map((risk) => (
               <Card key={risk.id} className="hover:shadow-lg transition-shadow">

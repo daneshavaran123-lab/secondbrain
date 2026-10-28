@@ -32,10 +32,10 @@ const SecretaryPortalPage = () => {
           </div>
           <div className="space-y-3">
             <h1 className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent tracking-tight">
-              پورتال منشی فانتزی
+              پورتال منشی
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              سیستم مدیریت هوشمند درخواست‌های اداری با تجربه فانتزی و مدرن
+              درخواست‌ها، جلسه‌ها و پیام‌هایی که منشی برای شما پیگیری می‌کند
             </p>
           </div>
           
@@ -61,7 +61,7 @@ const SecretaryPortalPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Quick Actions - Modern Card */}
           <ModernCard 
-            title="اقدامات سریع فانتزی" 
+            title="اقدامات سریع" 
             subtitle="دسترسی سریع به عملکردهای کلیدی"
             icon={<Activity className="h-6 w-6" />}
             hover={true}
@@ -76,7 +76,7 @@ const SecretaryPortalPage = () => {
                 glow={true}
                 icon={<Calendar className="h-5 w-5" />}
               >
-                ایجاد جلسه جادویی
+                ایجاد جلسه
               </ModernButton>
               <ModernButton 
                 className="w-full justify-start gap-4 h-14" 
@@ -85,7 +85,7 @@ const SecretaryPortalPage = () => {
                 glow={true}
                 icon={<MessageSquare className="h-5 w-5" />}
               >
-                پیام فوری فانتزی
+                پیام فوری
               </ModernButton>
               <ModernButton 
                 className="w-full justify-start gap-4 h-14" 
@@ -195,8 +195,8 @@ const SecretaryPortalPage = () => {
         {/* Features Overview - Fantasy Enhanced */}
         <div className="mt-12">
           <ModernCard 
-            title="راهنمای جادویی پورتال منشی"
-            subtitle="تمام قابلیت‌ها و محدودیت‌های سیستم فانتزی"
+            title="راهنمای پورتال منشی"
+            subtitle="آنچه منشی می‌تواند انجام دهد و حدود دسترسی او"
             icon={<Shield className="h-6 w-6" />}
             hover={true}
             glow={true}
@@ -207,11 +207,11 @@ const SecretaryPortalPage = () => {
               <div className="space-y-4">
                 <h3 className="font-bold text-lg bg-gradient-primary bg-clip-text text-transparent flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
-                  ویژگی‌های جادویی:
+                  امکانات:
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { icon: Calendar, text: "ایجاد و مدیریت جلسات فانتزی" },
+                    { icon: Calendar, text: "ایجاد و مدیریت جلسات" },
                     { icon: MessageSquare, text: "ارسال پیام‌های فوری با جلوه‌های ویژه" },
                     { icon: Bell, text: "یادآوری‌های هوشمند و تعاملی" },
                     { icon: Users, text: "مدیریت مخاطبین با امکانات پیشرفته" }
@@ -256,7 +256,7 @@ const SecretaryPortalPage = () => {
           <div className="p-6 glass-card rounded-xl shadow-floating hover-glow transition-elegant transform-gpu hover:scale-105">
             <p className="text-base bg-gradient-primary bg-clip-text text-transparent font-medium flex items-center justify-center gap-2">
               <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-              پورتال منشی فانتزی - نسخه ۲.۰ | طراحی شده برای تجربه مدرن و جادویی
+              پورتال منشی — نسخه ۲٫۰
               <Zap className="h-5 w-5 text-primary animate-pulse" />
             </p>
           </div>

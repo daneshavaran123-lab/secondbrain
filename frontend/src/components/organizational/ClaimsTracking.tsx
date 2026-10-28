@@ -14,7 +14,9 @@ import { BulkClaimImport } from "./claims/BulkClaimImport";
 import { ClaimExporter } from "./claims/ClaimExporter";
 import { QuickClaimEntry } from "./claims/QuickClaimEntry";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
+import { persistentStorage } from "@/lib/persistentStorage";
+import { organizationService, type UserOrganization } from "@/services/organizationService";
 
 interface ClaimsTrackingProps {
   organizationName: string;
@@ -40,20 +42,29 @@ export function ClaimsTracking({ organizationName }: ClaimsTrackingProps) {
   const [organizationId, setOrganizationId] = useState<string>("");
   const { toast } = useToast();
 
+  // Which of the person's organizations this section is about: the one with the section's name,
+  // else the one they picked for it before; with none, they choose (or create one)
+  const [orgChoices, setOrgChoices] = useState<UserOrganization[] | null>(null);
+  const choiceKey = `claims_org_${organizationName}`;
   useEffect(() => {
-    const fetchUserOrganization = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // Organization ID would come from user_organizations table
-        }
-      } catch (error) {
-        console.error('Error fetching user organization:', error);
+    (async () => {
+      const orgs = await organizationService.getUserOrganizations().catch(() => [] as UserOrganization[]);
+      const byName = orgs.find((o) => o.organization_name?.trim() === organizationName.trim());
+      const picked = orgs.find((o) => o.organization_id === localStorage.getItem(choiceKey));
+      const match = byName || picked;
+      if (match) setOrganizationId(match.organization_id);
+      else {
+        setOrgChoices(orgs);
+        setLoading(false);
       }
-    };
+    })();
+  }, [organizationName, choiceKey]);
 
-    fetchUserOrganization();
-  }, []);
+  const chooseOrganization = (id: string) => {
+    try { persistentStorage.setItem(choiceKey, id); } catch { /* remembered for this visit only */ }
+    setOrgChoices(null);
+    setOrganizationId(id);
+  };
 
   useEffect(() => {
     if (organizationId) {
@@ -134,6 +145,36 @@ export function ClaimsTracking({ organizationName }: ClaimsTrackingProps) {
     
     return matchesSearch && matchesStatus && matchesCategory;
   });
+
+  if (!organizationId && orgChoices) {
+    return (
+      <Card className="mx-auto max-w-lg">
+        <CardHeader>
+          <CardTitle>پیگیری مطالبات - {organizationName}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {orgChoices.length ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                سازمانی به نام «{organizationName}» در فهرست سازمان‌های شما نیست. مطالبات این بخش برای کدام سازمان ثبت شوند؟
+              </p>
+              <Select onValueChange={chooseOrganization}>
+                <SelectTrigger aria-label="انتخاب سازمان"><SelectValue placeholder="انتخاب سازمان…" /></SelectTrigger>
+                <SelectContent>
+                  {orgChoices.map((o) => <SelectItem key={o.organization_id} value={o.organization_id}>{o.organization_name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">برای ثبت مطالبات، اول سازمان خود را بسازید.</p>
+          )}
+          <Button asChild variant={orgChoices.length ? 'outline' : 'default'}>
+            <Link to="/organizations/new">ساخت سازمان تازه</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">

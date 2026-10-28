@@ -208,7 +208,7 @@ const SuccessionPlanning: React.FC<SuccessionPlanningProps> = ({ organizationNam
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            شما در حالت شخصی کار می‌کنید. اطلاعات در مرورگر شما ذخیره می‌شود.
+            شما در حالت شخصی کار می‌کنید؛ اطلاعات در حساب خودتان ذخیره می‌شود و در هر دستگاهی که وارد شوید در دسترس است.
           </AlertDescription>
         </Alert>
       )}
@@ -220,7 +220,7 @@ const SuccessionPlanning: React.FC<SuccessionPlanningProps> = ({ organizationNam
           <div>
             <h1 className="text-3xl font-bold text-foreground">جانشین‌پروری</h1>
             <p className="text-muted-foreground">
-              {isPersonalMode ? "حالت شخصی - داده‌ها در مرورگر ذخیره می‌شود" : `${organizationName} - توسعه جانشینان آینده`}
+              {isPersonalMode ? "حالت شخصی" : `${organizationName} - توسعه جانشینان آینده`}
             </p>
           </div>
         </div>

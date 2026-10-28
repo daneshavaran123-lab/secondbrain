@@ -42,7 +42,7 @@ export function ModernButton({
         {!loading && icon && iconPosition === "left" && (
           <span className="text-current opacity-90">{icon}</span>
         )}
-        <span className="font-medium">{children}</span>
+        <span className="inline-flex items-center gap-2 font-medium">{children}</span>
         {!loading && icon && iconPosition === "right" && (
           <span className="text-current opacity-90">{icon}</span>
         )}

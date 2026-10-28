@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { OrganizationMember, OrganizationRole } from "@/types/organization";
+import { OrganizationMember, OrganizationRole, ROLE_NAMES } from '@/types/organization';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -113,7 +113,7 @@ export function MembersList({
                     disabled={changingRole === member.id}
                   />
                 ) : (
-                  <Badge variant="secondary">{member.role}</Badge>
+                  <Badge variant="secondary">{ROLE_NAMES[member.role as OrganizationRole] ?? member.role}</Badge>
                 )}
 
                 {canManageMembers && member.role !== 'owner' && (

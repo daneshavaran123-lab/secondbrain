@@ -1,122 +1,40 @@
-import { motion } from 'framer-motion';
-import { Users, FolderKanban, CheckCircle, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Users, FolderKanban, CheckCircle, CalendarClock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import type { OrganizationStats } from '@/services/organizationStatsService';
 
 interface OrganizationStatsCardsProps {
   stats: OrganizationStats;
 }
 
+const fa = (n: number) => n.toLocaleString('fa-IR');
+
+// Only figures the app actually counts: there is no history yet to show a trend against.
 export function OrganizationStatsCards({ stats }: OrganizationStatsCardsProps) {
-  const statsData = [
-    {
-      title: 'کل اعضا',
-      value: stats.totalMembers,
-      icon: Users,
-      gradient: 'bg-blue-500',
-      bgGradient: 'bg-blue-50',
-      change: '+12%',
-      trend: 'up' as const,
-    },
-    {
-      title: 'پروژه‌های فعال',
-      value: stats.activeProjects,
-      icon: FolderKanban,
-      gradient: 'bg-purple-500',
-      bgGradient: 'bg-purple-50',
-      change: '+8%',
-      trend: 'up' as const,
-    },
-    {
-      title: 'نرخ تکمیل',
-      value: `${stats.completionRate}%`,
-      icon: CheckCircle,
-      gradient: 'bg-emerald-500',
-      bgGradient: 'bg-emerald-50',
-      change: '+5%',
-      trend: 'up' as const,
-    },
-    {
-      title: 'میانگین زمان پاسخ',
-      value: `${stats.averageResponseTime}h`,
-      icon: Clock,
-      gradient: 'bg-orange-500',
-      bgGradient: 'bg-orange-50',
-      change: '-3%',
-      trend: 'down' as const,
-    },
+  const cards = [
+    { title: 'اعضا', value: fa(stats.totalMembers), note: null, icon: Users },
+    { title: 'پروژه‌های فعال', value: fa(stats.activeProjects), note: `از ${fa(stats.totalProjects)} پروژه`, icon: FolderKanban },
+    { title: 'نرخ تکمیل پروژه‌ها', value: `${fa(stats.completionRate)}٪`, note: `${fa(stats.completedProjects)} پروژه تکمیل شده`, icon: CheckCircle, progress: stats.completionRate },
+    { title: 'جلسه‌های پیش رو', value: fa(stats.upcomingMeetings), note: `از ${fa(stats.totalMeetings)} جلسه سازمانی`, icon: CalendarClock },
   ];
 
-  const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
-    if (trend === 'up') return TrendingUp;
-    if (trend === 'down') return TrendingDown;
-    return Minus;
-  };
-
-  const getTrendColor = (trend: 'up' | 'down' | 'neutral', isNegative = false) => {
-    if (trend === 'neutral') return 'text-muted-foreground';
-    if (isNegative) {
-      return trend === 'up' ? 'text-red-500' : 'text-emerald-500';
-    }
-    return trend === 'up' ? 'text-emerald-500' : 'text-red-500';
-  };
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {statsData.map((stat, index) => {
-        const Icon = stat.icon;
-        const TrendIcon = getTrendIcon(stat.trend);
-        const isNegativeStat = stat.title.includes('زمان');
-
-        return (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.03, y: -5 }}
-          >
-            <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition duration-300 relative group">
-              {/* Background gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-50 group-hover:opacity-70 transition-opacity`} />
-              
-              {/* Animated background blob */}
-              <div className={`absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br ${stat.gradient} rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity`} />
-              
-              <CardContent className="p-6 relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition duration-300`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <div className={`flex items-center gap-1 text-sm font-medium ${getTrendColor(stat.trend, isNegativeStat)}`}>
-                    <TrendIcon className="w-4 h-4" />
-                    {stat.change}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                    {stat.title}
-                  </h3>
-                  <p className="text-3xl font-bold bg-foreground bg-clip-text">
-                    {stat.value}
-                  </p>
-                </div>
-
-                {/* Progress indicator */}
-                <div className="mt-4 h-1 w-full bg-border/30 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: '70%' }}
-                    transition={{ delay: index * 0.1 + 0.3, duration: 0.8 }}
-                    className={`h-full bg-gradient-to-r ${stat.gradient} rounded-full`}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        );
-      })}
+    <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {cards.map((c) => (
+        <Card key={c.title}>
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="text-sm text-muted-foreground">{c.title}</h3>
+                <p className="mt-1 text-2xl font-bold">{c.value}</p>
+                {c.note && <p className="mt-1 text-xs text-muted-foreground">{c.note}</p>}
+              </div>
+              <c.icon className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+            </div>
+            {c.progress !== undefined && <Progress value={c.progress} className="mt-4 h-1.5" aria-label={c.title} />}
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

@@ -26,25 +26,29 @@ export function PersonalInfoSection() {
     }
   }, [user]);
 
+  // The person's profile row (user_profiles, one per person); the name may only be in first/last name
   const loadProfile = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-
+      const { data, error } = await supabase.from('user_profiles').select('*').maybeSingle();
       if (error) throw error;
-
       if (data) {
         setFormData({
-          full_name: data.full_name || "",
+          full_name: data.full_name || [data.first_name, data.last_name].filter(Boolean).join(' ') || data.display_name || "",
           bio: data.bio || "",
           avatar_url: data.avatar_url || ""
         });
       }
     } catch (error) {
       console.error('Error loading profile:', error);
+    }
+  };
+
+  const saveProfile = async (fields: Record<string, unknown>) => {
+    const { data, error } = await supabase.from('user_profiles').update(fields).select('id');
+    if (error) throw error;
+    if (!Array.isArray(data) || data.length === 0) {
+      const inserted = await supabase.from('user_profiles').insert(fields);
+      if (inserted.error) throw inserted.error;
     }
   };
 
@@ -72,12 +76,7 @@ export function PersonalInfoSection() {
         .getPublicUrl(filePath);
 
       // به‌روزرسانی پروفایل
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user?.id);
-
-      if (updateError) throw updateError;
+      await saveProfile({ avatar_url: publicUrl });
 
       setFormData(prev => ({ ...prev, avatar_url: publicUrl }));
       toast.success('تصویر پروفایل با موفقیت به‌روزرسانی شد');
@@ -95,16 +94,9 @@ export function PersonalInfoSection() {
     try {
       setLoading(true);
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: formData.full_name,
-          bio: formData.bio,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      const name = formData.full_name.trim();
+      const [first, ...rest] = name.split(/\s+/);
+      await saveProfile({ full_name: name, first_name: first || null, last_name: rest.join(' ') || null, bio: formData.bio });
 
       toast.success('اطلاعات با موفقیت به‌روزرسانی شد');
     } catch (error: any) {

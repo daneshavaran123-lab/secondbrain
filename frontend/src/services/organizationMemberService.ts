@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getStoredUser } from "@/lib/api";
 import { OrganizationMember, OrganizationInvitation, OrganizationRole } from "@/types/organization";
 import { toast } from "sonner";
 import { organizationNotificationService } from "./organizationNotificationService";
@@ -203,21 +204,18 @@ class OrganizationMemberService {
 
       if (error) throw error;
       
-      // دریافت اطلاعات profiles
-      const membersWithProfiles = await Promise.all(
-        (data || []).map(async (member) => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('email, display_name, avatar_url')
-            .eq('id', member.user_id)
-            .single();
-          
-          return {
-            ...member,
-            profiles: profile || undefined,
-          };
-        })
-      );
+      // A person can read only their own profile here, so their own row gets a name and
+      // email; other members keep what the membership itself records
+      const me = getStoredUser();
+      const { data: own } = await supabase.from('user_profiles').select('full_name, first_name, last_name, display_name, avatar_url').maybeSingle();
+      const ownName = own?.full_name || [own?.first_name, own?.last_name].filter(Boolean).join(' ') || own?.display_name
+        || [me?.first_name, me?.last_name].filter(Boolean).join(' ') || '';
+      const membersWithProfiles = (data || []).map((member) => ({
+        ...member,
+        profiles: member.user_id === me?.id
+          ? { display_name: ownName || me?.email, email: me?.email, avatar_url: own?.avatar_url || undefined }
+          : (member.position_title ? { display_name: member.position_title } : undefined),
+      }));
       
       return membersWithProfiles as unknown as OrganizationMember[];
     } catch (error) {

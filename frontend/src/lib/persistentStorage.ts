@@ -23,7 +23,7 @@ const SYNCED = new Set([
   'dailyContentFavorites', 'dailyContentSettings', 'healthMetrics', 'main_company', 'main_organization', 'default_meeting_location',
   'brainforge_succession_positions', 'brainforge_succession_talent_pool', 'brainforge_succession_programs', 'brainforge_succession_goals',
 ]);
-const SYNCED_PREFIXES = ['legal_', 'sprints_', 'sprint_tasks_', 'current_sprint_', 'succession_'];
+const SYNCED_PREFIXES = ['legal_', 'sprints_', 'sprint_tasks_', 'current_sprint_', 'succession_', 'claims_org_'];
 // legal_data_* are flags of the sample-data loader, not records
 const NOT_SYNCED_PREFIXES = ['legal_data_'];
 
