@@ -16,6 +16,7 @@ import { personalPlanningService } from "@/services/personalPlanningService";
 import { professionalPlanningService } from "@/services/professionalPlanningService";
 import { organizationalPlanningService } from "@/services/organizationalPlanningService";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface ConvertToTaskDialogProps {
   idea: any;
@@ -237,7 +238,7 @@ export function ConvertToTaskDialog({ idea, open, onOpenChange }: ConvertToTaskD
                     selected={taskData.due_date ? new Date(taskData.due_date) : undefined}
                     onSelect={(date) => setTaskData({ 
                       ...taskData, 
-                      due_date: date?.toISOString().split('T')[0] 
+                      due_date: date ? format(date, 'yyyy-MM-dd') : undefined 
                     })}
                     initialFocus
                   />

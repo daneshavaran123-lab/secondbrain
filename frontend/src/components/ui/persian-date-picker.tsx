@@ -3,6 +3,13 @@ import PersianDate from 'persian-date';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/**
+ * A picked day is returned at local noon. Callers often store it with toISOString(); at
+ * midnight that is still the previous day in UTC for every time zone east of it (Tehran
+ * included), so a picked 10 Aban was saved as 9 Aban.
+ */
+const atNoon = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12);
+
 interface PersianDatePickerProps {
   value?: Date | null;
   onChange?: (date: Date | null) => void;
@@ -85,7 +92,7 @@ export const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   const handleDateSelect = (day: number) => {
     try {
       const newPersianDate = new PersianDate([currentViewDate.year, currentViewDate.month, day]);
-      const gregorianDate = newPersianDate.toDate();
+      const gregorianDate = atNoon(newPersianDate.toDate());
       setSelectedDate(gregorianDate);
       onChange?.(gregorianDate);
       setIsOpen(false);
@@ -248,7 +255,7 @@ export const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
             <button
               type="button"
               onClick={() => {
-                const today = new Date();
+                const today = atNoon(new Date());
                 setSelectedDate(today);
                 onChange?.(today);
                 setIsOpen(false);
