@@ -6,6 +6,7 @@ import { format } from "date-fns-jalali";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { TimeInput } from "@/components/ui/time-input";
 
 /**
  * What <Input type="date"> and <Input type="datetime-local"> render: the date is shown and
@@ -137,12 +138,12 @@ export const JalaliDateInput = React.forwardRef<HTMLInputElement, Props>(
           />
           <div className="flex items-center gap-2 border-t border-border p-2">
             {type === "datetime-local" && (
-              <input
-                type="time"
+              <TimeInput
                 aria-label="ساعت"
+                required
                 value={time}
-                onChange={(e) => emit(`${formatGregorian(date ?? new Date(), "yyyy-MM-dd")}T${e.target.value}`)}
-                className="latin-digits h-8 rounded-md border border-input bg-card px-2 text-sm"
+                onChange={(e) => emit(`${formatGregorian(date ?? new Date(), "yyyy-MM-dd")}T${e.target.value || "09:00"}`)}
+                className="h-9 w-auto"
               />
             )}
             <button

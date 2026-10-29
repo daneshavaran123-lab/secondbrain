@@ -131,10 +131,10 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
         if (stepsError) throw stepsError;
       }
 
-      toast.success('SOP با موفقیت ذخیره شد');
+      toast.success('دستورالعمل ذخیره شد');
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || 'خطا در ذخیره SOP');
+      toast.error(error.message || 'خطا در ذخیره دستورالعمل');
     } finally {
       setIsSubmitting(false);
     }
@@ -144,7 +144,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <Label>کد SOP</Label>
+          <Label>کد دستورالعمل</Label>
           <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="SOP-001" />
         </div>
         <div>
@@ -172,7 +172,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
       </div>
 
       <div>
-        <Label>عنوان SOP</Label>
+        <Label>عنوان دستورالعمل</Label>
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -314,7 +314,7 @@ export function SOPEditor({ organizationId, onSuccess, existingData }: SOPEditor
 
       <div className="flex justify-end gap-3">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'در حال ذخیره…' : 'ذخیره SOP'}
+          {isSubmitting ? 'در حال ذخیره…' : 'ذخیره دستورالعمل'}
         </Button>
       </div>
     </form>

@@ -49,10 +49,10 @@ export function ICPForm({ organizationId, profile, onClose, onSuccess }: ICPForm
 
       if (profile) {
         await salesService.updateICPProfile(profile.id, data);
-        toast.success('پروفایل ICP به‌روزرسانی شد');
+        toast.success('پروفایل مشتری ایده‌آل به‌روزرسانی شد');
       } else {
         await salesService.createICPProfile(data);
-        toast.success('پروفایل ICP ایجاد شد');
+        toast.success('پروفایل مشتری ایده‌آل ایجاد شد');
       }
 
       onSuccess();
@@ -72,7 +72,7 @@ export function ICPForm({ organizationId, profile, onClose, onSuccess }: ICPForm
         </Button>
         <div>
           <h3 className="text-lg font-semibold">
-            {profile ? 'ویرایش پروفایل ICP' : 'افزودن پروفایل ICP جدید'}
+            {profile ? 'ویرایش پروفایل مشتری ایده‌آل' : 'افزودن پروفایل مشتری ایده‌آل'}
           </h3>
           <p className="text-sm text-muted-foreground">مشخصات مشتری ایده‌آل خود را تعریف کنید</p>
         </div>

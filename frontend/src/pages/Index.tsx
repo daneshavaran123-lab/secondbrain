@@ -60,6 +60,12 @@ const Index = () => {
     }
   });
 
+  // Back to this page after signing in (an invitation link, a shared page…)
+  const signInPath = () => {
+    const here = window.location.pathname + window.location.search;
+    return here === '/' ? '/auth' : `/auth?redirect=${encodeURIComponent(here)}`;
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -69,14 +75,14 @@ const Index = () => {
           console.error('Error checking auth:', error);
           setIsAuthenticated(false);
           setIsLoading(false);
-          navigate('/auth');
+          navigate(signInPath());
           return;
         }
 
         if (!session) {
           setIsAuthenticated(false);
           setIsLoading(false);
-          navigate('/auth');
+          navigate(signInPath());
           return;
         }
 
@@ -86,7 +92,7 @@ const Index = () => {
       } catch (error) {
         console.error('Error in auth check:', error);
         setIsAuthenticated(false);
-        navigate('/auth');
+        navigate(signInPath());
       } finally {
         setIsLoading(false);
       }
@@ -97,7 +103,7 @@ const Index = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setIsAuthenticated(false);
-        navigate('/auth');
+        navigate(signInPath());
       } else {
         setIsAuthenticated(true);
       }

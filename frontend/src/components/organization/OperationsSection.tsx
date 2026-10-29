@@ -12,12 +12,12 @@ export function OperationsSection({ organizationId }: OperationsSectionProps) {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">عملیات و فرایندها</h2>
-        <p className="text-muted-foreground">مدیریت SOPها، چک‌لیست‌ها و فرم‌ها</p>
+        <p className="text-muted-foreground">مدیریت دستورالعمل‌ها (SOP)، چک‌لیست‌ها و فرم‌ها</p>
       </div>
 
       <Tabs defaultValue="sop">
         <TabsList>
-          <TabsTrigger value="sop">SOPها</TabsTrigger>
+          <TabsTrigger value="sop">دستورالعمل‌ها</TabsTrigger>
           <TabsTrigger value="checklist">چک‌لیست‌ها</TabsTrigger>
           <TabsTrigger value="forms">سازنده فرم</TabsTrigger>
         </TabsList>

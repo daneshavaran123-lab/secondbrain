@@ -16,7 +16,7 @@ export function SalesSection({ organizationId }: SalesSectionProps) {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">فروش و بازاریابی</h2>
-        <p className="text-muted-foreground">مدیریت ICP، قیف فروش، سرنخ‌ها و کمپین‌ها</p>
+        <p className="text-muted-foreground">مدیریت مشتری ایده‌آل (ICP)، قیف فروش، سرنخ‌ها و کمپین‌ها</p>
       </div>
 
       <SalesStats organizationId={organizationId} />
@@ -24,7 +24,7 @@ export function SalesSection({ organizationId }: SalesSectionProps) {
       <Tabs defaultValue="dashboard" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dashboard">داشبورد</TabsTrigger>
-          <TabsTrigger value="icp">ICP</TabsTrigger>
+          <TabsTrigger value="icp">مشتری ایده‌آل</TabsTrigger>
           <TabsTrigger value="funnel">قیف فروش</TabsTrigger>
           <TabsTrigger value="leads">سرنخ‌ها</TabsTrigger>
           <TabsTrigger value="campaigns">کمپین‌ها</TabsTrigger>

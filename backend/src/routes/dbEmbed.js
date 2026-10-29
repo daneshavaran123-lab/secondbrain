@@ -205,14 +205,20 @@ export function isScoped(conf) {
  * user id. Tables owned through a parent (`via`) follow the chain of parents:
  *   idea_risks.idea_id IN (SELECT id FROM ideas WHERE user_id = $1)
  */
-export function ownerCondition(tables, table, alias, param, depth = 0) {
+export function ownerCondition(tables, table, alias, param, depth = 0, mode = 'write') {
   const conf = Object.hasOwn(tables, table) ? tables[table] : null;
   const col = (name) => (alias ? `${alias}.${ident(name)}` : ident(name));
-  if (conf?.userCol) return `${col(conf.userCol)} = ${param}`;
+  if (conf?.userCol) {
+    const own = `${col(conf.userCol)} = ${param}`;
+    // `readers`: who else may read (never write) the row, e.g. an organization's members
+    return mode === 'read' && conf.readers ? `(${own} OR ${conf.readers(col, param)})` : own;
+  }
   if (conf?.via && depth < 4) {
     const p = `p${depth}`;
     const { col: fk, parent, parentCol = 'id' } = conf.via;
-    return `${col(fk)} IN (SELECT ${p}.${ident(parentCol)} FROM ${ident(parent)} ${p} WHERE ${ownerCondition(tables, parent, p, param, depth + 1)})`;
+    // a child row is readable by the parent's readers only when the table says so
+    const parentMode = mode === 'read' && conf.membersRead ? 'read' : 'write';
+    return `${col(fk)} IN (SELECT ${p}.${ident(parentCol)} FROM ${ident(parent)} ${p} WHERE ${ownerCondition(tables, parent, p, param, depth + 1, parentMode)})`;
   }
   throw new Forbidden(`Table '${table}' has no per-user scope`);
 }
@@ -293,7 +299,7 @@ export async function innerJoinConditions({ table, parsed, byAlias, userId, star
     const sub = filterConditions(own, idx + 1, conf.userCol, 'e');
     const clauses = [
       `e.${ident(rel.remoteCol)} = ${ident(table)}.${ident(rel.localCol)}`,
-      ownerCondition(tables, rel.table, 'e', `$${idx}`),
+      ownerCondition(tables, rel.table, 'e', `$${idx}`, 0, 'read'),
       ...sub.conditions,
     ];
     conditions.push(`EXISTS (SELECT 1 FROM ${ident(rel.table)} e WHERE ${clauses.join(' AND ')})`);
@@ -342,7 +348,7 @@ export async function attachEmbeds({ table, rows, parsed, byAlias = {}, userId, 
       const extra = new Set([rel.remoteCol, ...(await joinColumns(rel.table, embed.select, tables))]);
       const sub = filterConditions(own, 3, conf.userCol);
       const sql = `SELECT ${columnSql(embed.select, extra)} FROM ${ident(rel.table)}
-        WHERE ${ownerCondition(tables, rel.table, null, '$1')} AND ${ident(rel.remoteCol)} = ANY($2)${sub.conditions.map((c) => ` AND ${c}`).join('')}`;
+        WHERE ${ownerCondition(tables, rel.table, null, '$1', 0, 'read')} AND ${ident(rel.remoteCol)} = ANY($2)${sub.conditions.map((c) => ` AND ${c}`).join('')}`;
       children = (await query(sql, [userId, keys, ...sub.values])).rows;
       if (embed.select.embeds.length) {
         children = await attachEmbeds({ table: rel.table, rows: children, parsed: embed.select, byAlias: nested, userId, tables });

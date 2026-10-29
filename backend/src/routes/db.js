@@ -59,9 +59,11 @@ const BACKEND_TABLES = {
   delegation_attachments:      { userCol: 'user_id' },
   delegation_task_events:      { userCol: 'user_id' },
   // Organizations
-  organizations:               { userCol: 'user_id' },
+  // members read their organization (its name, logo, description); only the owner changes it
+  organizations:          { userCol: 'user_id', readers: (col, p) => `${col('id')} IN (SELECT m.organization_id FROM user_organizations m WHERE m.user_id = ${p} AND COALESCE(m.is_active, true))` },
   organization_members:        { userCol: 'user_id' },
-  organization_invitations:    { via: { col: 'organization_id', parent: 'organizations' } },
+  // the inviter is always the person sending it
+  organization_invitations:    { via: { col: 'organization_id', parent: 'organizations' }, stampCol: 'invited_by' },
   organization_departments:    { via: { col: 'organization_id', parent: 'organizations' } },
   organization_employees:      { via: { col: 'organization_id', parent: 'organizations' } },
   organization_missions:       { userCol: 'user_id' },
@@ -142,7 +144,9 @@ const BACKEND_TABLES = {
   plaud_recordings:            { userCol: 'user_id' },
   hi_dock_connections:         { userCol: 'user_id' },
   // System
-  user_organizations:          { userCol: 'user_id' },
+  // a membership row is the person's own, but only for an organization they own; joining someone
+  // else's organization goes through an invitation (routes/org-members.js)
+  user_organizations:          { userCol: 'user_id', ownsRef: { col: 'organization_id', parent: 'organizations' } },
   user_permissions:            { userCol: 'user_id' },
   user_audit_log:              { userCol: 'user_id' },
   system_permissions:          { userCol: null },
@@ -185,16 +189,26 @@ async function inTransaction(fn) {
   }
 }
 
-function buildWhere(filters, userId, table) {
+function buildWhere(filters, userId, table, mode = 'write') {
   if (!Array.isArray(filters)) throw new BadRequest('filters must be an array');
   const { conditions, values, nextIdx } = filterConditions(filters, 2, BACKEND_TABLES[table].userCol);
-  const owner = ownerCondition(BACKEND_TABLES, table, null, '$1');
+  const owner = ownerCondition(BACKEND_TABLES, table, null, '$1', 0, mode);
   return { where: [owner, ...conditions].join(' AND '), values: [userId, ...values], nextIdx };
 }
 
 /** Rows owned through a parent may only point at parents the user owns. */
 async function assertParentsOwned(client, table, rows, userId) {
-  const { via } = BACKEND_TABLES[table];
+  const { via, ownsRef } = BACKEND_TABLES[table];
+  if (ownsRef) {
+    const refs = [...new Set(rows.map((r) => r[ownsRef.col]).filter((v) => v !== undefined && v !== null))];
+    if (refs.length) {
+      const { rows: [{ count }] } = await client.query(
+        `SELECT COUNT(*)::int AS count FROM ${ident(ownsRef.parent)} p WHERE p.id = ANY($2) AND ${ownerCondition(BACKEND_TABLES, ownsRef.parent, 'p', '$1')}`,
+        [userId, refs]
+      );
+      if (count !== refs.length) throw new Forbidden(`${ownsRef.parent} row not found`);
+    }
+  }
   if (!via) return;
   const ids = [...new Set(rows.map((r) => r[via.col]))];
   if (ids.some((id) => id === undefined || id === null)) throw new BadRequest(`${via.col} is required`);
@@ -208,6 +222,7 @@ async function assertParentsOwned(client, table, rows, userId) {
 /** The values a new row gets from its owner: the owner column, or user_id when a child table keeps one. */
 async function withOwner(table, row, userId) {
   const conf = BACKEND_TABLES[table];
+  if (conf.stampCol) row = { ...row, [conf.stampCol]: userId };
   if (conf.userCol) return { ...row, [conf.userCol]: userId };
   if (row.user_id === undefined && (await columnsOf(table)).has('user_id')) return { ...row, user_id: userId };
   return { ...row };
@@ -248,7 +263,7 @@ router.post('/:table', async (req, res) => {
     if (operation === 'select') {
       const parsed = parseSelect(selectCols);
       const { own, byAlias } = routeFilters(filters);
-      const { where, values, nextIdx } = buildWhere(own, userId, table);
+      const { where, values, nextIdx } = buildWhere(own, userId, table, 'read');
       const inner = await innerJoinConditions({ table, parsed, byAlias, userId, startIdx: nextIdx, tables: BACKEND_TABLES });
       const extra = await joinColumns(table, parsed, BACKEND_TABLES);
 
@@ -297,9 +312,10 @@ router.post('/:table', async (req, res) => {
       const { where, values } = buildWhere(filters, userId, table);
       const updateData = { ...rowData };
       if (userCol) delete updateData[userCol];
+      if (conf.stampCol) delete updateData[conf.stampCol];
       delete updateData.id;
       delete updateData.created_at;
-      if (conf.via && updateData[conf.via.col] !== undefined) {
+      if ((conf.via && updateData[conf.via.col] !== undefined) || (conf.ownsRef && updateData[conf.ownsRef.col] !== undefined)) {
         await assertParentsOwned({ query }, table, [updateData], userId);
       }
 
@@ -367,7 +383,7 @@ router.post('/:table', async (req, res) => {
     } else if (operation === 'count') {
       const parsed = parseSelect(selectCols);
       const { own, byAlias } = routeFilters(filters);
-      const { where, values, nextIdx } = buildWhere(own, userId, table);
+      const { where, values, nextIdx } = buildWhere(own, userId, table, 'read');
       const inner = await innerJoinConditions({ table, parsed, byAlias, userId, startIdx: nextIdx, tables: BACKEND_TABLES });
       const sql = `SELECT COUNT(*) FROM ${table} WHERE ${[where, ...inner.conditions].join(' AND ')}`;
       const result = await query(sql, [...values, ...inner.values]);

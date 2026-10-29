@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Loader2, Eye, EyeOff, AlertCircle, Users, User, Phone, ArrowLeft, CheckCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiLogin, apiSubUserLogin, BACKEND_URL } from "@/lib/api";
@@ -24,6 +24,10 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Back to where sign-in was asked for (e.g. an invitation link); only paths inside the app
+  const redirect = searchParams.get('redirect');
+  const after = redirect && redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/';
   const { refreshAuth, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<'owner' | 'subuser' | 'phone'>('owner');
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +61,7 @@ export default function AuthPage() {
     
     // اگر کاربر قبلاً احراز هویت شده، هدایت به صفحه اصلی
     if (isAuthenticated) {
-      navigate('/');
+      navigate(after);
     }
   }, [isAuthenticated, navigate]);
 
@@ -73,7 +77,7 @@ export default function AuthPage() {
       setSuccess('ورود موفقیت‌آمیز! در حال انتقال…');
       await refreshAuth();
       toast({ title: 'خوش آمدید', description: 'با موفقیت وارد شدید' });
-      setTimeout(() => navigate('/'), 500);
+      setTimeout(() => navigate(after), 500);
     } else {
       setError(result.error || 'خطا در ورود');
     }
@@ -93,7 +97,7 @@ export default function AuthPage() {
       setSuccess('ورود موفقیت‌آمیز! در حال انتقال…');
       await refreshAuth();
       toast({ title: 'خوش آمدید', description: `ورود موفق به عنوان ${result.user?.profile?.display_name || data.email}` });
-      setTimeout(() => navigate('/'), 500);
+      setTimeout(() => navigate(after), 500);
     } else {
       setError(result.error || 'خطا در ورود');
     }
@@ -149,7 +153,7 @@ export default function AuthPage() {
         if (data.user) localStorage.setItem('mora_user', JSON.stringify(data.user));
         await refreshAuth();
         toast({ title: 'خوش آمدید', description: 'با موفقیت وارد شدید' });
-        setTimeout(() => navigate('/'), 400);
+        setTimeout(() => navigate(after), 400);
       } else {
         setError(data.error || 'کد اشتباه است');
       }

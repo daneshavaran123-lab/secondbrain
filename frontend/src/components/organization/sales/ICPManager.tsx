@@ -27,7 +27,7 @@ export function ICPManager({ organizationId }: ICPManagerProps) {
       setProfiles(data);
     } catch (error) {
       console.error('Error loading ICP profiles:', error);
-      toast.error('خطا در بارگذاری پروفایل‌های ICP');
+      toast.error('خطا در بارگذاری پروفایل‌های مشتری ایده‌آل');
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ export function ICPManager({ organizationId }: ICPManagerProps) {
 
     try {
       await salesService.deleteICPProfile(id);
-      toast.success('پروفایل ICP حذف شد');
+      toast.success('پروفایل مشتری ایده‌آل حذف شد');
       loadProfiles();
     } catch (error) {
       console.error('Error deleting ICP profile:', error);
@@ -83,7 +83,7 @@ export function ICPManager({ organizationId }: ICPManagerProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">پروفایل‌های ICP</h3>
+          <h3 className="text-lg font-semibold">پروفایل‌های مشتری ایده‌آل</h3>
           <p className="text-sm text-muted-foreground">مدیریت مشتریان ایده‌آل (Ideal Customer Profile)</p>
         </div>
         <Button onClick={() => setShowForm(true)} className="gap-2">
@@ -106,7 +106,7 @@ export function ICPManager({ organizationId }: ICPManagerProps) {
         <Card>
           <CardContent className="py-12 text-center">
             <Building2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">هنوز پروفایل ICP ندارید</h3>
+            <h3 className="text-lg font-semibold mb-2">هنوز پروفایل مشتری ایده‌آل ندارید</h3>
             <p className="text-muted-foreground mb-4">
               برای شروع، اولین پروفایل مشتری ایده‌آل خود را ایجاد کنید
             </p>

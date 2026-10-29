@@ -1,5 +1,16 @@
 import { supabase } from "@/integrations/supabase/client";
-import { getStoredUser } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
+
+// Members and invitations go through /org-members: /db shows a person only their own rows
+async function call(path: string, init?: RequestInit): Promise<{ ok: boolean; data?: unknown; error?: string }> {
+  try {
+    const res = await apiFetch(path, init);
+    const body = await res.json().catch(() => ({}));
+    return res.ok ? { ok: true, data: body.data } : { ok: false, error: body.error };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
 import { OrganizationMember, OrganizationInvitation, OrganizationRole } from "@/types/organization";
 import { toast } from "sonner";
 import { organizationNotificationService } from "./organizationNotificationService";
@@ -14,19 +25,6 @@ class OrganizationMemberService {
     role: OrganizationRole = 'member'
   ): Promise<OrganizationInvitation | null> {
     try {
-      // بررسی اینکه کاربر قبلاً عضو نباشد
-      const { data: existingMember } = await supabase
-        .from('user_organizations')
-        .select('id')
-        .eq('organization_id', organizationId)
-        .eq('user_id', email)
-        .maybeSingle();
-
-      if (existingMember) {
-        toast.error('این کاربر قبلاً عضو سازمان است');
-        return null;
-      }
-
       // ایجاد دعوتنامه
       const { data: invitation, error } = await supabase
         .from('organization_invitations')
@@ -93,135 +91,38 @@ class OrganizationMemberService {
    * پذیرش دعوتنامه
    */
   async acceptInvitation(token: string): Promise<boolean> {
-    try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) {
-        toast.error('لطفاً ابتدا وارد شوید');
-        return false;
-      }
-
-      // دریافت اطلاعات دعوتنامه
-      const { data: invitation, error: invError } = await supabase
-        .from('organization_invitations')
-        .select('*')
-        .eq('token', token)
-        .eq('status', 'pending')
-        .eq('email', user.user.email)
-        .single();
-
-      if (invError || !invitation) {
-        toast.error('دعوتنامه معتبر نیست یا منقضی شده است');
-        return false;
-      }
-
-      // بررسی انقضا
-      if (new Date(invitation.expires_at) < new Date()) {
-        await supabase
-          .from('organization_invitations')
-          .update({ status: 'expired' })
-          .eq('id', invitation.id);
-        
-        toast.error('دعوتنامه منقضی شده است');
-        return false;
-      }
-
-      // اضافه کردن به سازمان
-      const { error: joinError } = await supabase
-        .from('user_organizations')
-        .insert({
-          user_id: user.user.id,
-          organization_id: invitation.organization_id,
-          role: invitation.role,
-          invited_by: invitation.invited_by,
-          joined_at: new Date().toISOString(),
-        });
-
-      if (joinError) throw joinError;
-
-      // به‌روزرسانی وضعیت دعوتنامه
-      await supabase
-        .from('organization_invitations')
-        .update({
-          status: 'accepted',
-          accepted_at: new Date().toISOString(),
-          accepted_by: user.user.id,
-        })
-        .eq('id', invitation.id);
-
-      // ارسال اعلان
-      await organizationNotificationService.notifyAllMembers(
-        invitation.organization_id,
-        'invitation_accepted',
-        'عضو جدید',
-        `${user.user.email} به سازمان پیوست`,
-        { email: user.user.email },
-        user.user.id
-      );
-
-      toast.success('با موفقیت به سازمان پیوستید');
-      return true;
-    } catch (error) {
-      console.error('Error accepting invitation:', error);
-      toast.error('خطا در پذیرش دعوتنامه');
+    const res = await call(`/org-members/invitations/${encodeURIComponent(token)}/accept`, { method: 'POST' });
+    if (!res.ok) {
+      toast.error(res.error || 'دعوتنامه پذیرفته نشد');
       return false;
     }
+    toast.success('با موفقیت به سازمان پیوستید');
+    return true;
   }
 
   /**
    * رد دعوتنامه
    */
   async rejectInvitation(token: string): Promise<boolean> {
-    try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return false;
-
-      const { error } = await supabase
-        .from('organization_invitations')
-        .update({ status: 'rejected' })
-        .eq('token', token)
-        .eq('email', user.user.email);
-
-      if (error) throw error;
-      toast.success('دعوتنامه رد شد');
-      return true;
-    } catch (error) {
-      console.error('Error rejecting invitation:', error);
-      toast.error('خطا در رد دعوتنامه');
+    const res = await call(`/org-members/invitations/${encodeURIComponent(token)}/reject`, { method: 'POST' });
+    if (!res.ok) {
+      toast.error(res.error || 'دعوتنامه رد نشد');
       return false;
     }
+    toast.success('دعوتنامه رد شد');
+    return true;
   }
 
   /**
    * دریافت اعضای سازمان
    */
   async getMembers(organizationId: string): Promise<OrganizationMember[]> {
-    try {
-      const { data, error } = await supabase
-        .from('user_organizations')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .order('joined_at', { ascending: false });
-
-      if (error) throw error;
-      
-      // A person can read only their own profile here, so their own row gets a name and
-      // email; other members keep what the membership itself records
-      const me = getStoredUser();
-      const { data: own } = await supabase.from('user_profiles').select('full_name, first_name, last_name, display_name, avatar_url').maybeSingle();
-      const ownName = own?.full_name || [own?.first_name, own?.last_name].filter(Boolean).join(' ') || own?.display_name
-        || [me?.first_name, me?.last_name].filter(Boolean).join(' ') || '';
-      const membersWithProfiles = (data || []).map((member) => ({
-        ...member,
-        profiles: member.user_id === me?.id
-          ? { display_name: ownName || me?.email, email: me?.email, avatar_url: own?.avatar_url || undefined }
-          : (member.position_title ? { display_name: member.position_title } : undefined),
-      }));
-      
-      return membersWithProfiles as unknown as OrganizationMember[];
-    } catch (error) {
-      console.error('Error getting members:', error);
+    const res = await call(`/org-members/${organizationId}/members`);
+    if (!res.ok) {
+      console.error('Error getting members:', res.error);
       return [];
     }
+    return res.data as OrganizationMember[];
   }
 
   /**
@@ -232,64 +133,34 @@ class OrganizationMemberService {
     userId: string,
     newRole: OrganizationRole
   ): Promise<boolean> {
-    try {
-      const { error } = await supabase
-        .from('user_organizations')
-        .update({ role: newRole })
-        .eq('organization_id', organizationId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      // ارسال اعلان
-      await organizationNotificationService.createNotification(
-        organizationId,
-        userId,
-        'role_changed',
-        'تغییر نقش',
-        `نقش شما تغییر یافت`,
-        { new_role: newRole }
-      );
-
-      toast.success('نقش عضو با موفقیت تغییر یافت');
-      return true;
-    } catch (error) {
-      console.error('Error updating member role:', error);
-      toast.error('خطا در تغییر نقش عضو');
+    const res = await call(`/org-members/${organizationId}/members/${userId}`, { method: 'PATCH', body: JSON.stringify({ role: newRole }) });
+    if (!res.ok) {
+      toast.error(res.error || 'نقش عضو تغییر نکرد');
       return false;
     }
+    await organizationNotificationService.createNotification(
+      organizationId,
+      userId,
+      'role_changed',
+      'تغییر نقش',
+      `نقش شما تغییر یافت`,
+      { new_role: newRole }
+    ).catch(() => undefined);
+    toast.success('نقش عضو با موفقیت تغییر یافت');
+    return true;
   }
 
   /**
    * حذف عضو
    */
   async removeMember(organizationId: string, userId: string): Promise<boolean> {
-    try {
-      const { error } = await supabase
-        .from('user_organizations')
-        .delete()
-        .eq('organization_id', organizationId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      // ارسال اعلان
-      await organizationNotificationService.notifyAllMembers(
-        organizationId,
-        'member_left',
-        'عضو حذف شد',
-        'یک عضو از سازمان حذف شد',
-        {},
-        userId
-      );
-
-      toast.success('عضو با موفقیت حذف شد');
-      return true;
-    } catch (error) {
-      console.error('Error removing member:', error);
-      toast.error('خطا در حذف عضو');
+    const res = await call(`/org-members/${organizationId}/members/${userId}`, { method: 'DELETE' });
+    if (!res.ok) {
+      toast.error(res.error || 'عضو حذف نشد');
       return false;
     }
+    toast.success('عضو با موفقیت حذف شد');
+    return true;
   }
 
   /**
@@ -333,38 +204,8 @@ class OrganizationMemberService {
    * دریافت دعوتنامه با token
    */
   async getInvitationByToken(token: string): Promise<OrganizationInvitation | null> {
-    try {
-      const { data, error } = await supabase
-        .from('organization_invitations')
-        .select('*')
-        .eq('token', token)
-        .single();
-
-      if (error) throw error;
-      
-      // دریافت اطلاعات organization و inviter
-      const [orgData, inviterData] = await Promise.all([
-        supabase
-          .from('organizations')
-          .select('name, description, logo_url')
-          .eq('id', data.organization_id)
-          .single(),
-        supabase
-          .from('profiles')
-          .select('email, display_name')
-          .eq('id', data.invited_by)
-          .single(),
-      ]);
-      
-      return {
-        ...data,
-        organizations: orgData.data || undefined,
-        inviter: inviterData.data || undefined,
-      } as unknown as OrganizationInvitation;
-    } catch (error) {
-      console.error('Error getting invitation by token:', error);
-      return null;
-    }
+    const res = await call(`/org-members/invitations/${encodeURIComponent(token)}`);
+    return res.ok ? (res.data as OrganizationInvitation) : null;
   }
 
   /**

@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Button } from "@/components/ui/button";
+import { ShieldOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { SystemRole } from "@/types/user-management";
 
@@ -21,13 +23,6 @@ export function ProtectedRoute({
 
   useEffect(() => {
     const checkAccess = () => {
-      console.log('🔍 ProtectedRoute - بررسی دسترسی:', { 
-        isLoading, 
-        isAuthenticated, 
-        hasUser: !!user, 
-        role,
-        requiredRole 
-      });
 
       // پاکسازی timeout قبلی
       if (checkTimeoutRef.current) {
@@ -70,12 +65,7 @@ export function ProtectedRoute({
       if (requiredRole) {
         // اگر نقش مورد نیاز admin است و کاربر admin نیست
         if (requiredRole === 'admin' && role !== 'admin') {
-          console.log('❌ ProtectedRoute - دسترسی admin مورد نیاز');
           setAuthorized(false);
-          if (!hasNavigatedRef.current) {
-            hasNavigatedRef.current = true;
-            navigate("/", { replace: true });
-          }
           return;
         }
 
@@ -88,18 +78,12 @@ export function ProtectedRoute({
         }
 
         if (!role || !allowedRoles.includes(role)) {
-          console.log('❌ ProtectedRoute - نقش کافی نیست:', { role, allowedRoles });
           setAuthorized(false);
-          if (!hasNavigatedRef.current) {
-            hasNavigatedRef.current = true;
-            navigate("/", { replace: true });
-          }
           return;
         }
       }
 
       // همه چیز OK است
-      console.log('✅ ProtectedRoute - دسترسی تأیید شد');
       setAuthorized(true);
     };
 
@@ -125,9 +109,6 @@ export function ProtectedRoute({
         <div className="text-center space-y-4">
           <LoadingSpinner />
           <p className="text-muted-foreground">در حال بررسی دسترسی…</p>
-          <p className="text-xs text-muted-foreground">
-            Loading: {isLoading.toString()} | Auth: {authorized?.toString() ?? 'checking'}
-          </p>
         </div>
       </div>
     );
@@ -137,9 +118,11 @@ export function ProtectedRoute({
   if (authorized === false) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-destructive">عدم دسترسی به این بخش</p>
-          <p className="text-muted-foreground">شما مجوز دسترسی به این بخش را ندارید</p>
+        <div className="max-w-sm space-y-3 text-center">
+          <ShieldOff className="mx-auto h-10 w-10 text-muted-foreground" aria-hidden />
+          <h1 className="text-lg font-semibold">این بخش برای مدیران سامانه است</h1>
+          <p className="text-sm text-muted-foreground">حساب شما به این بخش دسترسی ندارد. اگر به آن نیاز دارید، از مدیر سامانه بخواهید نقش شما را تغییر دهد.</p>
+          <Button onClick={() => navigate('/')}>رفتن به داشبورد</Button>
         </div>
       </div>
     );

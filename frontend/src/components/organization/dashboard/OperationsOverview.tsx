@@ -74,7 +74,7 @@ export function OperationsOverview({ organizationId }: OperationsOverviewProps) 
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="bg-muted/50 rounded-lg p-2 text-center">
                 <div className="font-semibold text-foreground">{stats.sops}</div>
-                <div className="text-xs text-muted-foreground">SOPها</div>
+                <div className="text-xs text-muted-foreground">دستورالعمل‌ها</div>
               </div>
               <div className="bg-muted/50 rounded-lg p-2 text-center">
                 <div className="font-semibold text-foreground">{stats.checklists}</div>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Brain, Loader2, Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiRegister } from "@/lib/api";
@@ -38,6 +38,10 @@ type SignupForm = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Back to where sign-in was asked for (e.g. an invitation link); only paths inside the app
+  const redirect = searchParams.get('redirect');
+  const after = redirect && redirect.startsWith('/') && !redirect.startsWith('//') ? redirect : '/';
   const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +65,7 @@ export default function SignupPage() {
     
     // اگر کاربر قبلاً احراز هویت شده، هدایت به صفحه اصلی
     if (isAuthenticated) {
-      navigate('/');
+      navigate(after);
     }
   }, [isAuthenticated, navigate]);
 
@@ -75,7 +79,7 @@ export default function SignupPage() {
     if (result.success) {
       setSuccess('ثبت‌نام موفق! در حال ورود…');
       toast({ title: 'ثبت‌نام موفق', description: 'حساب شما ایجاد شد.' });
-      setTimeout(() => navigate('/'), 1000);
+      setTimeout(() => navigate(after), 1000);
     } else {
       setError(result.error || 'خطا در ثبت‌نام');
     }

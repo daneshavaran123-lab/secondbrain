@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { JalaliDateInput } from "@/components/ui/jalali-date-input"
+import { TimeInput } from "@/components/ui/time-input"
 
 const inputClass =
   "flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
@@ -48,6 +49,9 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
     // Dates are picked on the Jalali calendar; the value keeps the browser's yyyy-MM-dd form
     if (type === "date" || type === "datetime-local") {
       return <JalaliDateInput ref={ref} type={type as "date" | "datetime-local"} className={className} {...props} />
+    }
+    if (type === "time") {
+      return <TimeInput ref={ref} className={className} {...props} />
     }
     if (type === "file" && !/\b(hidden|sr-only)\b/.test(className ?? "")) {
       return <FileInput ref={ref} className={className} {...props} />

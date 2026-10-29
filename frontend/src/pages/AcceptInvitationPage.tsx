@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { organizationMemberService } from "@/services/organizationMemberService";
-import { OrganizationInvitation } from "@/types/organization";
+import { OrganizationInvitation, ROLE_NAMES, OrganizationRole } from '@/types/organization';
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -102,6 +102,33 @@ export default function AcceptInvitationPage() {
     );
   }
 
+  // Invitations that can't be answered here: sent to another address, answered, or expired
+  const info = invitation as typeof invitation & { for_me?: boolean; status?: string; inviter?: { display_name?: string } };
+  const blocked =
+    info.status === 'accepted' ? { title: 'این دعوت پذیرفته شده است', text: 'شما قبلاً به این سازمان پیوسته‌اید.', to: `/organizations/${invitation.organization_id}`, action: 'رفتن به سازمان' } :
+    info.status === 'rejected' ? { title: 'این دعوت رد شده است', text: 'اگر نظرتان عوض شده، از دعوت‌کننده بخواهید دعوت تازه‌ای بفرستد.', to: '/profile', action: 'بازگشت به پروفایل' } :
+    info.status === 'expired' ? { title: 'مهلت این دعوت تمام شده است', text: 'دعوت‌ها یک هفته اعتبار دارند. از دعوت‌کننده بخواهید دوباره دعوت کند.', to: '/profile', action: 'بازگشت به پروفایل' } :
+    info.for_me === false ? { title: 'این دعوت برای حساب دیگری است', text: 'دعوت به نشانی ایمیل دیگری فرستاده شده است. با همان نشانی وارد شوید و دوباره این پیوند را باز کنید.', to: '/profile', action: 'بازگشت به پروفایل' } :
+    null;
+
+  if (blocked) {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <CardTitle>{blocked.title}</CardTitle>
+            <CardDescription>
+              {invitation.organizations?.name ? `«${invitation.organizations.name}» — ` : ''}{blocked.text}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate(blocked.to)} className="w-full">{blocked.action}</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <Card className="max-w-md w-full">
@@ -121,6 +148,9 @@ export default function AcceptInvitationPage() {
                 {invitation.organizations.description}
               </p>
             )}
+            <p className="text-sm text-muted-foreground">
+              {info.inviter?.display_name ? `${info.inviter.display_name} شما را با نقش «${ROLE_NAMES[invitation.role as OrganizationRole] ?? invitation.role}» دعوت کرده است.` : `نقش شما: ${ROLE_NAMES[invitation.role as OrganizationRole] ?? invitation.role}`}
+            </p>
           </div>
 
           <div className="flex justify-center gap-4">
