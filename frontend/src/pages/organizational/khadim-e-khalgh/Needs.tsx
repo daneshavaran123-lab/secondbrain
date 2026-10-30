@@ -17,6 +17,7 @@ import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { useUserCollection } from '@/services/userCollections';
+import { useHighlight } from '@/hooks/useHighlight';
 import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 import { format } from 'date-fns-jalali';
 
@@ -98,6 +99,12 @@ const normalizeNeeds = (list: SocialNeed[]): SocialNeed[] => list.map((need) => 
   ...need,
   id: String(need.id),
   status: convertOldStatus(need.status),
+  // entries saved by older versions can lack these
+  category: need.category ?? '',
+  area: need.area ?? '',
+  priority: need.priority ?? 'متوسط',
+  beneficiaries: Number(need.beneficiaries) || 0,
+  estimatedCost: Number(need.estimatedCost) || 0,
   created_at: need.created_at || new Date().toISOString(),
   updated_at: need.updated_at || new Date().toISOString(),
 }));
@@ -109,6 +116,7 @@ const Needs = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
   const [needs, setNeeds] = useUserCollection<SocialNeed>('khk_social_needs', normalizeNeeds);
+  useHighlight(needs.length > 0);
   
   // Dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -482,7 +490,7 @@ const Needs = () => {
         {/* Needs List */}
         <div className="grid gap-6">
           {filteredNeeds.map((need) => (
-            <Card key={need.id} className="glass-card hover-lift transition-elegant">
+            <Card key={need.id} data-search-id={need.id} className="glass-card hover-lift transition-elegant">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">

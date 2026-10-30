@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useHighlight } from '@/hooks/useHighlight';
 import { Search, Plus, Phone, Mail, Building2, User, Trash2, Edit, X } from 'lucide-react';
 
 interface PersonalContact {
@@ -41,6 +42,7 @@ const PersonalContactsPage: React.FC = () => {
   const [contacts, setContacts] = useState<PersonalContact[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  useHighlight(!loading);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -200,7 +202,7 @@ const PersonalContactsPage: React.FC = () => {
       ) : (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map(c => (
-            <Card key={c.id} className="group hover:shadow-md transition-shadow">
+            <Card key={c.id} data-search-id={c.id} className="group hover:shadow-md transition-shadow">
               <CardContent className="p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">

@@ -41,6 +41,7 @@ import healthDataRouter from './routes/health-data.js';
 import newsRouter from './routes/news.js';
 import filesRouter from './routes/files.js';
 import orgMembersRouter from './routes/org-members.js';
+import searchRouter from './routes/search.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -115,6 +116,7 @@ app.use('/health-data',               healthDataRouter);
 app.use('/news',                      newsRouter);
 app.use('/files',                     filesRouter);
 app.use('/org-members',               orgMembersRouter);
+app.use('/search',                    searchRouter);
 
 // Serve frontend
 if (existsSync('./public/index.html')) {

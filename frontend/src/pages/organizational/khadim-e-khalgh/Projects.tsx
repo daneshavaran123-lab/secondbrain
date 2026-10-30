@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useUserCollection } from '@/services/userCollections';
+import { useHighlight } from '@/hooks/useHighlight';
 import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 import { format } from 'date-fns-jalali';
 
@@ -35,6 +36,8 @@ interface ServiceProject {
   budget: string;
   progress: number;
   category: string;
+  /** when it was recorded (shown by search) */
+  created_at?: string;
   attachments?: Array<{
     id: string;
     name: string;
@@ -75,6 +78,7 @@ const Projects = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useUserCollection<ServiceProject>('khk_service_projects');
+  useHighlight(projects.length > 0);
   const [selectedProject, setSelectedProject] = useState<ServiceProject | null>(null);
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -251,6 +255,7 @@ const Projects = () => {
 
       const newProject: ServiceProject = {
         id: Date.now().toString(),
+        created_at: new Date().toISOString(),
         title: data.title,
         description: data.description,
         status: data.status,
@@ -382,7 +387,7 @@ const Projects = () => {
   const plannedProjects = filteredProjects.filter(p => p.status === 'planned');
 
   const ProjectCard = ({ project }: { project: ServiceProject }) => (
-    <Card className="glass-card hover-lift transition-elegant">
+    <Card data-search-id={project.id} className="glass-card hover-lift transition-elegant">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">

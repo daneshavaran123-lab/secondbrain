@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, ListTodo, Plus, Trash2 } from 'lucide-react';
 import { differenceInCalendarDays, format } from 'date-fns-jalali';
 import { SectionHeader } from '@/components/ui/section-header';
@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useHighlight } from '@/hooks/useHighlight';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -63,7 +64,10 @@ const TasksPage = () => {
   const isMobile = useIsMobile();
   const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<'open' | 'done' | 'all'>('open');
+  useHighlight(!loading);
+  const [params] = useSearchParams();
+  // opened from a search result: show every task so the one found is on the list
+  const [view, setView] = useState<'open' | 'done' | 'all'>(() => (params.get('highlight') ? 'all' : 'open'));
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
   const [draft, setDraft] = useState({ title: '', domain: 'personal' as Domain, priority: 'medium' as Priority, due: '' });
   const [saving, setSaving] = useState(false);
@@ -231,7 +235,7 @@ const TasksPage = () => {
                 const priority = PRIORITIES[t.priority ?? 'medium'] ?? PRIORITIES.medium;
                 const domain = DOMAINS[t.domain ?? 'personal'] ?? DOMAINS.personal;
                 return (
-                  <li key={t.id} className="group flex items-center gap-3 px-4 py-3">
+                  <li key={t.id} data-search-id={t.id} className="group flex items-center gap-3 px-4 py-3">
                     <Checkbox checked={done} onCheckedChange={() => toggle(t)} aria-label={done ? `برگرداندن «${t.title}» به کارهای باز` : `انجام شد: ${t.title}`} />
                     <div className="min-w-0 flex-1">
                       <div className={cn('truncate font-medium', done && 'text-muted-foreground line-through')}>{t.title}</div>

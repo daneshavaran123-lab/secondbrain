@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { PersianDatePicker } from '@/components/ui/persian-date-picker';
 import { formatJalali, getDaysUntilDue } from '@/lib/date-utils';
 import { useUserCollection } from '@/services/userCollections';
+import { useHighlight } from '@/hooks/useHighlight';
 import { format } from 'date-fns-jalali';
 
 interface Campaign {
@@ -36,6 +37,8 @@ interface Campaign {
     date: string;
     completed: boolean;
   }>;
+  /** when it was recorded (shown by search) */
+  created_at?: string;
 }
 
 const programSchema = z.object({
@@ -76,6 +79,7 @@ const migrateCampaigns = (list: Campaign[]): Campaign[] => list.map((campaign) =
   return {
     ...campaign,
     status: (status === 'active' ? 'in-progress' : status === 'upcoming' || status === 'planning' ? 'planned' : status) as Campaign['status'],
+    milestones: Array.isArray(campaign.milestones) ? campaign.milestones : [],
   };
 });
 
@@ -86,6 +90,7 @@ const Roadmap = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [campaigns, setCampaigns] = useUserCollection<Campaign>('roadmap-programs', migrateCampaigns);
+  useHighlight(campaigns.length > 0);
 
   const form = useForm<ProgramFormData>({
     resolver: zodResolver(programSchema),
@@ -134,7 +139,9 @@ const Roadmap = () => {
 
   const onSubmit = (data: ProgramFormData) => {
     const newProgram: Campaign = {
-      id: campaigns.length + 1,
+      // not the list length: after a deletion that would repeat an existing id
+      id: Math.max(0, ...campaigns.map((c) => Number(c.id) || 0)) + 1,
+      created_at: new Date().toISOString(),
       title: data.title,
       description: data.description,
       type: data.type,
@@ -261,7 +268,7 @@ const Roadmap = () => {
   };
 
   const CampaignCard = ({ campaign }: { campaign: any }) => (
-    <Card className="glass-card hover-lift transition-elegant">
+    <Card data-search-id={String(campaign.id)} className="glass-card hover-lift transition-elegant">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 mb-2">

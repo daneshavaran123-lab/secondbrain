@@ -19,6 +19,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { formatPersianNumber, toPersianNumbers } from '@/utils/persian-numbers';
 import { useUserCollection } from '@/services/userCollections';
+import { useHighlight } from '@/hooks/useHighlight';
 import { ListEmpty } from '@/components/khadim-e-khalgh/ListEmpty';
 
 // Types and interfaces
@@ -39,6 +40,8 @@ interface Partner {
   projects: string[];
   status: 'active' | 'pending' | 'inactive';
   contacts?: ContactRecord[];
+  /** when it was recorded (shown by search) */
+  created_at?: string;
 }
 
 interface ContactRecord {
@@ -75,9 +78,27 @@ const contactSchema = z.object({
 type PartnerFormData = z.infer<typeof partnerSchema>;
 type ContactFormData = z.infer<typeof contactSchema>;
 
+// entries saved by older versions can lack the lists and contact fields
+const normalizePartners = (list: Partner[]): Partner[] => list.map((p) => ({
+  ...p,
+  id: String(p.id),
+  type: p.type ?? 'organization',
+  category: p.category ?? '',
+  phone: p.phone ?? '',
+  email: p.email ?? '',
+  address: p.address ?? '',
+  notes: p.notes ?? '',
+  status: p.status ?? 'active',
+  collaborationLevel: p.collaborationLevel ?? 'medium',
+  expertise: Array.isArray(p.expertise) ? p.expertise : [],
+  projects: Array.isArray(p.projects) ? p.projects : [],
+  contacts: Array.isArray(p.contacts) ? p.contacts : [],
+}));
+
 const Partners = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [partners, setPartners] = useUserCollection<Partner>('partners');
+  const [partners, setPartners] = useUserCollection<Partner>('partners', normalizePartners);
+  useHighlight(partners.length > 0);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
@@ -111,6 +132,7 @@ const Partners = () => {
   const onAddPartner = (data: PartnerFormData) => {
     const newPartner: Partner = {
       id: crypto.randomUUID(),
+      created_at: new Date().toISOString(),
       name: data.name,
       type: data.type,
       category: data.category,
@@ -285,7 +307,7 @@ const Partners = () => {
   const organizationPartners = filteredPartners.filter(p => p.type === 'organization');
 
   const PartnerCard = ({ partner }: { partner: Partner }) => (
-    <Card className="glass-card hover-lift transition-elegant">
+    <Card data-search-id={partner.id} className="glass-card hover-lift transition-elegant">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">

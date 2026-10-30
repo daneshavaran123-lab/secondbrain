@@ -16,6 +16,8 @@ import {
   persianDateLabel, persianTime, zonedToUtc,
 } from './time.js';
 import { matchTest } from '../health/labs.js';
+import { escapeLike, normalizeFa, searchWords, sqlNormalize } from '../search/normalize.js';
+import { SOURCE_TYPES, searchAll } from '../search/engine.js';
 
 const fn = (name, description, properties = {}, required = []) => ({
   type: 'function',
@@ -39,9 +41,9 @@ const READ_TOOL_DEFS = [
     domain: { type: 'string', enum: ['all', 'personal', 'professional', 'organizational'] },
     days_ahead: { type: 'number', description: 'تا چند روز آینده (پیش‌فرض ۷)' },
   }),
-  fn('search_brain', 'جستجو در مغز دوم کاربر: یادداشت‌ها، دانش، دل‌نوشته‌ها، صورتجلسه‌ها، ایده‌ها، شکرگزاری‌ها، محتوای فرهنگی، پرونده‌های حقوقی و نامه‌ها و بخشنامه‌های سازمانی. برای سوال‌هایی مثل «درباره X چی نوشته بودم؟»، «ایده‌هام درباره Y» یا «بخشنامه مرخصی چی می‌گفت؟».', {
+  fn('search_brain', 'جستجو در همه داده‌های کاربر: کارها، رویدادها، جلسه‌ها و صورت‌جلسه‌ها، یادداشت و دانش، دل‌نوشته، ایده، مخاطب، پروژه، پرونده حقوقی، نامه و بخشنامه، محتوای فرهنگی، شکرگزاری، نیازها/شرکا/اقدامات/برنامه‌های خادم خلق، ریسک، مسئولیت اجتماعی، شرکت و سازمان. برای «درباره X چی نوشته بودم؟»، «نیاز آب کلاته به کجا رسید؟»، «بخشنامه مرخصی چی می‌گفت؟». هر نتیجه path صفحه‌اش را دارد.', {
     query: { type: 'string', description: 'کلمات کلیدی' },
-    sources: { type: 'array', items: { type: 'string', enum: ['notes', 'ideas', 'meetings', 'gratitude', 'content', 'saved', 'legal', 'letters'] }, description: 'محدود کردن منابع (اختیاری)' },
+    sources: { type: 'array', items: { type: 'string', enum: SOURCE_TYPES }, description: 'محدود کردن نوع‌ها (اختیاری): task، delegated، event، meeting، minutes، note، journal، saved، idea، contact، company_contact، project، legal، letter، cultural، gratitude، need، partner، service، program، risk، csr، company، organization' },
     limit: { type: 'number' },
   }, ['query']),
   fn('search_contacts', 'جستجوی مخاطبین کاربر با نام، سازمان، ایمیل یا تلفن.', {
@@ -184,17 +186,12 @@ async function safeRows(sql, params) {
   }
 }
 
-// Unify Arabic/Persian letter variants and drop ZWNJ so «می‌خواهم» matches «میخواهم».
-const normalizeFa = (s) => String(s ?? '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/\u200c/g, '');
-const SQL_NORMALIZE = (expr) => `translate(${expr}, 'يك' || chr(8204), 'یک')`;
-const escapeLike = (s) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
+// Persian normalization (ی/ي, ک/ك, ZWNJ, digits…) is shared with the search box: ../search/normalize.js
+const SQL_NORMALIZE = sqlNormalize;
 
 const STOPWORDS = new Set(['از', 'به', 'در', 'که', 'را', 'با', 'این', 'آن', 'برای', 'و', 'یا', 'چی', 'چه', 'من', 'درباره', 'مورد', 'رو', 'هم', 'تا', 'بود', 'است', 'های', 'ها', 'یه', 'یک', 'نوشته', 'بودم', 'کردم', 'چیزی']);
 
-function keywords(text) {
-  return [...new Set(normalizeFa(text).toLowerCase().split(/[\s,.;:!?؟،«»"'()\-/]+/)
-    .filter((w) => w.length >= 2 && !STOPWORDS.has(w)))].slice(0, 6);
-}
+const keywords = (text) => searchWords(text, { stopwords: STOPWORDS });
 
 const localWhen = (value, tz) => {
   if (!value) return null;
@@ -282,71 +279,36 @@ async function getPendingTasks(args, ctx) {
   };
 }
 
-const BRAIN_SOURCES = {
-  notes: { label: 'یادداشت/دانش', table: 'knowledge_base', owner: 'author_id', title: 'title', body: 'content', extra: 'category' },
-  ideas: { label: 'ایده', table: 'ideas', owner: 'user_id', title: 'title', body: 'description', extra: 'status' },
-  meetings: { label: 'جلسه', table: 'meetings', owner: 'user_id', title: 'title', body: 'description', extra: 'status' },
-  gratitude: { label: 'شکرگزاری', table: 'gratitude_entries', owner: 'user_id', title: null, body: 'content', extra: 'mood' },
-  content: { label: 'محتوای فرهنگی', table: 'cultural_content', owner: 'user_id', title: 'title', body: 'content', extra: 'content_type' },
-  saved: { label: 'ذخیره‌شده', table: 'knowledge_items', owner: 'user_id', title: 'title', body: 'content', extra: null },
-  legal: { label: 'پرونده حقوقی', table: 'legal_cases', owner: 'user_id', title: 'title', body: 'description', extra: 'status' },
-  letters: { label: 'نامه/بخشنامه', table: 'organizational_letters', owner: 'user_id', title: 'subject', body: 'clean_text', fallback: 'ocr_text', extra: 'sender' },
-};
-
-function snippetAround(body, words) {
-  const text = String(body ?? '').replace(/\s+/g, ' ').trim();
-  if (!text) return '';
-  const norm = normalizeFa(text).toLowerCase();
-  const hit = words.map((w) => norm.indexOf(w)).filter((i) => i >= 0).sort((a, b) => a - b)[0];
-  if (hit === undefined || hit < 120) return clip(text, 320);
-  return `…${clip(text.slice(hit - 100), 320)}`;
-}
+// Older names the model may still send for search_brain sources
+const SOURCE_ALIASES = { notes: ['note', 'journal'], ideas: ['idea'], meetings: ['meeting', 'minutes'], content: ['cultural'], letters: ['letter'], contacts: ['contact', 'company_contact'], tasks: ['task', 'delegated'] };
 
 async function searchBrain(args, ctx) {
-  const words = keywords(args.query || '');
-  const wanted = Array.isArray(args.sources) && args.sources.length
-    ? args.sources.filter((s) => BRAIN_SOURCES[s])
-    : Object.keys(BRAIN_SOURCES);
+  const requested = Array.isArray(args.sources) ? args.sources.flatMap((s) => SOURCE_ALIASES[s] ?? [s]) : [];
+  const types = requested.filter((t) => SOURCE_TYPES.includes(t));
   const limit = Math.min(Math.max(Number(args.limit) || 8, 1), 20);
-  const patterns = words.map((w) => `%${escapeLike(w)}%`);
-
-  const perSource = await Promise.all(wanted.map(async (key) => {
-    const s = BRAIN_SOURCES[key];
-    const body = s.fallback ? `COALESCE(${s.body}, ${s.fallback})` : s.body;
-    const haystack = SQL_NORMALIZE(`COALESCE(${s.title || "''"}, '') || ' ' || COALESCE(${body}, '')`);
-    const where = patterns.length ? ` AND ${haystack} ILIKE ANY($2)` : '';
-    const params = patterns.length ? [ctx.userId, patterns] : [ctx.userId];
-    const rows = await safeRows(
-      `SELECT * FROM ${s.table} WHERE ${s.owner} = $1${where} ORDER BY created_at DESC NULLS LAST LIMIT 15`,
-      params,
-    );
-    return rows.map((r) => ({ key, s, r }));
-  }));
-
-  const scored = perSource.flat().map(({ key, s, r }) => {
-    const title = s.title ? r[s.title] : null;
-    const body = r[s.body] || (s.fallback ? r[s.fallback] : null);
-    const t = normalizeFa(title).toLowerCase();
-    const b = normalizeFa(body).toLowerCase();
-    const score = words.reduce((acc, w) => acc + (t.includes(w) ? 3 : 0) + (b.includes(w) ? 1 : 0), 0);
-    return {
-      score,
-      created: r.created_at ? new Date(r.created_at).getTime() : 0,
-      item: {
-        source: s.label,
-        id: r.id,
-        title: title || clip(body, 60),
-        ...(s.extra && r[s.extra] ? { tag: r[s.extra] } : {}),
-        date: r.created_at ? persianDateLabel(new Date(r.created_at), ctx.tz) : null,
-        snippet: snippetAround(body, words),
-        source_key: key,
-      },
-    };
-  });
-
-  scored.sort((a, b) => b.score - a.score || b.created - a.created);
-  const results = scored.slice(0, limit).map((x) => x.item);
-  return { keywords: words, count: results.length, results };
+  const options = { types, limit, palette: false, stopwords: STOPWORDS };
+  // every word first; when that finds nothing, records with some of the words (research R5)
+  let match = 'all';
+  let found = await searchAll(ctx.userId, args.query || '', { ...options, match });
+  if (!found.total && found.words.length > 1) {
+    match = 'any';
+    found = await searchAll(ctx.userId, args.query || '', { ...options, match });
+  }
+  const results = found.groups
+    .flatMap((g) => g.items.map((item) => ({ ...item, label: g.label })))
+    .sort((a, b) => (b.titleHit - a.titleHit) || (b.score - a.score) || ((b.date || '').localeCompare(a.date || '')))
+    .slice(0, limit)
+    .map((r) => ({
+      source: r.label,
+      source_key: r.type,
+      id: r.id,
+      title: r.title,
+      ...(r.status ? { tag: r.status } : {}),
+      date: r.date ? persianDateLabel(new Date(r.date), ctx.tz) : null,
+      snippet: r.snippet,
+      path: r.path,
+    }));
+  return { keywords: found.words, match, count: results.length, total: found.total, results };
 }
 
 async function searchContacts(args, ctx) {
@@ -357,7 +319,9 @@ async function searchContacts(args, ctx) {
   const [personal, network, company] = await Promise.all([
     safeRows(`SELECT * FROM personal_contacts WHERE user_id = $1 AND ${hay(['full_name', 'organization', 'email', 'phone', 'role'])} ILIKE ANY($2) LIMIT 10`, [ctx.userId, patterns]),
     safeRows(`SELECT * FROM networking_contacts WHERE user_id = $1 AND ${hay(['name', 'organization_name', 'email', 'phone', 'title'])} ILIKE ANY($2) LIMIT 10`, [ctx.userId, patterns]),
-    safeRows(`SELECT * FROM company_contacts WHERE user_id = $1 AND ${hay(['name', 'organization', 'email', 'phone', 'role'])} ILIKE ANY($2) LIMIT 10`, [ctx.userId, patterns]),
+    // company contacts belong to the person through their company
+    safeRows(`SELECT t.* FROM company_contacts t JOIN business_companies c ON c.id = t.company_id
+              WHERE c.user_id = $1 AND ${hay(['t.name', 't.organization', 't.email', 't.phone', 't.role'])} ILIKE ANY($2) LIMIT 10`, [ctx.userId, patterns]),
   ]);
   const contacts = [
     ...personal.map((c) => ({ id: c.id, name: c.full_name, phone: c.phone, email: c.email, organization: c.organization, role: c.role, list: 'شخصی' })),
@@ -516,7 +480,7 @@ export function stepLabel(name, args) {
   switch (name) {
     case 'search_calendar': return `بررسی تقویم${q}`;
     case 'get_pending_tasks': return 'مرور کارهای باز';
-    case 'search_brain': return `جستجو در یادداشت‌ها${q}`;
+    case 'search_brain': return `جستجو در داده‌ها${q}`;
     case 'search_contacts': return `جستجوی مخاطبین${q}`;
     case 'get_habits_status': return 'بررسی عادت‌ها';
     case 'get_health_summary': return 'مرور داده‌های سلامت';

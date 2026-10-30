@@ -120,7 +120,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
           aria-label="جستجو یا دستور"
         >
           <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
-          <span className="flex-1 truncate text-right">جستجوی صفحه‌ها یا پرسش از دستیار…</span>
+          <span className="flex-1 truncate text-right">جستجو در داده‌ها و صفحه‌ها، یا پرسش از دستیار…</span>
           <kbd className="shrink-0 rounded border border-border px-1.5 text-[11px] leading-5" dir="ltr">{commandShortcutLabel()}</kbd>
         </button>
       )}
