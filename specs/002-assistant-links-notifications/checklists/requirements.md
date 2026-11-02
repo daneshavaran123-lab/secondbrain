@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -35,5 +35,8 @@
 - Iteration 1: «روی سرور»، «مدل زبانی»، «دو نسخه سرور» and «وقت سرور» were reworded in user terms (FR-003, FR-005,
   FR-010, Edge Cases). Each FR is backed by an acceptance scenario or an edge case; FR-003/SC-006 (links stay inside the
   app) and FR-014/FR-015 (permission and list states) are checked by the stated tests.
-- Open: three [NEEDS CLARIFICATION] markers (FR-006 which events notify, FR-008 channels, FR-009 who receives), asked
-  of the user; each has a proposed default in the spec.
+- Iteration 2: the user answered the three questions (all events; all channels; other app users). Recorded under
+  Clarifications and in FR-006, FR-008/FR-009 and FR-016–FR-021; User Story 4 added for notifying other app users and
+  User Story 3 now covers choosing channels per type. «کاربر اپ» is bounded to people who share an organization with
+  the sender (Assumptions) to keep FR-016 safe and testable; the user can lift that bound. The push-service keys are
+  named as a dependency in Assumptions, not as a technology choice. All items pass.
