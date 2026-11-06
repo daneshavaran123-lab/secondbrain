@@ -5,10 +5,8 @@
  */
 
 import { useState, useRef, useEffect, useCallback, ChangeEvent, KeyboardEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import {
   X,
   ArrowUp,
@@ -49,6 +47,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { MoraVoiceAssistant } from './MoraVoiceAssistant';
 import { BrandMark } from '@/components/brand/BrandMark';
 import { cn } from '@/lib/utils';
+import { actionPage, type AssistantReference } from '@/lib/assistantLinks';
+import { AssistantMarkdown } from './AssistantMarkdown';
 
 type ActionState = 'running' | 'done' | 'failed' | 'awaiting' | 'dismissed';
 
@@ -56,6 +56,8 @@ interface ActionView extends AssistantAction {
   id: string;
   state: ActionState;
   resultMessage?: string;
+  /** id of the record the action created, for «باز کردن» */
+  createdId?: string;
 }
 
 interface Message {
@@ -64,6 +66,8 @@ interface Message {
   content: string;
   timestamp: Date;
   actions?: ActionView[];
+  /** records the answer links to */
+  references?: AssistantReference[];
   steps?: Array<{ tool: string; label: string }>;
   questions?: Array<{ question: string; options?: string[]; field?: string }>;
   isLoading?: boolean;
@@ -141,48 +145,20 @@ function FileIcon({ type, className }: { type: string; className?: string }) {
   return <Icon className={className} />;
 }
 
-function AssistantMarkdown({ content }: { content: string }) {
-  return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        p: ({ children }) => <p className="my-1.5 first:mt-0 last:mb-0">{children}</p>,
-        ul: ({ children }) => <ul className="my-2 list-disc space-y-1 ps-5 marker:text-muted-foreground">{children}</ul>,
-        ol: ({ children }) => <ol className="my-2 list-decimal space-y-1 ps-5 marker:text-muted-foreground">{children}</ol>,
-        strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-        a: ({ children, href }) => (
-          <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">{children}</a>
-        ),
-        h1: ({ children }) => <h3 className="mb-1 mt-3 text-sm font-semibold">{children}</h3>,
-        h2: ({ children }) => <h3 className="mb-1 mt-3 text-sm font-semibold">{children}</h3>,
-        h3: ({ children }) => <h3 className="mb-1 mt-3 text-sm font-semibold">{children}</h3>,
-        code: ({ children }) => <code className="rounded bg-muted px-1 py-0.5 text-[0.85em]">{children}</code>,
-        blockquote: ({ children }) => <blockquote className="my-2 border-s-2 border-border ps-3 text-muted-foreground">{children}</blockquote>,
-        table: ({ children }) => (
-          <div className="my-2 overflow-x-auto rounded-lg border border-border">
-            <table className="w-full border-collapse text-xs">{children}</table>
-          </div>
-        ),
-        th: ({ children }) => <th className="border-b border-border bg-muted/50 px-2 py-1.5 text-start font-medium">{children}</th>,
-        td: ({ children }) => <td className="border-b border-border/60 px-2 py-1.5">{children}</td>,
-      }}
-    >
-      {content}
-    </ReactMarkdown>
-  );
-}
-
 function ActionRow({
   action,
   disabled,
   onConfirm,
   onDismiss,
+  onOpen,
 }: {
   action: ActionView;
   disabled: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
+  onOpen?: () => void;
 }) {
+  const open = action.state === 'done' ? actionPage(action.feedback, action.createdId) : null;
   const { state } = action;
   const icon = {
     running: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
@@ -220,6 +196,16 @@ function ActionRow({
           </p>
           {detail && <p className="mt-0.5 whitespace-pre-wrap break-words leading-5 text-muted-foreground">{detail}</p>}
         </div>
+        {open && (
+          <Link
+            to={open}
+            onClick={onOpen}
+            className="shrink-0 rounded-md px-2 py-1 font-medium text-signal hover:bg-signal/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal"
+            aria-label={`باز کردن ${action.feedback?.location || 'مورد'}`}
+          >
+            باز کردن
+          </Link>
+        )}
       </div>
       {state === 'awaiting' && (
         <div className="mt-2.5 flex justify-end gap-2">
@@ -253,6 +239,10 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
   }, [onOpenChange]);
 
   const navigate = useNavigate();
+  // On a phone the panel covers the page a link opens, so it steps aside
+  const closeOnPhone = useCallback(() => {
+    if (window.matchMedia('(max-width: 767px)').matches) setIsOpen(false);
+  }, [setIsOpen]);
   const { user } = useAuth();
   const { isOnline } = useOffline();
   const tts = usePersianTTS();
@@ -296,12 +286,14 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
         role: h.role,
         content: h.content,
         timestamp: new Date(h.timestamp),
+        references: h.references,
         actions: h.actions?.map((a, i) => ({
           id: `${h.id}-${i}`,
           function: a.function || a.type || '',
           params: a.params,
           status: a.status,
           feedback: (a.result as { feedback?: ActionView['feedback'] } | undefined)?.feedback,
+          createdId: (a.result as { createdId?: string } | undefined)?.createdId,
           resultMessage: a.error && a.error !== 'dismissed' ? a.error : undefined,
           state: fromStoredStatus(a.status, a.error),
         })),
@@ -325,11 +317,12 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
           content: m.content,
           timestamp: m.timestamp.toISOString(),
           sessionId: SESSION_ID,
+          references: m.references,
           actions: m.actions?.map((a) => ({
             function: a.function,
             params: a.params,
             status: toStoredStatus(a.state),
-            result: { feedback: a.feedback },
+            result: { feedback: a.feedback, createdId: a.createdId },
             error: a.state === 'dismissed' ? 'dismissed' : a.state === 'failed' ? a.resultMessage : undefined,
           })),
         }).catch(() => {});
@@ -388,7 +381,12 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
       error_message: result.success ? null : result.message,
     });
 
-    updateAction(messageId, action.id, { state: result.success ? 'done' : 'failed', resultMessage: result.message });
+    const createdId = (result.data as { id?: unknown } | undefined)?.id;
+    updateAction(messageId, action.id, {
+      state: result.success ? 'done' : 'failed',
+      resultMessage: result.message,
+      createdId: result.success && createdId ? String(createdId) : undefined,
+    });
   }, [updateAction]);
 
   const clearAttachment = useCallback(() => {
@@ -455,6 +453,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
         content: data.message || '',
         timestamp: new Date(),
         actions,
+        references: Array.isArray(data.references) ? data.references : [],
         steps: data.steps,
         questions: data.questions,
       };
@@ -648,7 +647,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                           ) : (
                             <div className={cn('break-words text-sm leading-7', message.isError && 'flex items-start gap-2 text-destructive')}>
                               {message.isError && <AlertCircle className="mt-1.5 h-4 w-4 shrink-0" />}
-                              {message.isError ? <p>{message.content}</p> : <AssistantMarkdown content={message.content} />}
+                              {message.isError ? <p>{message.content}</p> : <AssistantMarkdown content={message.content} references={message.references} onOpen={closeOnPhone} />}
                             </div>
                           )}
 
@@ -661,6 +660,7 @@ export function SmartAssistant({ className, isOpen: externalIsOpen, onOpenChange
                                   disabled={isLoading}
                                   onConfirm={() => runAction(message.id, action)}
                                   onDismiss={() => updateAction(message.id, action.id, { state: 'dismissed' })}
+                                  onOpen={closeOnPhone}
                                 />
                               ))}
                             </div>

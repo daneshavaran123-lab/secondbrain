@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 // an outline, not a ring: cards set their own box-shadow, which would hide a ring
 const RING = ['outline', 'outline-2', 'outline-offset-4', 'outline-signal'];
@@ -21,7 +22,11 @@ export function useHighlight(ready = true) {
       const el = find();
       if (!el && ++tries < 20) return;
       clearInterval(poll);
-      if (!el) return; // deleted since, or on another tab: the page is open, nothing to point at
+      if (!el) {
+        // the page is open; the record itself is gone (deleted since the link was made)
+        toast({ title: 'این مورد دیگر وجود ندارد', description: 'ممکن است حذف شده باشد؛ بقیه موردهای همین بخش این‌جا هستند.' });
+        return;
+      }
       el.scrollIntoView({ block: 'center', behavior: 'smooth' });
       el.classList.add(...RING);
       clear = setTimeout(() => el.classList.remove(...RING), 2500);

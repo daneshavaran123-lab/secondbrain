@@ -16,6 +16,10 @@ export interface AssistantAction {
   feedback?: {
     location: string;
     details: string;
+    /** page the record is on, for «باز کردن» */
+    page?: string;
+    /** the page can show the new record with ?highlight=<id> */
+    highlight?: boolean;
   };
 }
 
@@ -939,71 +943,39 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
       return { success: false, message: 'لطفاً وارد شوید', error: 'UNAUTHORIZED' };
     }
 
-    // If organization is specified, save to company_contacts (professional)
-    // Otherwise save to personal_contacts
-    if (organization) {
-      const contactData = {
-        id: crypto.randomUUID(),
-        name: name as string,
-        phone: phone as string || null,
-        email: email as string || null,
-        organization: organization as string || null,
-        role: role as string || null,
-        address: address as string || null,
-        notes: notes as string || null,
-        company_id: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
+    // Saved to the personal contacts list, with the organization as a field: company contacts
+    // belong to one of the person's companies, which the assistant does not know.
+    const contactData = {
+      user_id: user.id,
+      full_name: name as string,
+      phone: phone as string || null,
+      email: email as string || null,
+      organization: organization as string || null,
+      role: role as string || null,
+      address: address as string || null,
+      notes: notes as string || null,
+      category: 'general',
+    };
 
-      const { error } = await supabase
-        .from('company_contacts')
-        .insert(contactData);
+    const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .from('personal_contacts' as any)
+      .insert(contactData)
+      .select('id')
+      .single();
 
-      if (error) {
-        console.error('[ActionExecutor] Contact creation error:', error);
-        return { success: false, message: 'خطا در ذخیره مخاطب', error: error.message };
-      }
-
-      return {
-        success: true,
-        message: `✅ مخاطب «${name}» در لیست مخاطبین حرفه‌ای ذخیره شد`,
-        location: 'لیست مخاطبین حرفه‌ای',
-        timestamp: new Date(),
-        data: contactData
-      };
-    } else {
-      // Save to personal_contacts
-      const contactData = {
-        user_id: user.id,
-        full_name: name as string,
-        phone: phone as string || null,
-        email: email as string || null,
-        organization: null,
-        role: role as string || null,
-        address: address as string || null,
-        notes: notes as string || null,
-        category: 'general',
-      };
-
-      const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('personal_contacts' as any)
-        .insert(contactData);
-
-      if (error) {
-        console.error('[ActionExecutor] Personal contact creation error:', error);
-        return { success: false, message: 'خطا در ذخیره مخاطب', error: error.message };
-      }
-
-      return {
-        success: true,
-        message: `✅ مخاطب «${name}» در لیست مخاطبین شخصی ذخیره شد 📇`,
-        location: 'لیست مخاطبین شخصی',
-        timestamp: new Date(),
-        data: contactData
-      };
+    if (error) {
+      console.error('[ActionExecutor] Personal contact creation error:', error);
+      return { success: false, message: 'خطا در ذخیره مخاطب', error: error.message };
     }
+
+    return {
+      success: true,
+      message: `✅ مخاطب «${name}»${organization ? ` (${organization})` : ''} در مخاطبین ذخیره شد 📇`,
+      location: 'مخاطبین',
+      timestamp: new Date(),
+      data: { ...contactData, id: (data as { id?: string } | null)?.id },
+    };
   }
 
   /**

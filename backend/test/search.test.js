@@ -90,3 +90,15 @@ test('meetings open on the minutes page of their organization', () => {
   const need = COLLECTION_SOURCES.find((s) => s.type === 'need');
   assert.equal(need.path({ id: 'a b' }), '/organizational/khadim-e-khalgh/needs?highlight=a%20b');
 });
+
+test('pathFor gives the page of a record, also for types that are not searched', async () => {
+  const { pathFor, PALETTE_TYPES: palette } = await import('../src/search/sources.js');
+  assert.equal(pathFor('need', { id: 'x' }), '/organizational/khadim-e-khalgh/needs?highlight=x');
+  assert.equal(pathFor('task', { id: 7 }), '/tasks?highlight=7');
+  assert.equal(pathFor('reminder', { id: 'r' }), '/calendar');
+  assert.equal(pathFor('invitation', { id: 'i', token: 'a/b' }), '/accept-invitation/a%2Fb');
+  assert.equal(pathFor('invitation', { id: 'i' }), null);
+  assert.equal(pathFor('nonsense', { id: 'x' }), null);
+  // invitations and reminders are not added to what the search box looks in
+  assert.ok(!palette.includes('invitation') && !palette.includes('reminder'));
+});

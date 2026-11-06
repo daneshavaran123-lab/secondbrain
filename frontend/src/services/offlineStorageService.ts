@@ -95,6 +95,8 @@ interface MoraDB extends DBSchema {
         result?: unknown;
         error?: string;
       }>;
+      /** records the answer links to (assistant messages) */
+      references?: Array<{ key: string; type: string; id: string; title: string; path: string; label?: string }>;
       timestamp: string;
       sessionId: string;
     };

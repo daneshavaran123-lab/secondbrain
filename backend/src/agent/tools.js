@@ -18,6 +18,7 @@ import {
 import { matchTest } from '../health/labs.js';
 import { escapeLike, normalizeFa, searchWords, sqlNormalize } from '../search/normalize.js';
 import { SOURCE_TYPES, searchAll } from '../search/engine.js';
+import { pathFor } from '../search/sources.js';
 
 const fn = (name, description, properties = {}, required = []) => ({
   type: 'function',
@@ -201,6 +202,17 @@ const localWhen = (value, tz) => {
 };
 
 // ─── Read tools ──────────────────────────────────────────────────────────────
+/**
+ * A found record with its reference key when this answer collects references (ctx.refs): the
+ * model then writes [title](ref:rN) and the page itself never reaches it. Without ctx.refs the
+ * item keeps its page, if it has one.
+ */
+function withRef(ctx, item, { type, id, title, path }) {
+  if (!ctx.refs) return path ? { ...item, path } : item;
+  const ref = ctx.refs.add({ type, id, title, path });
+  return ref ? { ...item, ref } : item;
+}
+
 async function searchCalendar(args, ctx) {
   const { userId, tz, now } = ctx;
   const today = isoDateOf(now, tz);
@@ -224,7 +236,7 @@ async function searchCalendar(args, ctx) {
   return {
     range: { from: start, to: addDays(end, -1) },
     count: rows.length,
-    events: rows.map((e) => ({
+    events: rows.map((e) => withRef(ctx, {
       id: e.id,
       title: e.title,
       when: localWhen(e.start_date, tz),
@@ -232,7 +244,7 @@ async function searchCalendar(args, ctx) {
       end_time: e.end_date ? persianTime(new Date(e.end_date), tz) : null,
       type: e.event_type || null,
       location: e.venue_address || null,
-    })),
+    }, { type: 'event', id: e.id, title: e.title, path: pathFor('event', e) })),
   };
 }
 
@@ -242,9 +254,9 @@ async function loadOpenTasks(userId, domain) {
   const domainFilter = domain && domain !== 'all' ? ' AND domain = $2' : '';
   const params = domainFilter ? [userId, domain] : [userId];
   const [delegated, planned] = await Promise.all([
-    safeRows(`SELECT id, title, due_date, priority, status, domain FROM delegation_tasks
+    safeRows(`SELECT id, title, due_date, priority, status, domain, 'delegated' AS source FROM delegation_tasks
               WHERE delegator_id = $1 AND ${OPEN_TASK}${domainFilter} ORDER BY due_date ASC NULLS LAST LIMIT 60`, params),
-    safeRows(`SELECT id, title, due_date, priority::text AS priority, status::text AS status, domain FROM personal_planning
+    safeRows(`SELECT id, title, due_date, priority::text AS priority, status::text AS status, domain, 'task' AS source FROM personal_planning
               WHERE user_id = $1 AND ${OPEN_TASK}${domainFilter} ORDER BY due_date ASC NULLS LAST LIMIT 60`, params),
   ]);
   return [...delegated, ...planned];
@@ -269,7 +281,13 @@ export function bucketTasks(tasks, now, tz, daysAhead = 7) {
 async function getPendingTasks(args, ctx) {
   const tasks = await loadOpenTasks(ctx.userId, args.domain);
   const days = Math.min(Math.max(Number(args.days_ahead) || 7, 1), 60);
+  const source = new Map(tasks.map((t) => [String(t.id), t.source]));
+  const ref = (list) => list.map((item) => {
+    const type = source.get(String(item.id)) || 'task';
+    return withRef(ctx, item, { type, id: item.id, title: item.title, path: pathFor(type, item) });
+  });
   const b = bucketTasks(tasks, ctx.now, ctx.tz, days);
+  for (const key of ['overdue', 'today', 'upcoming', 'no_date']) b[key] = ref(b[key]);
   return {
     counts: { overdue: b.overdue.length, today: b.today.length, upcoming: b.upcoming.length, no_date: b.no_date.length },
     overdue: b.overdue.slice(0, 15),
@@ -298,7 +316,7 @@ async function searchBrain(args, ctx) {
     .flatMap((g) => g.items.map((item) => ({ ...item, label: g.label })))
     .sort((a, b) => (b.titleHit - a.titleHit) || (b.score - a.score) || ((b.date || '').localeCompare(a.date || '')))
     .slice(0, limit)
-    .map((r) => ({
+    .map((r) => withRef(ctx, {
       source: r.label,
       source_key: r.type,
       id: r.id,
@@ -306,8 +324,7 @@ async function searchBrain(args, ctx) {
       ...(r.status ? { tag: r.status } : {}),
       date: r.date ? persianDateLabel(new Date(r.date), ctx.tz) : null,
       snippet: r.snippet,
-      path: r.path,
-    }));
+    }, { type: r.type, id: r.id, title: r.title, path: r.path }));
   return { keywords: found.words, match, count: results.length, total: found.total, results };
 }
 
@@ -324,9 +341,12 @@ async function searchContacts(args, ctx) {
               WHERE c.user_id = $1 AND ${hay(['t.name', 't.organization', 't.email', 't.phone', 't.role'])} ILIKE ANY($2) LIMIT 10`, [ctx.userId, patterns]),
   ]);
   const contacts = [
-    ...personal.map((c) => ({ id: c.id, name: c.full_name, phone: c.phone, email: c.email, organization: c.organization, role: c.role, list: 'شخصی' })),
+    ...personal.map((c) => withRef(ctx, { id: c.id, name: c.full_name, phone: c.phone, email: c.email, organization: c.organization, role: c.role, list: 'شخصی' },
+      { type: 'contact', id: c.id, title: c.full_name, path: pathFor('contact', c) })),
+    // networking contacts are shown on no page, so they get no link
     ...network.map((c) => ({ id: c.id, name: c.name, phone: c.phone, email: c.email, organization: c.organization_name, role: c.title, list: 'شبکه' })),
-    ...company.map((c) => ({ id: c.id, name: c.name, phone: c.phone, email: c.email, organization: c.organization, role: c.role, list: 'شرکت' })),
+    ...company.map((c) => withRef(ctx, { id: c.id, name: c.name, phone: c.phone, email: c.email, organization: c.organization, role: c.role, list: 'شرکت' },
+      { type: 'company_contact', id: c.id, title: c.name, path: pathFor('company_contact', { ...c, company_id: String(c.company_id) }) })),
   ].slice(0, 15);
   return { count: contacts.length, contacts };
 }
@@ -503,7 +523,26 @@ function whenLabel(date, time, ctx) {
   return `${persianDateLabel(d, ctx.tz)}${hasTime ? `، ساعت ${persianTime(d, ctx.tz)}` : ''}`;
 }
 
+// The page each write tool's record is on, for the «باز کردن» link on its confirmation;
+// highlight: the page can bring the new record into view with ?highlight=<id>
+const ACTION_PAGES = {
+  create_meeting: '/calendar', cancel_meeting: '/calendar', update_meeting: '/calendar', create_reminder: '/calendar',
+  // tasks the assistant creates are tracked with the delegated ones
+  create_task: '/delegation', create_tasks_batch: '/delegation',
+  save_idea: '/ideas', save_journal_entry: '/personal-journal', save_gratitude: '/gratitude-journal',
+  save_meeting_summary: '/knowledge', save_knowledge: '/knowledge', save_for_later: '/cultural-content',
+  create_contact: { page: '/contacts', highlight: true }, import_contacts_batch: '/contacts',
+  save_health_metrics: '/health', complete_habit: '/habits', add_resume_item: '/resume',
+  create_legal_case: '/legal', save_lawyer_note: '/legal',
+};
+
 function feedbackFor(name, p, ctx) {
+  const target = ACTION_PAGES[name];
+  const page = typeof target === 'string' ? { page: target } : target ?? {};
+  return { ...describeAction(name, p, ctx), ...page };
+}
+
+function describeAction(name, p, ctx) {
   const reminderAt = String(p.datetime || '').split(' ');
   switch (name) {
     case 'create_meeting': return { location: 'تقویم', details: `«${p.title}» · ${whenLabel(p.date, p.time, ctx)}` };

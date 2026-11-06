@@ -28,8 +28,8 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 **Purpose**: Dependencies and the new module's place
 
-- [ ] T001 Add `web-push` to `backend/package.json` and `@capacitor/push-notifications` and `@capacitor/local-notifications` to `frontend/package.json` (install, keep lockfiles in sync)
-- [ ] T002 [P] Create `backend/src/notifications/` with empty `schedule.js`, `producers.js`, `delivery.js`, `worker.js`, `settings.js` (ES modules) and document the new env vars `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `FCM_SERVICE_ACCOUNT`, `FCM_API_BASE`, `SMS_API_URL`, `APP_URL`, `NOTIFY_TICK_MS` in `backend/.env.example`
+- [X] T001 Add `web-push` to `backend/package.json` and `@capacitor/push-notifications` and `@capacitor/local-notifications` to `frontend/package.json` (install, keep lockfiles in sync)
+- [X] T002 [P] Create `backend/src/notifications/` with empty `schedule.js`, `producers.js`, `delivery.js`, `worker.js`, `settings.js` (ES modules) and document the new env vars `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `FCM_SERVICE_ACCOUNT`, `FCM_API_BASE`, `SMS_API_URL`, `APP_URL`, `NOTIFY_TICK_MS` in `backend/.env.example`
 
 ---
 
@@ -39,7 +39,7 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 **⚠️ CRITICAL**: US1 and US2 both need this
 
-- [ ] T003 Export `pathFor(type, row)` from `backend/src/search/sources.js` (the `path` of the table or collection source with that `type`, else `null`) and add the extra types the new features need: `invitation` → `/accept-invitation/<token>`, `delegated` → `/delegation`; unit-test it in `backend/test/search.test.js`
+- [X] T003 Export `pathFor(type, row)` from `backend/src/search/sources.js` (the `path` of the table or collection source with that `type`, else `null`) and add the extra types the new features need: `invitation` → `/accept-invitation/<token>`, `delegated` → `/delegation`; unit-test it in `backend/test/search.test.js`
 
 **Checkpoint**: `pathFor('need', { id: 'x' })` gives `/organizational/khadim-e-khalgh/needs?highlight=x`
 
@@ -53,20 +53,20 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 ### Tests for User Story 1
 
-- [ ] T004 [P] [US1] `backend/test/references.test.js`: keys `r1…rN` are unique per answer; the same record gets the same key; `linkify` links the first unlinked occurrence of each title; `ref:` keys not in the book and any `http(s):`/`mailto:` links become plain text; a reference with `path: null` is never linked
-- [ ] T005 [P] [US1] vitest `frontend/src/test/__tests__/components/AssistantLinks.test.tsx`: `[x](ref:r1)` with `r1` in `references` renders an in-app link to its `path` with `aria-label` «{نوع}: {عنوان}»; `[x](https://…)` and `[x](ref:r9)` render as text; the confirmation card shows «باز کردن» to `page?highlight=<id>`
+- [X] T004 [P] [US1] `backend/test/references.test.js`: keys `r1…rN` are unique per answer; the same record gets the same key; `linkify` links the first unlinked occurrence of each title; `ref:` keys not in the book and any `http(s):`/`mailto:` links become plain text; a reference with `path: null` is never linked
+- [X] T005 [P] [US1] vitest `frontend/src/test/__tests__/components/AssistantLinks.test.tsx`: `[x](ref:r1)` with `r1` in `references` renders an in-app link to its `path` with `aria-label` «{نوع}: {عنوان}»; `[x](https://…)` and `[x](ref:r9)` render as text; the confirmation card shows «باز کردن» to `page?highlight=<id>`
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] `backend/src/agent/references.js`: `createReferenceBook()` with `add({ type, id, title, path })` → key and `linkify(text)` per contracts/assistant-references.md; `path` must start with `/` and contain no `//` or `:`
-- [ ] T007 [US1] In `backend/src/agent/tools.js`, give each item of the read tools a `ref` from `ctx.refs` (the path is not sent to the model): `search_brain` (engine `path`), `search_calendar` (`/calendar`), `get_pending_tasks` (mark each task's source; planning → `/tasks?highlight=<id>`, delegated → `/delegation`), `search_contacts` (personal → `/contacts?highlight=<id>`, company → `/company/<company_id>`, network → `null`)
-- [ ] T008 [US1] In `backend/src/routes/smart-assistant.js`, create `ctx.refs` per turn, run `linkify` on the final text and return `references` with the response
-- [ ] T009 [P] [US1] In `backend/src/agent/prompt.js`, tell the model to write record names as `[عنوان](ref:rN)` using the `ref` from tool results, and never to write URLs
-- [ ] T010 [US1] In `feedbackFor` (`backend/src/agent/tools.js`), add `page` and `highlight` for every write tool (create_task/create_tasks_batch → `/tasks` with highlight; create_meeting/cancel_meeting/update_meeting/create_reminder → `/calendar`; save_idea → `/ideas`; save_journal_entry → `/personal-journal`; save_gratitude → `/gratitude-journal`; save_meeting_summary → `/meetings`; create_contact/import_contacts_batch → `/contacts` with highlight; save_for_later → `/cultural-content`; save_knowledge → `/knowledge`; save_health_metrics → `/health`; complete_habit → `/habits`; add_resume_item → `/resume`; create_legal_case/save_lawyer_note → `/legal`)
-- [ ] T011 [US1] In `frontend/src/services/actionExecutorService.ts`, return the created row's id in `ActionResult.data.id` (`insert(...).select('id').single()`) for every create action
-- [ ] T012 [US1] In `frontend/src/components/assistant/SmartAssistant.tsx`: keep `references` on each assistant message; `AssistantMarkdown` renders `ref:` links as `react-router` links per T005 and every other link as text; the action confirmation shows «باز کردن» from `feedback.page` (+ `highlight=<id>` when `feedback.highlight` and an id came back)
-- [ ] T013 [US1] In `frontend/src/hooks/useHighlight.ts`, show the toast «این مورد دیگر وجود ندارد» when the page is ready and the record is not found
-- [ ] T014 [P] [US1] Fake-LLM scenarios and `agent-test/assistant-links.mjs`: a question about «کلاته» returns `references` and linked names; a model answer with an external link and an unknown `ref` comes back as text; a confirmed create has `page`
+- [X] T006 [US1] `backend/src/agent/references.js`: `createReferenceBook()` with `add({ type, id, title, path })` → key and `linkify(text)` per contracts/assistant-references.md; `path` must start with `/` and contain no `//` or `:`
+- [X] T007 [US1] In `backend/src/agent/tools.js`, give each item of the read tools a `ref` from `ctx.refs` (the path is not sent to the model): `search_brain` (engine `path`), `search_calendar` (`/calendar`), `get_pending_tasks` (mark each task's source; planning → `/tasks?highlight=<id>`, delegated → `/delegation`), `search_contacts` (personal → `/contacts?highlight=<id>`, company → `/company/<company_id>`, network → `null`)
+- [X] T008 [US1] In `backend/src/routes/smart-assistant.js`, create `ctx.refs` per turn, run `linkify` on the final text and return `references` with the response
+- [X] T009 [P] [US1] In `backend/src/agent/prompt.js`, tell the model to write record names as `[عنوان](ref:rN)` using the `ref` from tool results, and never to write URLs
+- [X] T010 [US1] In `feedbackFor` (`backend/src/agent/tools.js`), add `page` and `highlight` for every write tool (create_task/create_tasks_batch → `/tasks` with highlight; create_meeting/cancel_meeting/update_meeting/create_reminder → `/calendar`; save_idea → `/ideas`; save_journal_entry → `/personal-journal`; save_gratitude → `/gratitude-journal`; save_meeting_summary → `/meetings`; create_contact/import_contacts_batch → `/contacts` with highlight; save_for_later → `/cultural-content`; save_knowledge → `/knowledge`; save_health_metrics → `/health`; complete_habit → `/habits`; add_resume_item → `/resume`; create_legal_case/save_lawyer_note → `/legal`)
+- [X] T011 [US1] In `frontend/src/services/actionExecutorService.ts`, return the created row's id in `ActionResult.data.id` (`insert(...).select('id').single()`) for every create action
+- [X] T012 [US1] In `frontend/src/components/assistant/SmartAssistant.tsx`: keep `references` on each assistant message; `AssistantMarkdown` renders `ref:` links as `react-router` links per T005 and every other link as text; the action confirmation shows «باز کردن» from `feedback.page` (+ `highlight=<id>` when `feedback.highlight` and an id came back)
+- [X] T013 [US1] In `frontend/src/hooks/useHighlight.ts`, show the toast «این مورد دیگر وجود ندارد» when the page is ready and the record is not found
+- [X] T014 [P] [US1] Fake-LLM scenarios and `agent-test/assistant-links.mjs`: a question about «کلاته» returns `references` and linked names; a model answer with an external link and an unknown `ref` comes back as text; a confirmed create has `page`
 
 **Checkpoint**: clicking a record name in an answer opens its page with the record outlined
 

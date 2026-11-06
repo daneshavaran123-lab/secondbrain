@@ -5,6 +5,8 @@ import { AiUnavailableError, chatCompletion, getApiKey } from '../agent/llm.js';
 import { buildSystemPrompt } from '../agent/prompt.js';
 import { SERVER_TOOLS, TOOLS, isWriteTool, planWriteAction, stepLabel } from '../agent/tools.js';
 import { resolveTimeZone } from '../agent/time.js';
+import { createReferenceBook } from '../agent/references.js';
+import { LABELS } from '../search/sources.js';
 
 const router = Router();
 
@@ -76,9 +78,11 @@ router.post('/', requireAuth, async (req, res) => {
     tz: resolveTimeZone(context.timezone),
     now: new Date(),
     page: typeof context.page === 'string' ? context.page.slice(0, 200) : null,
+    // records the tools find, so the answer can link to them
+    refs: createReferenceBook(),
   };
 
-  const result = { message: '', actions: [], questions: [], steps: [], model: null };
+  const result = { message: '', references: [], actions: [], questions: [], steps: [], model: null };
   const seenActions = new Set();
 
   try {
@@ -154,7 +158,8 @@ router.post('/', requireAuth, async (req, res) => {
       }
     }
 
-    result.message = finalText || fallbackMessage(result.actions, result.questions);
+    result.message = ctx.refs.linkify(finalText || fallbackMessage(result.actions, result.questions));
+    result.references = ctx.refs.list().map((r) => ({ ...r, label: LABELS[r.type] ?? '' }));
     console.info(`[agent] user=${ctx.userId} model=${result.model} steps=${result.steps.length} actions=${result.actions.length} ${Date.now() - startedAt}ms`);
     res.json(result);
   } catch (error) {

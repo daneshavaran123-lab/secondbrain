@@ -130,3 +130,16 @@ export const SOURCE_TYPES = [
 ];
 export const PALETTE_TYPES = SOURCE_TYPES.filter((t) => !TABLE_SOURCES.some((s) => s.type === t && s.palette === false));
 export const LABELS = Object.fromEntries([...TABLE_SOURCES, ...COLLECTION_SOURCES].map((s) => [s.type, s.label]));
+
+// Pages of records that are not searched but that notifications point to
+const OTHER_PAGES = {
+  reminder: () => '/calendar',
+  invitation: (r) => (r.token ? `/accept-invitation/${encodeURIComponent(r.token)}` : null),
+};
+
+/** The page a record of this type is on (with ?highlight= where the page can show it), or null. */
+export function pathFor(type, row) {
+  const source = TABLE_SOURCES.find((s) => s.type === type) ?? COLLECTION_SOURCES.find((s) => s.type === type);
+  const page = source ? source.path : OTHER_PAGES[type];
+  return page ? page({ ...row, id: String(row?.id ?? '') }) ?? null : null;
+}
