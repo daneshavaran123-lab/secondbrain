@@ -225,3 +225,14 @@ What changed against the task text while implementing, and the `/speckit-analyze
 - Found on the way and fixed: saving a contact with an organization from the assistant always failed (it went to company contacts with no company); every switch stretched into a circle on phones (a 44px minimum for every button), fixed in the shared `Switch`; the bell's list ran off a phone screen.
 - Web Push endpoints must be HTTPS (`web-push` always uses TLS); the route accepts only `https://` endpoints.
 
+
+## Phase 8: Convergence
+
+- [ ] T045 CRITICAL: show the person only Persian delivery errors — map each channel's failure to a Persian sentence (keep the raw error for the server log) for `last_errors` in `backend/src/notifications/delivery.js` and `backend/src/routes/notifications.js` per Constitution I (contradicts)
+- [ ] T046 CRITICAL: register `notifications`, `notification_settings`, `notification_devices` (owner `user_id`) and `notification_deliveries` (via `notifications`) in `BACKEND_TABLES` in `backend/src/routes/db.js` as read-only, so `/db` reads only the person's own rows and never writes them (or, with the user's approval, amend the constitution's Technical Constraints via `/speckit-constitution` instead) per Constitution Technical Constraints (contradicts)
+- [ ] T047 Return the id of a task the assistant creates (`insertTrackedTask` with `.select('id').single()` in `frontend/src/services/actionExecutorService.ts`), set `highlight: true` for `create_task` in `backend/src/agent/tools.js`, and give the delegation page's task rows `data-search-id` with `useHighlight`, so «باز کردن» lands on that task per US1/AC2 (partial)
+- [ ] T048 Add `data-search-id` and `useHighlight` to the other pages answer links open (ideas, knowledge, personal journal, legal, letters, cultural content, gratitude) and add `highlight=<id>` to their search `path` in `backend/src/search/sources.js`, so a link to a deleted record says so on every page per US1/AC4 (partial)
+- [ ] T049 Add a regression test for saving a contact with an organization from the assistant (personal list, id returned) in `frontend/src/test/__tests__/services/actionExecutorContact.test.ts` per Constitution V (partial)
+- [ ] T050 Hold system notifications that arrive during quiet hours and show them once the window ends in `frontend/src/hooks/useNotifications.ts` per FR-013 (partial)
+- [ ] T051 Make the notice for a meeting scheduled in advance (created before its notice time) even when nothing ran at that time, until one hour after it starts, in `backend/src/notifications/producers.js` and `backend/src/notifications/schedule.js` per spec Edge Cases «برنامه هنگام موعد در دسترس نبوده» (contradicts)
+- [ ] T052 Record `backend/src/notifications/teammates.js`, `frontend/src/lib/assistantLinks.ts` and `frontend/src/components/assistant/AssistantMarkdown.tsx` in the Source Code structure of `specs/002-assistant-links-notifications/plan.md` per plan: structure (unrequested)
