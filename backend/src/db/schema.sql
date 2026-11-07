@@ -2387,3 +2387,64 @@ CREATE TABLE IF NOT EXISTS user_files (
   UNIQUE (user_id, bucket, path)
 );
 ALTER TABLE users ADD COLUMN IF NOT EXISTS file_key TEXT UNIQUE;
+
+-- ─── Notifications (specs/002-assistant-links-notifications/data-model.md) ────────────────
+-- Not in /db: only the server creates notifications and records deliveries.
+CREATE TABLE IF NOT EXISTS notifications (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type        TEXT NOT NULL CHECK (type IN ('reminder', 'event', 'task_due', 'invitation', 'delegated', 'delegation_status', 'message')),
+  title       TEXT NOT NULL CHECK (char_length(title) <= 120),
+  body        TEXT CHECK (char_length(body) <= 500),
+  sender_id   UUID REFERENCES users(id) ON DELETE SET NULL,
+  ref_type    TEXT,
+  ref_id      TEXT,
+  path        TEXT CHECK (path IS NULL OR (path LIKE '/%' AND path NOT LIKE '//%' AND position(':' in path) = 0)),
+  due_at      TIMESTAMPTZ NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  read_at     TIMESTAMPTZ,
+  dedupe_key  TEXT NOT NULL,
+  UNIQUE (user_id, dedupe_key)
+);
+CREATE INDEX IF NOT EXISTS notifications_user_created_idx ON notifications (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS notifications_unread_idx ON notifications (user_id) WHERE read_at IS NULL;
+CREATE INDEX IF NOT EXISTS notifications_sender_idx ON notifications (sender_id, created_at) WHERE sender_id IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS notification_deliveries (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  notification_id UUID NOT NULL REFERENCES notifications(id) ON DELETE CASCADE,
+  channel         TEXT NOT NULL CHECK (channel IN ('push', 'sms', 'email')),
+  deliver_after   TIMESTAMPTZ NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed', 'skipped')),
+  attempts        INT NOT NULL DEFAULT 0,
+  sent_at         TIMESTAMPTZ,
+  error           TEXT,
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (notification_id, channel)
+);
+CREATE INDEX IF NOT EXISTS notification_deliveries_due_idx ON notification_deliveries (deliver_after) WHERE status = 'pending';
+
+CREATE TABLE IF NOT EXISTS notification_settings (
+  user_id              UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  channels             JSONB NOT NULL DEFAULT '{}'::jsonb,
+  quiet_start          TIME,
+  quiet_end            TIME,
+  accept_from_others   BOOLEAN NOT NULL DEFAULT TRUE,
+  tz                   TEXT NOT NULL DEFAULT 'Asia/Tehran',
+  permission_explained BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS notification_devices (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL CHECK (kind IN ('webpush', 'fcm')),
+  endpoint    TEXT NOT NULL UNIQUE,
+  p256dh      TEXT,
+  auth        TEXT,
+  label       TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_ok_at  TIMESTAMPTZ,
+  disabled_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS notification_devices_user_idx ON notification_devices (user_id) WHERE disabled_at IS NULL;

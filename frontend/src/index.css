@@ -1753,11 +1753,16 @@ body {
     max-width: 90vw;
   }
 
+  /* On a phone the list spans the screen, with a small margin, wherever the bell sits */
   @media (max-width: 768px) {
     .notification-center {
-      left: 50% !important;
-      transform: translateX(-75%) !important;
-      min-width: 320px;
+      position: fixed !important;
+      top: 4rem !important;
+      left: 0.75rem !important;
+      right: 0.75rem !important;
+      transform: none !important;
+      min-width: 0;
+      max-width: none;
     }
   }
 

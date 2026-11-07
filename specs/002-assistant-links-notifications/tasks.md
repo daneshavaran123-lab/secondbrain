@@ -29,7 +29,7 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 **Purpose**: Dependencies and the new module's place
 
 - [X] T001 Add `web-push` to `backend/package.json` and `@capacitor/push-notifications` and `@capacitor/local-notifications` to `frontend/package.json` (install, keep lockfiles in sync)
-- [X] T002 [P] Create `backend/src/notifications/` with empty `schedule.js`, `producers.js`, `delivery.js`, `worker.js`, `settings.js` (ES modules) and document the new env vars `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `FCM_SERVICE_ACCOUNT`, `FCM_API_BASE`, `SMS_API_URL`, `APP_URL`, `NOTIFY_TICK_MS` in `backend/.env.example`
+- [X] T002 [P] Create `backend/src/notifications/` with empty `schedule.js`, `producers.js`, `delivery.js`, `worker.js`, `settings.js` (ES modules) and document the new env vars `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `FCM_SERVICE_ACCOUNT`, `FCM_API_BASE`, `SMS_API_URL`, `NOTIFY_TICK_MS` (links use the existing `SITE_URL`) in `backend/.env.example`
 
 ---
 
@@ -80,26 +80,26 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] `backend/test/notifications.test.js`: due times (event 15 minutes before; all-day event 08:00; `task_due` 08:00 on the due date in the user's tz; reminder at `start_date`), quiet window including one that crosses midnight, `Asia/Tehran` vs another tz, dedupe keys include the due time, message text for SMS/email is short and has no body details (FR-021)
-- [ ] T016 [P] [US2] `agent-test/fake-notify.mjs` (records Web Push, FCM, SMS and email requests) and `agent-test/notifications-api.mjs` covering quickstart §2 items 1–7, 10 and 11 with three users
+- [X] T015 [P] [US2] `backend/test/notifications.test.js`: due times (event 15 minutes before; all-day event 08:00; `task_due` 08:00 on the due date in the user's tz; reminder at `start_date`), quiet window including one that crosses midnight, `Asia/Tehran` vs another tz, dedupe keys include the due time, message text for SMS/email is short and has no body details (FR-021)
+- [X] T016 [P] [US2] `agent-test/fake-notify.mjs` (records Web Push, FCM, SMS and email requests) and `agent-test/notifications-api.mjs` covering quickstart §2 items 1–7, 10 and 11 with three users
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Add to `backend/src/db/schema.sql` (idempotent): `notifications` (`title` "حداکثر ۱۲۰ نویسه", `body` "حداکثر ۵۰۰ نویسه", `type` one of `reminder`، `event`، `task_due`، `invitation`، `delegated`، `delegation_status`، `message`, `UNIQUE (user_id, dedupe_key)`, `ON DELETE CASCADE`, indexes `(user_id, created_at DESC)` and unread), `notification_deliveries` (`channel` `push`|`sms`|`email`, `status` `pending`|`sent`|`failed`|`skipped`, `attempts` "حداکثر ۳ تلاش", `UNIQUE (notification_id, channel)`), `notification_settings` (defaults per data-model.md) and `notification_devices` (`kind` `webpush`|`fcm`, `endpoint` UNIQUE)
-- [ ] T018 [P] [US2] `backend/src/notifications/settings.js`: defaults (every type `{ push: true, sms: false, email: false }`, `accept_from_others: true`, `tz: 'Asia/Tehran'`), load/merge, `isOff(type)`, `channelsFor(type)`
-- [ ] T019 [P] [US2] `backend/src/notifications/schedule.js`: pure functions for due times, `deliverAfter(dueAt, settings)` (quiet window end) and dedupe keys, per research R4/R5/R7
-- [ ] T020 [US2] `backend/src/notifications/producers.js`: one producer per type of research R5 with the 24-hour look-back window, `INSERT … ON CONFLICT (user_id, dedupe_key) DO NOTHING`, skipping types the user turned off, and one `notification_deliveries` row per enabled outside channel with `deliver_after`; `path` from `pathFor` (T003)
-- [ ] T021 [P] [US2] `SMS_API_URL` override in `backend/src/utils/sms.js` (default `https://api.sms.ir/v1`)
-- [ ] T022 [US2] `backend/src/notifications/delivery.js`: Web Push with `web-push` (VAPID); FCM HTTP v1 (OAuth token signed with `jsonwebtoken` RS256 from `FCM_SERVICE_ACCOUNT`, base `FCM_API_BASE`); SMS via `utils/sms.js` to `user_profiles.mobile_phone`/`phone`; email via Resend; short Persian text with Jalali date and 24-hour time plus `APP_URL` link; up to 3 attempts; 404/410 disables the device; `skipped` when there is no device/phone/email
-- [ ] T023 [US2] `backend/src/notifications/worker.js`: every `NOTIFY_TICK_MS` (default 30000) under `pg_try_advisory_lock`: produce → deliver due rows → once a day delete notifications older than 90 days; start it from `backend/src/index.js` (not when `NODE_ENV=test`)
-- [ ] T024 [US2] `backend/src/routes/notifications.js` with `requireAuth` and `wrap`: `GET /`, `GET /unread-count`, `POST /read`, `DELETE /:id`, `POST /devices`, `DELETE /devices/:id` per contracts/notifications-api.md (same endpoint from another user moves the device); mount `/notifications` in `backend/src/index.js`
-- [ ] T025 [P] [US2] `frontend/src/services/notificationsService.ts` for the routes of T024
-- [ ] T026 [US2] `frontend/src/hooks/useNotifications.ts`: unread count every 20 seconds and on focus; newly arrived unread items shown once as a system notification (web: `registration.showNotification` with `tag` = notification id; app: `@capacitor/local-notifications`) when permission is granted
-- [ ] T027 [US2] `frontend/src/lib/push.ts`: register the device (web: `pushManager.subscribe` with the VAPID public key from settings; app: `PushNotifications.register` → FCM token) and `POST /notifications/devices`; keep the device id; `DELETE` it on sign-out from `frontend/src/contexts/AuthContext.tsx`
-- [ ] T028 [P] [US2] `frontend/public/sw.js`: `push` shows title/body with `tag` and `data.path`; `notificationclick` focuses an open window and navigates to `data.path`, or opens it
-- [ ] T029 [US2] Rewrite `frontend/src/components/ui/notification-center.tsx` on the server: list with type icon, Jalali date and 24-hour time, sender name; click → navigate to `path` and mark read; «همه خوانده شد»; delete; loading, empty («هنوز اعلانی ندارید» + what produces notifications) and error states (FR-015); remove the `localStorage` service
-- [ ] T030 [US2] `frontend/src/components/Header.tsx`: badge and `aria-label` «اعلان‌ها، N خوانده‌نشده» from `useNotifications`
-- [ ] T031 [US2] Permission explanation once (FR-014): when permission is denied and `permission_explained` is false, a short note in the notification center with how to allow it; dismissing sets `permission_explained` via settings
+- [X] T017 [US2] Add to `backend/src/db/schema.sql` (idempotent): `notifications` (`title` "حداکثر ۱۲۰ نویسه", `body` "حداکثر ۵۰۰ نویسه", `type` one of `reminder`، `event`، `task_due`، `invitation`، `delegated`، `delegation_status`، `message`, `UNIQUE (user_id, dedupe_key)`, `ON DELETE CASCADE`, indexes `(user_id, created_at DESC)` and unread), `notification_deliveries` (`channel` `push`|`sms`|`email`, `status` `pending`|`sent`|`failed`|`skipped`, `attempts` "حداکثر ۳ تلاش", `UNIQUE (notification_id, channel)`), `notification_settings` (defaults per data-model.md) and `notification_devices` (`kind` `webpush`|`fcm`, `endpoint` UNIQUE)
+- [X] T018 [P] [US2] `backend/src/notifications/settings.js`: defaults (every type `{ push: true, sms: false, email: false }`, `accept_from_others: true`, `tz: 'Asia/Tehran'`), load/merge, `isOff(type)`, `channelsFor(type)`
+- [X] T019 [P] [US2] `backend/src/notifications/schedule.js`: pure functions for due times, `deliverAfter(dueAt, settings)` (quiet window end) and dedupe keys, per research R4/R5/R7
+- [X] T020 [US2] `backend/src/notifications/producers.js`: one producer per type of research R5 with the 24-hour look-back window, `INSERT … ON CONFLICT (user_id, dedupe_key) DO NOTHING`, skipping types the user turned off, and one `notification_deliveries` row per enabled outside channel with `deliver_after`; `path` from `pathFor` (T003)
+- [X] T021 [P] [US2] `SMS_API_URL` override in `backend/src/utils/sms.js` (default `https://api.sms.ir/v1`)
+- [X] T022 [US2] `backend/src/notifications/delivery.js`: Web Push with `web-push` (VAPID); FCM HTTP v1 (OAuth token signed with `jsonwebtoken` RS256 from `FCM_SERVICE_ACCOUNT`, base `FCM_API_BASE`); SMS via `utils/sms.js` to `user_profiles.mobile_phone`/`phone`; email via Resend; short Persian text with Jalali date and 24-hour time plus a `SITE_URL` link; up to 3 attempts; 404/410 disables the device; `skipped` when there is no device/phone/email
+- [X] T023 [US2] `backend/src/notifications/worker.js`: every `NOTIFY_TICK_MS` (default 30000) under `pg_try_advisory_lock`: produce → deliver due rows → once a day delete notifications older than 90 days; start it from `backend/src/index.js` (not when `NODE_ENV=test`)
+- [X] T024 [US2] `backend/src/routes/notifications.js` with `requireAuth` and `wrap`: `GET /`, `GET /unread-count`, `POST /read`, `DELETE /:id`, `POST /devices`, `DELETE /devices/:id` per contracts/notifications-api.md (same endpoint from another user moves the device); mount `/notifications` in `backend/src/index.js`
+- [X] T025 [P] [US2] `frontend/src/services/notificationsService.ts` for the routes of T024
+- [X] T026 [US2] `frontend/src/hooks/useNotifications.ts`: unread count every 20 seconds and on focus; newly arrived unread items shown once as a system notification (web: `registration.showNotification` with `tag` = notification id; app: `@capacitor/local-notifications`) when permission is granted
+- [X] T027 [US2] `frontend/src/lib/push.ts`: register the device (web: `pushManager.subscribe` with the VAPID public key from settings; app: `PushNotifications.register` → FCM token) and `POST /notifications/devices`; keep the device id; `DELETE` it on sign-out from `frontend/src/contexts/AuthContext.tsx`
+- [X] T028 [P] [US2] `frontend/public/sw.js`: `push` shows title/body with `tag` and `data.path`; `notificationclick` focuses an open window and navigates to `data.path`, or opens it
+- [X] T029 [US2] Rewrite `frontend/src/components/ui/notification-center.tsx` on the server: list with type icon, Jalali date and 24-hour time, sender name; click → navigate to `path` and mark read; «همه خوانده شد»; delete; loading, empty («هنوز اعلانی ندارید» + what produces notifications) and error states (FR-015); remove the `localStorage` service
+- [X] T030 [US2] `frontend/src/components/Header.tsx`: badge and `aria-label` «اعلان‌ها، N خوانده‌نشده» from `useNotifications`
+- [X] T031 [US2] Permission explanation once (FR-014): when permission is denied and `permission_explained` is false, a short note in the notification center with how to allow it; dismissing sets `permission_explained` via settings
 
 **Checkpoint**: a reminder set by the assistant arrives on time in the bell and as a system/push notification, once
 
@@ -113,13 +113,13 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 ### Tests for User Story 3
 
-- [ ] T032 [P] [US3] In `agent-test/notifications-api.mjs`: `PUT /settings` with `sms` and no phone → 422 with `field: "phone"`; bad time or tz → 400; type off → no notification; quiet window → `deliver_after` at its end and no push before it; SMS/email only for types where they are on (SC-008)
-- [ ] T033 [P] [US3] vitest `frontend/src/test/__tests__/pages/NotificationSettings.test.tsx`: renders every type with its channels, saves, shows the phone error next to the SMS switch
+- [X] T032 [P] [US3] In `agent-test/notifications-api.mjs`: `PUT /settings` with `sms` and no phone → 422 with `field: "phone"`; bad time or tz → 400; type off → no notification; quiet window → `deliver_after` at its end and no push before it; SMS/email only for types where they are on (SC-008)
+- [X] T033 [P] [US3] vitest `frontend/src/test/__tests__/pages/NotificationSettings.test.tsx`: renders every type with its channels, saves, shows the phone error next to the SMS switch
 
 ### Implementation for User Story 3
 
-- [ ] T034 [US3] `GET`/`PUT /notifications/settings` in `backend/src/routes/notifications.js` with validation, `has_phone`, `has_email`, `last_errors` and `vapid_public_key`; the client sends `Intl` time zone once
-- [ ] T035 [US3] `frontend/src/pages/NotificationSettingsPage.tsx`: a row per type with switches for in-app (fixed on), on-device, SMS, email; quiet hours with `TimeInput`; «اعلان از دیگران»; this device's state with an «فعال کردن اعلان روی این دستگاه» button; route `/settings/notifications` in `frontend/src/App.tsx`; links from the notification center and the user menu
+- [X] T034 [US3] `GET`/`PUT /notifications/settings` in `backend/src/routes/notifications.js` with validation, `has_phone`, `has_email`, `last_errors` and `vapid_public_key`; the client sends `Intl` time zone once
+- [X] T035 [US3] `frontend/src/pages/NotificationSettingsPage.tsx`: a row per type with switches for in-app (fixed on), on-device, SMS, email; quiet hours with `TimeInput`; «اعلان از دیگران»; this device's state with an «فعال کردن اعلان روی این دستگاه» button; route `/settings/notifications` in `frontend/src/App.tsx`; links from the notification center and the user menu
 
 **Checkpoint**: settings change what arrives and when
 
@@ -133,14 +133,14 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 ### Tests for User Story 4
 
-- [ ] T036 [P] [US4] In `agent-test/notifications-api.mjs`: `send` 201 to a teammate; 403 with no shared organization; 403 when the recipient refuses others; 429 on the 21st in an hour; `ref` to an organization the recipient is not in is dropped; `recipients` lists only shared-organization members (SC-007)
-- [ ] T037 [P] [US4] In `agent-test/assistant-links.mjs`: `notify_user` for one teammate → awaiting confirmation with `recipient_id`; two matches → clarification; none → `NOT_A_TEAMMATE`
+- [X] T036 [P] [US4] In `agent-test/notifications-api.mjs`: `send` 201 to a teammate; 403 with no shared organization; 403 when the recipient refuses others; 429 on the 21st in an hour; `ref` to an organization the recipient is not in is dropped; `recipients` lists only shared-organization members (SC-007)
+- [X] T037 [P] [US4] In `agent-test/assistant-links.mjs`: `notify_user` for one teammate → awaiting confirmation with `recipient_id`; two matches → clarification; none → `NOT_A_TEAMMATE`
 
 ### Implementation for User Story 4
 
-- [ ] T038 [US4] `POST /notifications/send` and `GET /notifications/recipients` in `backend/src/routes/notifications.js` per the contract (message "حداکثر ۵۰۰ نویسه"; `sender_id` from the session; title = sender's display name)
-- [ ] T039 [US4] Write tool `notify_user` in `backend/src/agent/tools.js`: definition, `planWriteAction` resolution against shared-organization members, `feedback` «اعلان به {نام}», never auto-confirmed; describe when to use it in `backend/src/agent/prompt.js`
-- [ ] T040 [US4] Execute `notify_user` in `frontend/src/services/actionExecutorService.ts` with `POST /notifications/send`, showing the server's Persian error on 403/429
+- [X] T038 [US4] `POST /notifications/send` and `GET /notifications/recipients` in `backend/src/routes/notifications.js` per the contract (message "حداکثر ۵۰۰ نویسه"; `sender_id` from the session; title = sender's display name)
+- [X] T039 [US4] Write tool `notify_user` in `backend/src/agent/tools.js`: definition, `planWriteAction` resolution against shared-organization members, `feedback` «اعلان به {نام}», never auto-confirmed; describe when to use it in `backend/src/agent/prompt.js`
+- [X] T040 [US4] Execute `notify_user` in `frontend/src/services/actionExecutorService.ts` with `POST /notifications/send`, showing the server's Persian error on 403/429
 
 **Checkpoint**: a teammate receives the message; strangers cannot be messaged
 
@@ -148,10 +148,10 @@ Web app: `backend/src/`, `backend/test/`, `frontend/src/`, `frontend/public/`. R
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T041 [P] Browser test `verify-notifications.cjs` (scratchpad) for quickstart §4: answer links (mouse and keyboard), deleted record message, permission granted/denied, bell count, system notification once, settings page, mobile 390px without horizontal scroll
-- [ ] T042 [P] Setup notes for VAPID keys and Firebase (Android `google-services.json`, iOS APNs key in Firebase) in `frontend/BUILD_INSTRUCTIONS.md`
-- [ ] T043 Full gate (constitution V): `tsc`, `eslint`, `vitest` (UTC and `Asia/Tehran`), backend `npm test`, `vite build`, the new API and browser suites and the earlier ones (search, storage, members, org, health, embed, db-security)
-- [ ] T044 Commit and push to `claude/vibrant-johnson-3obrre`
+- [X] T041 [P] Browser test `verify-notifications.cjs` (scratchpad) for quickstart §4: answer links (mouse and keyboard), deleted record message, permission granted/denied, bell count, system notification once, settings page, mobile 390px without horizontal scroll
+- [X] T042 [P] Setup notes for VAPID keys and Firebase (Android `google-services.json`, iOS APNs key in Firebase) in `frontend/BUILD_INSTRUCTIONS.md`
+- [X] T043 Full gate (constitution V): `tsc`, `eslint`, `vitest` (UTC and `Asia/Tehran`), backend `npm test`, `vite build`, the new API and browser suites and the earlier ones (search, storage, members, org, health, embed, db-security)
+- [X] T044 Commit and push to `claude/vibrant-johnson-3obrre`
 
 ---
 
@@ -209,3 +209,19 @@ Links (US1) → notifications on time in every channel (US2) → personal contro
 - [P] tasks = different files, no dependencies
 - Outside services (Apple/Google/browser push, sms.ir, Resend) are tested against local fakes; real delivery is reported as untested
 - Commit after the full gate (T043), per the constitution
+
+## Implementation notes
+
+What changed against the task text while implementing, and the `/speckit-analyze` findings folded in:
+
+- **I1**: `GET`/`PUT /notifications/settings` (with the VAPID key and `permission_explained`) were built with T024, so story 2 does not wait on story 3; T034 kept the validation.
+- **G1**: `POST /notifications/send` stores the message with `createNotification`, so it reaches the recipient on the recipient's channels and after their quiet hours.
+- **G2**: `GET /notifications/unread-count` returns `quiet_until`; the app holds its own system notification during quiet hours.
+- **G4**: `create_reminder` for a time already passed returns `TIME_PASSED` before saving.
+- **U1**: `pathFor` has its own table for `reminder` and `invitation`; neither became a search source.
+- **C1**: second-user checks for story 1 (`agent-tests/assistant-links`: B's answer links only B's records) and story 3 (B's settings are B's own).
+- Links in SMS and email use the existing `SITE_URL`, not a new `APP_URL`.
+- Tasks the assistant creates are stored with delegated tasks, so «باز کردن» for them opens `/delegation`; only contacts are highlighted on their page.
+- Found on the way and fixed: saving a contact with an organization from the assistant always failed (it went to company contacts with no company); every switch stretched into a circle on phones (a 44px minimum for every button), fixed in the shared `Switch`; the bell's list ran off a phone screen.
+- Web Push endpoints must be HTTPS (`web-push` always uses TLS); the route accepts only `https://` endpoints.
+

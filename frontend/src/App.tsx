@@ -71,6 +71,7 @@ const SubUsersManagementPage = lazy(() => import("./pages/SubUsersManagementPage
 const AuditLogsPage = lazy(() => import("./pages/AuditLogsPage"));
 const AssistantReportsPage = lazy(() => import("./pages/AssistantReportsPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const NotificationSettingsPage = lazy(() => import("./pages/NotificationSettingsPage"));
 const OrganizationDetailPage = lazy(() => import("./pages/OrganizationDetailPage"));
 const OrganizationDashboardPage = lazy(() => import("./pages/OrganizationDashboardPage"));
 const OrganizationSettingsPage = lazy(() => import("./pages/OrganizationSettingsPage"));
@@ -173,6 +174,7 @@ const App = () => {
                   <Route path="contacts" element={<PersonalContactsPage />} />
                   <Route path="assistant-reports" element={<AssistantReportsPage />} />
                   <Route path="profile" element={<ProfilePage />} />
+                  <Route path="settings/notifications" element={<NotificationSettingsPage />} />
                   <Route path="my-organizations" element={<MyOrganizationsPage />} />
                   
                   {/* Debug/Cleanup Route */}

@@ -2,6 +2,8 @@ import { Resend } from 'resend';
 
 const FROM = process.env.EMAIL_FROM || 'noreply@brainforge.dev';
 
+export const emailConfigured = () => !!process.env.RESEND_API_KEY;
+
 function getResend() {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error('RESEND_API_KEY is not configured');
@@ -65,6 +67,26 @@ body{font-family:Tahoma,Arial,sans-serif;background:#f8fafc;direction:rtl;paddin
   </div>
   <p>لطفاً نسبت به انجام این وظیفه اقدام نمایید.</p></div>
   <div class="foot"><p>BrainForge — شناسه وظیفه: ${taskId}</p></div>
+</div></body></html>`,
+  });
+}
+
+const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/** A notification by email: the title and a link; details are seen after signing in (FR-021). */
+export async function sendNotificationEmail(to, { title, link }) {
+  const resend = getResend();
+  await resend.emails.send({
+    from: FROM,
+    to: [to],
+    subject: title,
+    html: `<!DOCTYPE html><html dir="rtl" lang="fa"><head><meta charset="UTF-8"></head>
+<body style="font-family:Tahoma,Arial,sans-serif;background:#f8fafc;direction:rtl;padding:20px">
+<div style="max-width:520px;margin:auto;background:#fff;border-radius:12px;padding:28px">
+  <p style="color:#64748b;font-size:13px;margin:0 0 8px">مغز دوم من</p>
+  <h2 style="color:#0f172a;font-size:18px;margin:0 0 16px">${escapeHtml(title)}</h2>
+  ${link ? `<p><a href="${escapeHtml(link)}" style="display:inline-block;padding:10px 22px;background:#0e7c86;color:#fff;border-radius:8px;text-decoration:none">باز کردن در برنامه</a></p>` : ''}
+  <p style="color:#94a3b8;font-size:12px;margin-top:20px">این ایمیل را چون در تنظیمات اعلان «ایمیل» را روشن کرده‌اید دریافت کرده‌اید.</p>
 </div></body></html>`,
   });
 }

@@ -3,7 +3,10 @@
  * Docs: https://app.sms.ir/developer
  */
 
-const GATEWAY_URL = 'https://api.sms.ir/v1';
+// SMS_API_URL only for tests (a local stand-in for the gateway)
+const GATEWAY_URL = process.env.SMS_API_URL || 'https://api.sms.ir/v1';
+
+export const smsConfigured = () => !!process.env.SMS_API_KEY;
 
 function getApiKey() {
   const key = process.env.SMS_API_KEY;

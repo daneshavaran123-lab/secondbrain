@@ -132,6 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (currentUserId && queryClient) {
         fullUserSwitchCleanup(queryClient, currentUserId);
       }
+      // this device stops receiving the account's notifications (needs the session, so first)
+      await import('@/lib/push').then(({ disablePush }) => disablePush()).catch(() => {});
       await apiLogout();
       setAuthState({ user: null, role: null, isAuthenticated: false, isLoading: false, sessionType: null });
     } catch {

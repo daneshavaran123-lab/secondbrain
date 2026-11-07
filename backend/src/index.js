@@ -42,6 +42,8 @@ import newsRouter from './routes/news.js';
 import filesRouter from './routes/files.js';
 import orgMembersRouter from './routes/org-members.js';
 import searchRouter from './routes/search.js';
+import notificationsRouter from './routes/notifications.js';
+import { startNotificationWorker } from './notifications/worker.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -117,6 +119,7 @@ app.use('/news',                      newsRouter);
 app.use('/files',                     filesRouter);
 app.use('/org-members',               orgMembersRouter);
 app.use('/search',                    searchRouter);
+app.use('/notifications',             notificationsRouter);
 
 // Serve frontend
 if (existsSync('./public/index.html')) {
@@ -171,6 +174,7 @@ async function runMigration() {
 
 runMigration().then(() => {
   app.listen(PORT, () => {
+    if (process.env.NODE_ENV !== 'test') startNotificationWorker();
     console.log(`BrainForge Backend running on port ${PORT}`);
     console.log(`Health check: http://localhost:${PORT}/health`);
   });

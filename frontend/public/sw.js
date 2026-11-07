@@ -182,40 +182,35 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Push notifications (for future use)
+// A notification pushed by the server (also when the app is closed). The tag is the
+// notification's id, so the same one shown by the open app is not shown twice.
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push notification received');
-  
-  const data = event.data?.json() || {};
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch { data = {}; }
   const title = data.title || 'مغز دوم من';
-  const options = {
-    body: data.body || 'شما یک اعلان جدید دارید',
+  event.waitUntil(self.registration.showNotification(title, {
+    body: data.body || '',
     icon: '/android-chrome-192x192.png',
     badge: '/android-chrome-192x192.png',
     dir: 'rtl',
     lang: 'fa',
-    data: data.data || {},
-  };
-  
-  event.waitUntil(self.registration.showNotification(title, options));
+    tag: data.tag || undefined,
+    data: { path: typeof data.path === 'string' && data.path.startsWith('/') && !data.path.startsWith('//') ? data.path : '/' },
+  }));
 });
 
-// Handle notification click
+// Opens the record the notification is about: in a window of the app if one is open
 self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked');
   event.notification.close();
-  
+  const path = event.notification.data?.path || '/';
+  const target = new URL(path, self.location.origin).href;
   event.waitUntil(
-    self.clients.matchAll({ type: 'window' }).then((clients) => {
-      // Focus existing window or open new one
-      for (const client of clients) {
-        if (client.url === '/' && 'focus' in client) {
-          return client.focus();
-        }
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const client = clients.find((c) => new URL(c.url).origin === self.location.origin);
+      if (client) {
+        return client.focus().then((focused) => (focused && 'navigate' in focused ? focused.navigate(target) : undefined));
       }
-      if (self.clients.openWindow) {
-        return self.clients.openWindow('/');
-      }
+      return self.clients.openWindow ? self.clients.openWindow(target) : undefined;
     })
   );
 });

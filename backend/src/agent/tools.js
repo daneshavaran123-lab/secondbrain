@@ -19,6 +19,7 @@ import { matchTest } from '../health/labs.js';
 import { escapeLike, normalizeFa, searchWords, sqlNormalize } from '../search/normalize.js';
 import { SOURCE_TYPES, searchAll } from '../search/engine.js';
 import { pathFor } from '../search/sources.js';
+import { findTeammates } from '../notifications/teammates.js';
 
 const fn = (name, description, properties = {}, required = []) => ({
   type: 'function',
@@ -160,13 +161,17 @@ const WRITE_TOOL_DEFS = [
   fn('send_sms', 'ارسال پیامک. همیشه نیاز به تأیید کاربر دارد.', {
     phone: { type: 'string', description: 'شماره موبایل، مثلاً 09121234567' }, message: { type: 'string' },
   }, ['phone', 'message']),
+  fn('notify_user', 'فرستادن اعلان درون برنامه به یکی از هم‌سازمانی‌های کاربر (کسی که در برنامه حساب دارد و با کاربر در یک سازمان است). همیشه با تأیید کاربر.', {
+    recipient: { type: 'string', description: 'نام گیرنده، مثلاً «لیلا نوری»' },
+    message: { type: 'string', description: 'متن کوتاه اعلان، حداکثر ۵۰۰ نویسه' },
+  }, ['recipient', 'message']),
 ];
 
 export const TOOLS = [...READ_TOOL_DEFS, ...MEMORY_TOOL_DEFS, CLARIFY_TOOL_DEF, ...WRITE_TOOL_DEFS];
 
 const WRITE_TOOLS = new Set(WRITE_TOOL_DEFS.map((t) => t.function.name));
 // Destructive, outbound or bulk actions wait for an explicit tap in the app.
-const NEEDS_CONFIRMATION = new Set(['cancel_meeting', 'update_meeting', 'send_sms', 'import_contacts_batch']);
+const NEEDS_CONFIRMATION = new Set(['cancel_meeting', 'update_meeting', 'send_sms', 'import_contacts_batch', 'notify_user']);
 
 export const isWriteTool = (name) => WRITE_TOOLS.has(name);
 
@@ -565,6 +570,7 @@ function describeAction(name, p, ctx) {
     case 'create_legal_case': return { location: 'امور حقوقی', details: `«${p.title}»` };
     case 'save_lawyer_note': return { location: 'یادداشت‌های حقوقی', details: `«${p.title}»` };
     case 'send_sms': return { location: 'پیامک', details: `به ${p.phone}: ${clip(p.message, 40)}` };
+    case 'notify_user': return { location: `اعلان به ${p.recipient}`, details: clip(p.message, 80) };
     default: return { location: 'سیستم', details: name };
   }
 }
@@ -633,6 +639,26 @@ export async function planWriteAction(name, rawArgs, ctx) {
   if (name === 'create_meeting') {
     const conflict = await meetingConflicts(params, ctx);
     if (conflict) return conflict;
+  }
+  if (name === 'notify_user') {
+    // only people who share an organization with the user (spec 002 FR-016)
+    const found = await findTeammates(ctx.userId, params.recipient);
+    if (!found.length) {
+      return { error: 'NOT_A_TEAMMATE', hint: 'فقط به هم‌سازمانی‌هایی که در برنامه حساب دارند می‌شود اعلان داد؛ برای دیگران ایمیل یا پیامکِ واگذاری کار را پیشنهاد کن.' };
+    }
+    if (found.length > 1) {
+      return { error: 'AMBIGUOUS_RECIPIENT', options: found.slice(0, 5).map((t) => t.display_name), hint: 'با ask_clarification بپرس منظور کدام است.' };
+    }
+    params.recipient_id = found[0].id;
+    params.recipient = found[0].display_name;
+    params.message = String(params.message).trim().slice(0, 500);
+  }
+  if (name === 'create_reminder') {
+    // a reminder for a moment that has passed would never notify: say so before saving (spec 002 edge cases)
+    const [day, time] = String(params.datetime || '').split(' ');
+    if (/^\d{4}-\d{2}-\d{2}$/.test(day || '') && /^\d{2}:\d{2}$/.test(time || '') && zonedToUtc(day, time, ctx.tz) <= ctx.now) {
+      return { error: 'TIME_PASSED', when: whenLabel(day, time, ctx), hint: 'این زمان گذشته است؛ به کاربر بگو و زمان آینده‌ای بپرس.' };
+    }
   }
   if ((name === 'cancel_meeting' || name === 'update_meeting') && !params.meeting_id && !params.search_query) {
     return { error: 'MISSING_FIELDS', missing: ['meeting_id'], hint: 'اول با search_calendar قرار را پیدا کن.' };

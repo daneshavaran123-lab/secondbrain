@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Bell, Search, Settings, Menu, ChevronDown, HelpCircle, Plus, Calendar as CalendarIcon, BookOpen, FileText, User, LogOut, Shield, Mail, FlaskConical } from "lucide-react";
 import SettingsModal from "./SettingsModal";
 import HelpModal from "./HelpModal";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { NotificationCenter, notificationService } from "@/components/ui/notification-center";
+import { NotificationCenter } from "@/components/ui/notification-center";
+import { useNotifications } from "@/hooks/useNotifications";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { PersianNumber } from "@/components/ui/persian-number";
@@ -20,6 +21,7 @@ import { OfflineChip } from "@/components/ui/luxe/OfflineChip";
 import { BrandMark, Wordmark } from "@/components/brand/BrandMark";
 import { askAssistant } from "@/lib/assistant";
 import { commandShortcutLabel, openCommandPalette } from "@/lib/command";
+import { toPersianDigits } from "@/lib/date-utils";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -33,7 +35,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const { unread: unreadNotifications, refresh: refreshNotifications } = useNotifications();
 
   // تاریخ شمسی امروز، مثل «سه‌شنبه ۵ آبان»
   const getCurrentPersianDate = () => {
@@ -45,19 +47,6 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
     const part = (type: string) => parts.find((p) => p.type === type)?.value || '';
     return `${part('weekday')} ${part('day')} ${part('month')}`;
   };
-
-  // به‌روزرسانی شمارش اعلانات
-  useEffect(() => {
-    const updateNotificationCount = () => {
-      setUnreadNotifications(notificationService.getUnreadCount());
-    };
-    
-    updateNotificationCount(); // اجرای فوری
-    
-    // بررسی تغییرات هر 5 ثانیه
-    const interval = setInterval(updateNotificationCount, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,10 +68,6 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
   // بررسی دسترسی مدیریت کاربران
   const canManageUsers = hasCapability(currentRole, 'مدیریت کاربران');
 
-  // تابع به‌روزرسانی شمارش اعلانات
-  const handleNotificationChange = () => {
-    setUnreadNotifications(notificationService.getUnreadCount());
-  };
   const iconButton = "h-10 w-10 min-h-0 rounded-lg text-muted-foreground hover:text-foreground sm:h-9 sm:w-9";
 
   return (
@@ -179,7 +164,8 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
             size="icon"
             className={cn(iconButton, "relative")}
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            aria-label="اعلان‌ها"
+            aria-label={unreadNotifications ? `اعلان‌ها، ${toPersianDigits(unreadNotifications)} خوانده‌نشده` : "اعلان‌ها"}
+            aria-expanded={isNotificationsOpen}
           >
             <Bell className="h-[18px] w-[18px]" />
             {unreadNotifications > 0 && (
@@ -191,7 +177,7 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
           <NotificationCenter
             isOpen={isNotificationsOpen}
             onClose={() => setIsNotificationsOpen(false)}
-            onNotificationChange={handleNotificationChange}
+            onChanged={refreshNotifications}
           />
         </div>
 
@@ -218,6 +204,10 @@ const Header = ({ onMenuClick, sidebarOpen = true }: HeaderProps) => {
             <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               پروفایل
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings/notifications')} className="cursor-pointer gap-2">
+              <Bell className="h-4 w-4 text-muted-foreground" />
+              تنظیمات اعلان‌ها
             </DropdownMenuItem>
             {canManageUsers && (
               <DropdownMenuItem onClick={() => navigate('/admin/users')} className="cursor-pointer gap-2">

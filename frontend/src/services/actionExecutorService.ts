@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
 import { syncService } from './syncService';
 import { offlineStorage } from './offlineStorageService';
 
@@ -160,6 +161,8 @@ class ActionExecutorService {
           return await this.createOrganizationMission(action.params);
         case 'send_sms':
           return await this.sendSms(action.params);
+        case 'notify_user':
+          return await this.notifyUser(action.params);
         default:
           return {
             success: false,
@@ -2139,6 +2142,26 @@ ${(action_items as { task: string; assignee?: string; deadline?: string }[] || [
   /**
    * Send SMS via backend
    */
+  /** A notification to a teammate, after the person confirmed it (spec 002, story 4). */
+  private async notifyUser(params: Record<string, unknown>): Promise<ActionResult> {
+    const { recipient_id, recipient, message } = params;
+    const res = await apiFetch('/notifications/send', {
+      method: 'POST',
+      body: JSON.stringify({ recipient_id, message }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return { success: false, message: data.error || 'اعلان فرستاده نشد', error: data.error || `HTTP ${res.status}` };
+    }
+    return {
+      success: true,
+      message: `اعلان برای ${recipient} فرستاده شد`,
+      location: 'اعلان‌ها',
+      timestamp: new Date(),
+      data: { id: data.id },
+    };
+  }
+
   private async sendSms(params: Record<string, unknown>): Promise<ActionResult> {
     const { phone, message } = params;
     if (!phone || !message) {

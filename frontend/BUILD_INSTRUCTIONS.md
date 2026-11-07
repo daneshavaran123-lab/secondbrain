@@ -97,6 +97,23 @@ npx cap sync android
 2. مجوزهای خواندن Health Connect را پلاگین خودش اضافه می‌کند؛ روی اندروید ۱۳ و پایین‌تر کاربر باید Health Connect را از Play Store نصب کند.
 3. برای انتشار در Play Store، فرم «Health Connect permissions» را در Play Console پر کنید و دلیل خواندن هر داده را توضیح دهید.
 
+### اعلان‌ها روی دستگاه (وقتی برنامه بسته است)
+
+اعلان‌های داخل برنامه (زنگوله) بدون هیچ تنظیمی کار می‌کنند. برای اینکه یادآورها و خبرها روی مرورگر و گوشی هم برسند، حتی وقتی برنامه بسته است:
+
+**مرورگر (Web Push)** — فقط روی سرور:
+1. یک بار کلیدها را بسازید: `cd backend && npx web-push generate-vapid-keys`
+2. در محیط سرور بگذارید: `VAPID_PUBLIC_KEY`، `VAPID_PRIVATE_KEY` و `VAPID_SUBJECT=mailto:آدرس-شما`. کلید خصوصی را در مخزن نگذارید.
+3. سایت باید روی HTTPS باشد (مرورگرها اعلان را فقط روی HTTPS یا localhost می‌دهند).
+
+**اندروید و iOS (Firebase Cloud Messaging)** — پلاگین `@capacitor/push-notifications`:
+1. در [Firebase Console](https://console.firebase.google.com) یک پروژه بسازید و اپ اندروید و اپ iOS را با همان شناسه `appId` در `capacitor.config.ts` به آن اضافه کنید.
+2. **Android:** فایل `google-services.json` را در `android/app/` بگذارید (Capacitor آن را خودش به Gradle وصل می‌کند) و `npx cap sync android` بزنید. روی اندروید ۱۳ و بالاتر، برنامه هنگام «فعال کردن اعلان» اجازه می‌گیرد.
+3. **iOS:** در Xcode: Signing & Capabilities → `+ Capability` → **Push Notifications** و **Background Modes → Remote notifications**. در Apple Developer یک کلید APNs (`.p8`) بسازید و در Firebase Console → Project settings → Cloud Messaging بارگذاری کنید. فایل `GoogleService-Info.plist` را در `ios/App/App/` بگذارید.
+4. روی سرور: در Firebase Console → Project settings → Service accounts → «Generate new private key»؛ محتوای JSON را در یک خط در `FCM_SERVICE_ACCOUNT` بگذارید.
+
+**پیامک و ایمیل اعلان‌ها** از همان `SMS_API_KEY` (sms.ir) و `RESEND_API_KEY` موجود می‌روند؛ برای پیوند در پیامک و ایمیل، `SITE_URL` را روی نشانی سایت بگذارید. هر کاربر خودش در «تنظیمات اعلان‌ها» تعیین می‌کند کدام نوع اعلان با پیامک یا ایمیل بیاید (به‌طور پیش‌فرض خاموش‌اند).
+
 ---
 
 ### 🍎 Build iOS App
